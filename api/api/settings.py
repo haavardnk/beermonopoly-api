@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
+    'django_q',
     'beers',
 ]
 
@@ -132,3 +133,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+Q_CLUSTER = {
+    'name': 'beerapi',
+    "orm": "default",
+    'timeout': 300,
+    'label': 'Django Q',
+}
