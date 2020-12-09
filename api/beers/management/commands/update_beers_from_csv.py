@@ -17,28 +17,28 @@ class Command(BaseCommand):
         
         for index, row in df.iterrows():
             try:
-                beer = Beer.objects.get(beerid=int(row['Varenummer']))
-                beer.name = row['Varenavn']
-                beer.category = row['Varetype']
+                beer = Beer.objects.get(vmp_id=int(row['Varenummer']))
+                beer.vmp_name = row['Varenavn']
+                beer.sub_category = row['Varetype']
                 beer.country = row['Land']
                 beer.price = float(row['Pris'].replace(',','.'))
                 beer.volume = float(row['Volum'].replace(',','.'))
                 beer.product_selection = row['Produktutvalg']
-                beer.vinmonopolet_url = row['Vareurl']
-                beer.vinmonopolet_updated = timezone.now()
+                beer.vmp_url = row['Vareurl']
+                beer.vmp_updated = timezone.now()
                 beer.save()
 
             except Beer.DoesNotExist:
                 beer = Beer.objects.create(
-                beerid = int(row['Varenummer']),
-                name = row['Varenavn'],
-                category = row['Varetype'],
+                vmp_id = int(row['Varenummer']),
+                vmp_name = row['Varenavn'],
+                sub_category = row['Varetype'],
                 country = row['Land'],
                 price = float(row['Pris'].replace(',','.')),
                 volume = float(row['Volum'].replace(',','.')),
                 product_selection = row['Produktutvalg'],
-                vinmonopolet_url = row['Vareurl'],
-                vinmonopolet_updated = timezone.now(),
+                vmp_url = row['Vareurl'],
+                vmp_updated = timezone.now(),
                 )
 
         self.stdout.write(self.style.SUCCESS('Successfully updated beers from Vinmonpolet CSV'))
