@@ -1,4 +1,4 @@
-import csv, pytz
+import csv
 import pandas as pd
 from beers.models import Store
 from django.utils import timezone
