@@ -12,7 +12,7 @@ class Command(BaseCommand):
         api_client_id = untappd.api_client_id
         api_client_secret = untappd.api_client_secret
         baseurl = untappd.baseurl
-        beers = Beer.objects.filter(untpd_id__isnull=True)
+        beers = Beer.objects.filter(untpd_id__isnull=True, match_manually=False)
 
         api_remaining = '100'
         matched_beers = 0
@@ -46,6 +46,9 @@ class Command(BaseCommand):
                 matched_beers += 1
 
             except:
+                beer.match_manually = True
+                beer.save()
+
                 api_remaining = request.headers['X-Ratelimit-Remaining']
                 continue
         

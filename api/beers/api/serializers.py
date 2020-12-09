@@ -5,7 +5,7 @@ class BeerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Beer
-        exclude = ("verified_match", "prioritize_recheck",)
+        exclude = ("verified_match", "prioritize_recheck", "match_manually")
 
 class StoreSerializer(serializers.ModelSerializer):
 

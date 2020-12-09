@@ -1,6 +1,6 @@
 import csv
 import pandas as pd
-from beers.models import Store
+from beers.models import Store, ExternalAPI
 from django.utils import timezone
 from django.core.management.base import BaseCommand
 
@@ -8,7 +8,7 @@ class Command(BaseCommand):
     # Updates stores from CSV file from Vinmonopolet.
 
     def handle(self, *args, **options):
-        url = "https://www.vinmonopolet.no/medias/sys_master/locations/locations/h3c/h4a/8834253946910/8834253946910.csv"
+        url = ExternalAPI.objects.get(name="store_csv").baseurl
 
         df = pd.read_csv(url, sep=';')
         

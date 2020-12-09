@@ -1,6 +1,6 @@
 import csv, pytz
 import pandas as pd
-from beers.models import Beer
+from beers.models import Beer, ExternalAPI
 from django.utils import timezone
 from django.core.management.base import BaseCommand
 
@@ -8,7 +8,7 @@ class Command(BaseCommand):
     # Updates beers from CSV file from Vinmonopolet. Backup solution or as first database init.
 
     def handle(self, *args, **options):
-        url = "https://www.vinmonopolet.no/medias/sys_master/products/products/hbc/hb0/8834253127710/produkter.csv"
+        url = ExternalAPI.objects.get(name="beer_csv").baseurl
         styles = ['Klosterstil', 'Saison farmhouse ale', 'Barley wine', 'Spesial', 'Hveteøl',
                 'Porter & stout', 'Pale ale', 'Mørk lager', 'Brown ale', 'India pale ale', 
                 'Lys ale', 'Lys lager', 'Surøl', 'Red/amber', 'Mjød', 'Scotch ale']

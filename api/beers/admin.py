@@ -3,7 +3,7 @@ from beers.models import Beer, ExternalAPI, Store, Stock
 
 @admin.register(Beer)
 class BeerAdmin(admin.ModelAdmin):
-    list_display = ("vmp_name", "brewery", "sub_category", "vmp_id", "untpd_id", "rating", "vmp_updated", "untpd_updated")
+    list_display = ("vmp_name", "brewery", "untpd_name", "vmp_id", "untpd_id", "rating", "vmp_updated", "untpd_updated", "match_manually")
     search_fields = ("vmp_name", "brewery", "vmp_id", "untpd_id", "style" )
 
 class StockInline(admin.TabularInline):

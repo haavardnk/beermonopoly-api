@@ -52,7 +52,7 @@ class Command(BaseCommand):
                         price = b['price']['value'],
                         volume = b['volume']['value'],
                         product_selection = b['product_selection'],
-                        vmp_url = "https://www.vinmonopolet.no/"+b['url'],
+                        vmp_url = "https://www.vinmonopolet.no"+b['url'],
                         vmp_updated = timezone.now()
                         )
 
