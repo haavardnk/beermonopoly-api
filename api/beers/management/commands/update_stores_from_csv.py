@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
+    # Updates stores from CSV file from Vinmonopolet.
 
     def handle(self, *args, **options):
         url = "https://www.vinmonopolet.no/medias/sys_master/locations/locations/h3c/h4a/8834253946910/8834253946910.csv"
@@ -17,7 +18,6 @@ class Command(BaseCommand):
                 store.name = row['Butikknavn']
                 store.address = row['Gateadresse']
                 store.zipcode = int(row['Gate_postnummer'])
-                store.phone = row['Telefonnummer']
                 store.category = row['Kategori']
                 store.gps_lat = float(row['GPS_breddegrad'])
                 store.gps_long = float(row['GPS_lengdegrad'])
@@ -29,7 +29,6 @@ class Command(BaseCommand):
                 name = row['Butikknavn'],
                 address = row['Gateadresse'],
                 zipcode = int(row['Gate_postnummer']),
-                phone = row['Telefonnummer'],
                 category = row['Kategori'],
                 gps_lat = float(row['GPS_breddegrad']),
                 gps_long = float(row['GPS_lengdegrad']),

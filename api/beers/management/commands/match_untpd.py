@@ -5,6 +5,7 @@ from beers.models import Beer, ExternalAPI
 from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
+    # Matches beers from beername to untappd ID.
 
     def handle(self, *args, **options):
         untappd = ExternalAPI.objects.get(name='untappd')
@@ -26,14 +27,17 @@ class Command(BaseCommand):
                 request = requests.get(url)
                 response = json.loads(request.text)
 
+                # Use fuzzywuzzy to assert matches instead of just taking top result
                 beer2match = beer.vmp_name
                 options = []
                 for r in response['response']['beers']['items']:
                     options.append(r['brewery']['brewery_name']+" "+r['beer']['beer_name'])
                 best_match = process.extractOne(beer2match,options)
                 
+                # Gets matched beer
                 match = response['response']['beers']['items'][options.index(best_match[0])]
 
+                # Updates database
                 beer.untpd_id = match['beer']['bid']
                 beer.untpd_url = "https://untappd.com/b/"+match['beer']['beer_slug']+"/"+str(match['beer']['bid'])
                 beer.save()

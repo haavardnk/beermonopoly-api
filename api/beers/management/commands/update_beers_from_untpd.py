@@ -15,10 +15,10 @@ class Command(BaseCommand):
         api_remaining = '100'
         updated = 0
 
-        #First priority: never updated rating
-        beers1 = Beer.objects.filter(untpd_id__isnull=False, rating__isnull=True)
-        #Second priority, recheck prioritized
-        beers2 = Beer.objects.filter(prioritize_recheck=True)
+        #First priority, recheck prioritized wrong matches
+        beers1 = Beer.objects.filter(prioritize_recheck=True)
+        #Second priority: never updated rating
+        beers2 = Beer.objects.filter(untpd_id__isnull=False, rating__isnull=True)
         #Second priority, latest updated rating
         beers3 = Beer.objects.filter(untpd_id__isnull=False).order_by('untpd_updated')
 
@@ -46,6 +46,8 @@ class Command(BaseCommand):
                 beer.label_url = b['beer_label_hd']
                 beer.untpd_url = "https://untappd.com/b/"+b['beer_slug']+"/"+str(b['bid'])
                 beer.untpd_updated = timezone.now()
+                if beer.prioritize_recheck == True:
+                    beer.verified_match = True
                 beer.prioritize_recheck = False
                 beer.save()
 
