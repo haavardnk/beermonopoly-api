@@ -3,17 +3,20 @@ from django.core.validators import MinValueValidator, MaxValueValidator, URLVali
 
 class Beer(models.Model):
     #Vinmonopolet info
-    beerid = models.BigIntegerField(primary_key=True) # ID number on Vinmonopolet
-    name = models.CharField(max_length=100)
-    category = models.CharField(max_length=50, blank=True, null=True)
+    vmp_id = models.BigIntegerField(primary_key=True) # ID number on Vinmonopolet
+    vmp_name = models.CharField(max_length=100)
+    main_category = models.CharField(max_length=50, blank=True, null=True)
+    sub_category = models.CharField(max_length=50, blank=True, null=True)
     country = models.CharField(max_length=50, blank=True, null=True)
     price = models.FloatField(blank=True, null=True)
     volume = models.FloatField(blank=True, null=True)
     product_selection = models.CharField(max_length=50, blank=True, null=True)
-    vinmonopolet_url = models.TextField(validators=[URLValidator()], blank=True, null=True)
+    vmp_url = models.CharField(max_length=150, validators=[URLValidator()], blank=True, null=True)
 
     #Untappd info
-    untappd_id = models.IntegerField(blank=True, null=True)
+    untpd_id = models.IntegerField(blank=True, null=True)
+    untpd_name = models.CharField(max_length=100, blank=True, null=True)
+    untpd_url = models.CharField(max_length=150, validators=[URLValidator()], blank=True, null=True)
     verified_match = models.BooleanField(default=False)
     brewery = models.CharField(max_length=100, blank=True, null=True)
     rating = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(5)], blank=True, null=True)
@@ -22,17 +25,16 @@ class Beer(models.Model):
     description = models.TextField(blank=True, null=True)
     abv = models.FloatField(blank=True, null=True)
     ibu = models.IntegerField(blank=True, null=True)
-    label_url = models.TextField(validators=[URLValidator()], blank=True, null=True)
-    undappd_url = models.TextField(validators=[URLValidator()], blank=True, null=True)
+    label_url = models.CharField(max_length=150, validators=[URLValidator()], blank=True, null=True)
 
     #Server update times
-    vinmonopolet_updated = models.DateTimeField(blank=True, null=True)
-    untappd_updated = models.DateTimeField(blank=True, null=True)
+    vmp_updated = models.DateTimeField(blank=True, null=True)
+    untpd_updated = models.DateTimeField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.name
+        return self.vmp_name
 
 class Store(models.Model):
     storeid = models.IntegerField(primary_key=True)
@@ -58,7 +60,7 @@ class Stock(models.Model):
         unique_together = [['store', 'beer']]
 
     def __str__(self):
-        return self.beer.name
+        return self.beer.vmp_name
 
 
 class ExternalAPI(models.Model):

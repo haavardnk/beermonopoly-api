@@ -3,7 +3,7 @@ from beers.models import Beer, ExternalAPI, Store, Stock
 
 @admin.register(Beer)
 class BeerAdmin(admin.ModelAdmin):
-    list_display = ("name", "brewery", "beerid", "untappd_id", "rating", "vinmonopolet_updated", "untappd_updated")
+    list_display = ("vmp_name", "brewery","main_category", "vmp_id", "untpd_id", "rating", "vmp_updated", "untpd_updated")
 
 @admin.register(Store)
 class StoreAdmin(admin.ModelAdmin):
