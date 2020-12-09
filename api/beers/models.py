@@ -18,6 +18,7 @@ class Beer(models.Model):
     untpd_name = models.CharField(max_length=100, blank=True, null=True)
     untpd_url = models.CharField(max_length=150, validators=[URLValidator()], blank=True, null=True)
     verified_match = models.BooleanField(default=False)
+    prioritize_recheck = models.BooleanField(default=False)
     brewery = models.CharField(max_length=100, blank=True, null=True)
     rating = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(5)], blank=True, null=True)
     checkins = models.IntegerField(blank=True, null=True)
@@ -46,7 +47,7 @@ class Store(models.Model):
     gps_lat = models.FloatField()
     gps_long = models.FloatField()
 
-    updated_at = models.DateTimeField(auto_now=True)
+    store_updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -55,6 +56,8 @@ class Stock(models.Model):
     store = models.ForeignKey(Store, on_delete=models.CASCADE)
     beer = models.ForeignKey(Beer, on_delete=models.CASCADE)
     quantity = models.IntegerField()
+
+    stock_updated = models.DateTimeField(auto_now=True)
 
     class Meta:
         unique_together = [['store', 'beer']]

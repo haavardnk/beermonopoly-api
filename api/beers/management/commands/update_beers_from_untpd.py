@@ -16,17 +16,19 @@ class Command(BaseCommand):
         updated = 0
 
         #First priority: never updated rating
-        beers1 = Beer.objects.filter(rating__isnull=True, untpd_id__isnull=False)
+        beers1 = Beer.objects.filter(untpd_id__isnull=False, rating__isnull=True)
+        #Second priority, recheck prioritized
+        beers2 = Beer.objects.filter(prioritize_recheck=True)
         #Second priority, latest updated rating
-        beers2 = Beer.objects.filter(untpd_id__isnull=False).order_by('untpd_updated')
+        beers3 = Beer.objects.filter(untpd_id__isnull=False).order_by('untpd_updated')
 
-        beers = beers1 | beers2
+        beers = beers1 | beers2 | beers3
 
         for beer in beers:
             if int(api_remaining) <= 1:
                 break
 
-            url = baseurl+"beer/info/"+str(beer.untappd_id)+"?client_id="+api_client_id+"&client_secret="+api_client_secret
+            url = baseurl+"beer/info/"+str(beer.untpd_id)+"?client_id="+api_client_id+"&client_secret="+api_client_secret
             request = requests.get(url)
             response = json.loads(request.text)
 
@@ -44,10 +46,11 @@ class Command(BaseCommand):
                 beer.label_url = b['beer_label_hd']
                 beer.untpd_url = "https://untappd.com/b/"+b['beer_slug']+"/"+str(b['bid'])
                 beer.untpd_updated = timezone.now()
+                beer.prioritize_recheck = False
                 beer.save()
 
                 api_remaining = request.headers['X-Ratelimit-Remaining']
-                updated_beers += 1
+                updated += 1
 
             except:
                 api_remaining = request.headers['X-Ratelimit-Remaining']
