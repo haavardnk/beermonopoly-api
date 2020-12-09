@@ -18,6 +18,7 @@ class Beer(models.Model):
     untpd_name = models.CharField(max_length=100, blank=True, null=True)
     untpd_url = models.CharField(max_length=150, validators=[URLValidator()], blank=True, null=True)
     verified_match = models.BooleanField(default=False)
+    match_manually = models.BooleanField(default=False)
     prioritize_recheck = models.BooleanField(default=False)
     brewery = models.CharField(max_length=100, blank=True, null=True)
     rating = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(5)], blank=True, null=True)
