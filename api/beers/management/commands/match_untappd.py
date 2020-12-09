@@ -1,17 +1,18 @@
 import requests, json
 from urllib.parse import quote
-from beers.models import Beer, SiteSetting
+from beers.models import Beer, ExternalAPI
 from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        untappd = SiteSetting.objects.get(name='untappd')
+        untappd = ExternalAPI.objects.get(name='untappd')
         api_client_id = untappd.api_client_id
         api_client_secret = untappd.api_client_secret
+        baseurl = untappd.baseurl
         beers = Beer.objects.filter(untappd_id__isnull=True)
 
-        api_remaining = '1'
+        api_remaining = '100'
         matched_beers = 0
 
         for beer in beers:
@@ -20,8 +21,7 @@ class Command(BaseCommand):
 
             try:
                 query = quote(beer.name)
-                url = "https://api.untappd.com/v4/search/beer?client_id="+\
-                        api_client_id+"&client_secret="+api_client_secret+"&q="+query
+                url = baseurl+"search/beer?client_id="+api_client_id+"&client_secret="+api_client_secret+"&q="+query
 
                 request = requests.get(url)
                 response = json.loads(request.text)

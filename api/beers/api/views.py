@@ -18,4 +18,10 @@ class BeerViewSet(ModelViewSet):
         if beerid is not None:
             beerid = list(int(v) for v in beerid.split(','))
             queryset = queryset.filter(beerid__in=beerid)
+
+        search = self.request.query_params.get("search", None)
+        if search is not None:
+            search = list(v for v in search.split(','))
+            queryset = queryset.filter(name__search=search)
+
         return queryset

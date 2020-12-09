@@ -1,29 +1,29 @@
 import csv, pytz
 import pandas as pd
-from beers.models import Beer, SiteSetting
+from beers.models import Beer
 from django.utils import timezone
 from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        vinmonopolet = SiteSetting.objects.get(name='vinmonopolet')
+        url = "https://www.vinmonopolet.no/medias/sys_master/products/products/hbc/hb0/8834253127710/produkter.csv"
         styles = ['Klosterstil', 'Saison farmhouse ale', 'Barley wine', 'Spesial', 'Hveteøl',
                 'Porter & stout', 'Pale ale', 'Mørk lager', 'Brown ale', 'India pale ale', 
-                'Lys ale', 'Lys lager', 'Surøl', 'Red/amber', 'Mjød', 'Alkoholfritt øl', 'Scotch ale']
+                'Lys ale', 'Lys lager', 'Surøl', 'Red/amber', 'Mjød', 'Scotch ale']
 
-        df = pd.read_csv(vinmonopolet.url, sep=';')
+        df = pd.read_csv(url, sep=';')
         df = df.loc[df['Varetype'].isin(styles)]
         
         for index, row in df.iterrows():
             try:
                 beer = Beer.objects.get(beerid=int(row['Varenummer']))
                 beer.name = row['Varenavn']
-                beer.brewery = row['Produsent']
-                beer.abv = float(row['Alkohol'].replace(',','.'))
+                beer.category = row['Varetype']
                 beer.country = row['Land']
                 beer.price = float(row['Pris'].replace(',','.'))
                 beer.volume = float(row['Volum'].replace(',','.'))
+                beer.product_selection = row['Produktutvalg']
                 beer.vinmonopolet_url = row['Vareurl']
                 beer.vinmonopolet_updated = timezone.now()
                 beer.save()
@@ -32,13 +32,13 @@ class Command(BaseCommand):
                 beer = Beer.objects.create(
                 beerid = int(row['Varenummer']),
                 name = row['Varenavn'],
-                brewery = row['Produsent'],
-                abv = float(row['Alkohol'].replace(',','.')),
+                category = row['Varetype'],
                 country = row['Land'],
                 price = float(row['Pris'].replace(',','.')),
                 volume = float(row['Volum'].replace(',','.')),
+                product_selection = row['Produktutvalg'],
                 vinmonopolet_url = row['Vareurl'],
                 vinmonopolet_updated = timezone.now(),
                 )
 
-        self.stdout.write(self.style.SUCCESS('Successfully updated database from Vinmonpolet CSV'))
+        self.stdout.write(self.style.SUCCESS('Successfully updated beers from Vinmonpolet CSV'))
