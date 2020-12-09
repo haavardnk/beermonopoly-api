@@ -1,4 +1,4 @@
 from rest_framework.pagination import PageNumberPagination
 
-class SmallSetPagination(PageNumberPagination):
+class Pagination(PageNumberPagination):
     page_size = 50
