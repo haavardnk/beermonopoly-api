@@ -1,29 +1,27 @@
-from rest_framework import generics
-from rest_framework import permissions
+from rest_framework import generics, permissions, filters
 from rest_framework.viewsets import ModelViewSet
-
+from django_filters.rest_framework import DjangoFilterBackend
 from beers.models import Beer, Stock, Store
 from beers.api.pagination import Pagination
 from beers.api.serializers import BeerSerializer, StockSerializer, StoreSerializer
 
 class BeerViewSet(ModelViewSet):
-    queryset = Beer.objects.filter(active=True).order_by("vmp_id")
     serializer_class = BeerSerializer
     pagination_class = Pagination
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+    filter_backends = (filters.SearchFilter,filters.OrderingFilter,DjangoFilterBackend)
+    search_fields = ["vmp_name", "brewery", "sub_category", "style", "vmp_id", "untpd_id"]
+    ordering_fields = ["vmp_name", "brewery", "sub_category", "rating"]
+    filterset_fields = ['style', 'brewery']
 
     def get_queryset(self):
-        queryset = Beer.objects.all().order_by("vmp_id")
-        vmp_id = self.request.query_params.get("id", None)
-        if vmp_id is not None:
-            vmp_id = list(int(v) for v in vmp_id.split(','))
-            queryset = queryset.filter(vmp_id__in=vmp_id, active=True)
-
-        search = self.request.query_params.get("search", None)
-        if search is not None:
-            search = list(v for v in search.split(','))
-            queryset = queryset.filter(vmp_name__search=search, active=True)
-
+        queryset = Beer.objects.filter(active=True)
+        beers = self.request.query_params.get("beers", None)
+        if beers is not None:
+            beers = list(int(v) for v in beers.split(','))
+            queryset = queryset.filter(vmp_id__in=beers)
+        
         return queryset
 
 class StoreViewSet(ModelViewSet):
@@ -32,23 +30,16 @@ class StoreViewSet(ModelViewSet):
     pagination_class = Pagination
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+    filter_backends = (filters.SearchFilter,filters.OrderingFilter)
+    search_fields = ["name", "address", "store_id"]
+    ordering_fields = ["name", "store_id"]
+    ordering = ['name']
+
 class StockViewSet(ModelViewSet):
-    queryset = Stock.objects.all().order_by("store__storeid")
+    queryset = Stock.objects.all().order_by("store__store_id")
     serializer_class = StockSerializer
     pagination_class = Pagination
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-    def get_queryset(self):
-        queryset = Stock.objects.all().order_by("store__storeid")
-        storeid = self.request.query_params.get("store", None)
-        if storeid is not None:
-            storeid = storeid
-            queryset = queryset.filter(store=storeid)
-
-        beerid = self.request.query_params.get("beer", None)
-        if beerid is not None:
-            beerid = beerid
-            queryset = queryset.filter(beer=beerid)
-
-
-        return queryset
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['store', 'beer']
+    

@@ -14,7 +14,7 @@ class Command(BaseCommand):
         
         for index, row in df.iterrows():
             try:
-                store = Store.objects.get(storeid=int(row['Butikknummer']))
+                store = Store.objects.get(store_id=int(row['Butikknummer']))
                 store.name = row['Butikknavn']
                 store.address = row['Gateadresse']
                 store.zipcode = int(row['Gate_postnummer'])
@@ -25,7 +25,7 @@ class Command(BaseCommand):
 
             except Store.DoesNotExist:
                 store = Store.objects.create(
-                storeid = int(row['Butikknummer']),
+                store_id = int(row['Butikknummer']),
                 name = row['Butikknavn'],
                 address = row['Gateadresse'],
                 zipcode = int(row['Gate_postnummer']),

@@ -40,7 +40,7 @@ class Beer(models.Model):
         return self.vmp_name
 
 class Store(models.Model):
-    storeid = models.IntegerField(primary_key=True)
+    store_id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=100)
     zipcode = models.IntegerField()

@@ -5,7 +5,9 @@ class BeerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Beer
-        exclude = ("verified_match", "prioritize_recheck", "match_manually", "active")
+        fields = ["vmp_id","untpd_id","vmp_name","untpd_name","brewery","product_selection","price",\
+            "volume","abv","ibu","rating","checkins","sub_category","style","description",\
+            "vmp_url","untpd_url","label_url","vmp_updated","untpd_updated","created_at"]
 
 class StoreSerializer(serializers.ModelSerializer):
 
@@ -17,7 +19,6 @@ class StockSerializer(serializers.ModelSerializer):
     beer_name = serializers.CharField(read_only=True, source="beer.vmp_name")
     store_name = serializers.CharField(read_only=True, source="store.name")
 
-
     class Meta:
         model = Stock
-        fields = ["beer", "beer_name", "store", "store_name", "quantity"]
+        fields = ["beer", "beer_name", "store", "store_name", "quantity","stock_updated"]
