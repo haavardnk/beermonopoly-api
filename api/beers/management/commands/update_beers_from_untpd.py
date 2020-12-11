@@ -16,11 +16,11 @@ class Command(BaseCommand):
         updated = 0
 
         #First priority, recheck prioritized wrong matches
-        beers1 = Beer.objects.filter(prioritize_recheck=True)
+        beers1 = Beer.objects.filter(prioritize_recheck=True, active=True)
         #Second priority: never updated rating
-        beers2 = Beer.objects.filter(untpd_id__isnull=False, rating__isnull=True)
+        beers2 = Beer.objects.filter(untpd_id__isnull=False, rating__isnull=True, active=True)
         #Second priority, latest updated rating
-        beers3 = Beer.objects.filter(untpd_id__isnull=False).order_by('untpd_updated')
+        beers3 = Beer.objects.filter(untpd_id__isnull=False, active=True).order_by('untpd_updated')
 
         beers = beers1 | beers2 | beers3
 

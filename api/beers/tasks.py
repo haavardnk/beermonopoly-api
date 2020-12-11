@@ -27,3 +27,6 @@ def smart_update_untappd():
         return management.call_command('match_untpd')
     else:
         return management.call_command('update_beers_from_untpd')
+
+def deactivate_inactive():
+    return management.call_command('deactivate_inactive')
