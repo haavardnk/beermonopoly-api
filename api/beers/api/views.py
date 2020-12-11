@@ -7,7 +7,7 @@ from beers.api.pagination import Pagination
 from beers.api.serializers import BeerSerializer, StockSerializer, StoreSerializer
 
 class BeerViewSet(ModelViewSet):
-    queryset = Beer.objects.all().order_by("vmp_id")
+    queryset = Beer.objects.filter(active=True).order_by("vmp_id")
     serializer_class = BeerSerializer
     pagination_class = Pagination
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -17,12 +17,12 @@ class BeerViewSet(ModelViewSet):
         vmp_id = self.request.query_params.get("id", None)
         if vmp_id is not None:
             vmp_id = list(int(v) for v in vmp_id.split(','))
-            queryset = queryset.filter(vmp_id__in=vmp_id)
+            queryset = queryset.filter(vmp_id__in=vmp_id, active=True)
 
         search = self.request.query_params.get("search", None)
         if search is not None:
             search = list(v for v in search.split(','))
-            queryset = queryset.filter(vmp_name__search=search)
+            queryset = queryset.filter(vmp_name__search=search, active=True)
 
         return queryset
 

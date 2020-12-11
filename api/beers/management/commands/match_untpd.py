@@ -12,7 +12,7 @@ class Command(BaseCommand):
         api_client_id = untappd.api_client_id
         api_client_secret = untappd.api_client_secret
         baseurl = untappd.baseurl
-        beers = Beer.objects.filter(untpd_id__isnull=True, match_manually=False)
+        beers = Beer.objects.filter(untpd_id__isnull=True, match_manually=False, active=True)
         filters = []
         for f in MatchFilter.objects.all():
             filters.append(f.name)

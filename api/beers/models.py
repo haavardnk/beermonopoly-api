@@ -34,6 +34,7 @@ class Beer(models.Model):
     untpd_updated = models.DateTimeField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.vmp_name
