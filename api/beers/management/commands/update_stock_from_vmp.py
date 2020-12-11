@@ -3,8 +3,8 @@ from beers.models import Beer, ExternalAPI, Store, Stock
 from django.utils import timezone
 from django.core.management.base import BaseCommand
 
-def call_api(url, storeid, page):
-    params = {'query':':name-asc:visibleInSearch:true:mainCategory:øl:availableInStores:'+str(storeid)+':','pageSize':100,'currentPage':page}
+def call_api(url, store_id, page):
+    params = {'query':':name-asc:visibleInSearch:true:mainCategory:øl:availableInStores:'+str(store_id)+':','pageSize':100,'currentPage':page}
     request = requests.get(url = url, params = params)
     response = json.loads(request.text)
     total_pages = response['pagination']['totalPages']
@@ -25,12 +25,12 @@ class Command(BaseCommand):
 
         for store in stores:
             stocked_beer = []
-            response, total_pages = call_api(url, store.storeid, 0)
+            response, total_pages = call_api(url, store.store_id, 0)
 
             # Update all beers in stock
             for page in range(0,total_pages):
                 try:
-                    response, total_pages = call_api(url, store.storeid, page)
+                    response, total_pages = call_api(url, store.store_id, page)
 
                     for r in response['products']:
                         # Find beer

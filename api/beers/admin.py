@@ -11,11 +11,11 @@ class StockInline(admin.TabularInline):
 
 @admin.register(Store)
 class StoreAdmin(admin.ModelAdmin):
-    list_display = ("name", "storeid", "address", "store_updated")
+    list_display = ("name", "store_id", "address", "store_updated")
     inlines = [
         StockInline
     ]
-    search_fields = ("name", "storeid")
+    search_fields = ("name", "store_id")
 
 @admin.register(Stock)
 class StockAdmin(admin.ModelAdmin):

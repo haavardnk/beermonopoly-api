@@ -50,7 +50,7 @@ class Command(BaseCommand):
                 best_match = process.extractOne(beer2match,options)
                 
                 # Only match if match is over 60%
-                if best_match[1] > 60
+                if best_match[1] > 60:
                     # Gets matched beer
                     match = response['response']['beers']['items'][options.index(best_match[0])]
 
