@@ -1,7 +1,7 @@
 import requests, json
 from urllib.parse import quote
 from fuzzywuzzy import process
-from beers.models import Beer, ExternalAPI, MatchFilter
+from beers.models import Beer, ExternalAPI, MatchFilter, MatchFilterCollab
 from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
@@ -16,32 +16,58 @@ class Command(BaseCommand):
         filters = []
         for f in MatchFilter.objects.all():
             filters.append(f.name)
+        brewery_list = []
+        for f in MatchFilterCollab.objects.all():
+            brewery_list.append(f.name)
 
         api_remaining = '100'
         matched_beers = 0
 
         for beer in beers:
             # Stop if no api calls remaining
-            if int(api_remaining) <= 1:
+            if int(api_remaining) <= 5:
                 break
 
             # Make query string
-            querywords = beer.vmp_name.split()
+            querystring = beer.vmp_name
+
             # Remove collab brewery
-            if 'x' in querywords:
+            if 'x' in querystring:
+                collab_removed = False
+                querywords = querystring.split()
                 index = querywords.index('x')
-                querywords = querywords[:index] + querywords[index+1 :]
+                str1 = querywords[:index]
+                str2 = querywords[index+1 :]
+                str3 = querywords[index+2 :]
+                for brewery in brewery_list:
+                    if brewery in ' '.join(str2).lower():
+                        str2 = [word for word in str2 if word.lower() not in brewery.split()]
+                        collab_removed = True
+                        break
+                if collab_removed:
+                    querystring = ' '.join(str1+str2) 
+                else:
+                    querystring = ' '.join(str1+str3)
+
             # Remove filter words (only if the word is long)
-            if len(querywords) > 3:
-                resultwords  = [word for word in querywords if word.lower() not in filters]
-                query = ' '.join(resultwords)      
+            if len(querystring.split()) > 3:
+                for filter_word in filters:
+                    if filter_word in querystring.lower():
+                        querywords = querystring.split()
+                        resultwords  = [word for word in querywords if word.lower() not in filter_word.split()]
+                        querystring = ' '.join(resultwords)     
+            query = querystring 
+
+            url = baseurl+"search/beer?client_id="+api_client_id+"&client_secret="+api_client_secret+"&q="+quote(query)+"&limit=5"
 
             try:
-                url = baseurl+"search/beer?client_id="+api_client_id+"&client_secret="+api_client_secret+"&q="+quote(query)+"&limit=5"
-
                 request = requests.get(url)
                 response = json.loads(request.text)
+                api_remaining = request.headers['X-Ratelimit-Remaining']
+            except:
+                break
 
+            try:
                 # Use fuzzywuzzy to assert matches instead of just taking top result
                 beer2match = query
                 options = []
@@ -62,15 +88,12 @@ class Command(BaseCommand):
                     beer.match_manually = True
                     beer.save()
 
-                api_remaining = request.headers['X-Ratelimit-Remaining']
                 matched_beers += 1
 
             except:
-                beer.match_manually = True
-                beer.save()
-
-                api_remaining = request.headers['X-Ratelimit-Remaining']
                 continue
-        
+
         self.stdout.write(self.style.SUCCESS(f'Successfully matched {matched_beers} beers,'+\
                                              f' {api_remaining} remaining API calls.'))
+
+
