@@ -16,6 +16,7 @@ class Command(BaseCommand):
         filters = []
         for f in MatchFilter.objects.all():
             filters.append(f.name)
+        filters.sort(key=len, reverse=True)
         brewery_list = []
 
         api_remaining = '100'
@@ -51,7 +52,6 @@ class Command(BaseCommand):
                 request = requests.get(url)
                 response = json.loads(request.text)
                 api_remaining = request.headers['X-Ratelimit-Remaining']
-
             except:
                 break
 
@@ -81,6 +81,8 @@ class Command(BaseCommand):
                 matched_beers += 1
 
             except:
+                beer.match_manually = True
+                beer.save()
                 continue
 
         self.stdout.write(self.style.SUCCESS(f'Successfully matched {matched_beers} beers,'+\
