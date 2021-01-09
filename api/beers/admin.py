@@ -1,5 +1,5 @@
 from django.contrib import admin
-from beers.models import Beer, ExternalAPI, Store, Stock, MatchFilter, MatchFilterCollab
+from beers.models import Beer, ExternalAPI, Store, Stock, MatchFilter
 
 @admin.register(Beer)
 class BeerAdmin(admin.ModelAdmin):
@@ -24,4 +24,3 @@ class StockAdmin(admin.ModelAdmin):
 
 admin.site.register(ExternalAPI)
 admin.site.register(MatchFilter)
-admin.site.register(MatchFilterCollab)

@@ -1,7 +1,7 @@
 import requests, json
 from urllib.parse import quote
-from fuzzywuzzy import process
-from beers.models import Beer, ExternalAPI, MatchFilter, MatchFilterCollab
+from fuzzywuzzy import process, fuzz
+from beers.models import Beer, ExternalAPI, MatchFilter
 from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
@@ -17,8 +17,6 @@ class Command(BaseCommand):
         for f in MatchFilter.objects.all():
             filters.append(f.name)
         brewery_list = []
-        for f in MatchFilterCollab.objects.all():
-            brewery_list.append(f.name)
 
         api_remaining = '100'
         matched_beers = 0
@@ -32,22 +30,10 @@ class Command(BaseCommand):
             querystring = beer.vmp_name
 
             # Remove collab brewery
-            if 'x' in querystring:
-                collab_removed = False
+            if ' x ' in querystring:
                 querywords = querystring.split()
                 index = querywords.index('x')
-                str1 = querywords[:index]
-                str2 = querywords[index+1 :]
-                str3 = querywords[index+2 :]
-                for brewery in brewery_list:
-                    if brewery in ' '.join(str2).lower():
-                        str2 = [word for word in str2 if word.lower() not in brewery.split()]
-                        collab_removed = True
-                        break
-                if collab_removed:
-                    querystring = ' '.join(str1+str2) 
-                else:
-                    querystring = ' '.join(str1+str3)
+                querystring = ' '.join(querywords[:index]+querywords[index+2 :]) 
 
             # Remove filter words (only if the word is long)
             if len(querystring.split()) > 3:
@@ -59,11 +45,13 @@ class Command(BaseCommand):
             query = querystring 
 
             url = baseurl+"search/beer?client_id="+api_client_id+"&client_secret="+api_client_secret+"&q="+quote(query)+"&limit=5"
+            self.stdout.write(url)
 
             try:
                 request = requests.get(url)
                 response = json.loads(request.text)
                 api_remaining = request.headers['X-Ratelimit-Remaining']
+
             except:
                 break
 
@@ -71,16 +59,18 @@ class Command(BaseCommand):
                 # Use fuzzywuzzy to assert matches instead of just taking top result
                 beer2match = query
                 options = []
+                
                 for r in response['response']['beers']['items']:
                     options.append(r['brewery']['brewery_name']+" "+r['beer']['beer_name'])
-                best_match = process.extractOne(beer2match,options)
-                
-                # Only match if match is over 60%
-                if best_match[1] > 60:
+                best_match = process.extractOne(beer2match,options,scorer=fuzz.ratio)
+
+                # Only match if match is over 50
+                if best_match[1] > 50:
                     # Gets matched beer
                     match = response['response']['beers']['items'][options.index(best_match[0])]
 
                     # Updates database
+                    print("https://untappd.com/b/"+match['beer']['beer_slug']+"/"+str(match['beer']['bid']))
                     beer.untpd_id = match['beer']['bid']
                     beer.untpd_url = "https://untappd.com/b/"+match['beer']['beer_slug']+"/"+str(match['beer']['bid'])
                     beer.save()
