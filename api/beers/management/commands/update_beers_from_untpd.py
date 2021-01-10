@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
+
     # Updates the database with information from Untappd.
     def handle(self, *args, **options):
         untappd = ExternalAPI.objects.get(name='untappd')
@@ -23,19 +24,25 @@ class Command(BaseCommand):
         #Second priority, latest updated rating
         beers3 = Beer.objects.filter(untpd_id__isnull=False, active=True).order_by('untpd_updated')
 
-        beers = list(chain(beers1, beers2, beers3))
+        #Create list of unique beers (Same beers can appear in different priorities.)
+        beers = []
+        for x in list(chain(beers1, beers2, beers3)):
+            if x not in beers:
+                beers.append(x)
 
         for beer in beers:
             if int(api_remaining) <= 5:
                 break
-
-            url = baseurl+"beer/info/"+str(beer.untpd_id)+"?client_id="+api_client_id+"&client_secret="+api_client_secret
-            request = requests.get(url)
-            response = json.loads(request.text)
+            
+            try:
+                url = baseurl+"beer/info/"+str(beer.untpd_id)+"?client_id="+api_client_id+"&client_secret="+api_client_secret
+                request = requests.get(url)
+                response = json.loads(request.text)
+            except:
+                break
 
             try:
                 b = response['response']['beer']
-
                 beer.untpd_name = b['beer_name']
                 beer.brewery = b['brewery']['brewery_name']
                 beer.rating = b['rating_score']
@@ -58,7 +65,6 @@ class Command(BaseCommand):
             except:
                 api_remaining = request.headers['X-Ratelimit-Remaining']
                 continue
-
 
         self.stdout.write(self.style.SUCCESS(f'Updated {updated} beers. {api_remaining} api calls remaining'))
 
