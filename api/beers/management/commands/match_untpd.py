@@ -12,13 +12,15 @@ class Command(BaseCommand):
         api_client_id = untappd.api_client_id
         api_client_secret = untappd.api_client_secret
         baseurl = untappd.baseurl
+
         beers = Beer.objects.filter(untpd_id__isnull=True, match_manually=False, active=True)
+
         filters = []
         for f in MatchFilter.objects.all():
             filters.append(f.name)
         filters.sort(key=len, reverse=True)
+        
         brewery_list = []
-
         api_remaining = '100'
         matched_beers = 0
 
@@ -36,7 +38,7 @@ class Command(BaseCommand):
                 index = querywords.index('x')
                 querystring = ' '.join(querywords[:index]+querywords[index+2 :]) 
 
-            # Remove filter words (only if the word is long)
+            # Remove filter words (only if the word is more than two words long)
             if len(querystring.split()) > 2:
                 for filter_word in filters:
                     if filter_word in querystring.lower():
@@ -46,13 +48,13 @@ class Command(BaseCommand):
             query = querystring 
 
             url = baseurl+"search/beer?client_id="+api_client_id+"&client_secret="+api_client_secret+"&q="+quote(query)+"&limit=5"
-            self.stdout.write(url)
 
             try:
                 request = requests.get(url)
                 response = json.loads(request.text)
                 api_remaining = request.headers['X-Ratelimit-Remaining']
             except:
+                print("Why?")
                 break
 
             try:
@@ -71,7 +73,6 @@ class Command(BaseCommand):
                     match = response['response']['beers']['items'][options.index(best_match[0])]
 
                     # Updates database
-                    print("https://untappd.com/b/"+match['beer']['beer_slug']+"/"+str(match['beer']['bid']))
                     beer.untpd_id = match['beer']['bid']
                     beer.untpd_url = "https://untappd.com/b/"+match['beer']['beer_slug']+"/"+str(match['beer']['bid'])
                     beer.save()
