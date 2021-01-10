@@ -38,6 +38,8 @@ class Command(BaseCommand):
                         beer.product_selection = b['product_selection']
                         beer.vmp_url = "https://www.vinmonopolet.no"+b['url']
                         beer.vmp_updated = timezone.now()
+                        if beer.active == False: 
+                            beer.active = True 
                         beer.save()
                         
                         updated += 1
