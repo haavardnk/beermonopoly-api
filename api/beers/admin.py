@@ -11,6 +11,7 @@ class BeerAdmin(admin.ModelAdmin):
         "vmp_id",
         "untpd_id",
         "rating",
+        "checkins",
         "vmp_updated",
         "untpd_updated",
         "match_manually",
