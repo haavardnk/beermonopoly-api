@@ -1,36 +1,52 @@
-from django.core import management
+from django.core.management import call_command
+from io import StringIO
 from beers.models import Beer
 
 
 def update_beers_from_vmp():
-    return management.call_command("update_beers_from_vmp")
+    out = StringIO()
+    call_command("update_beers_from_vmp", stdout=out)
+    return out.getvalue()
 
 
 def match_untpd():
-    return management.call_command("match_untpd")
+    out = StringIO()
+    call_command("match_untpd", stdout=out)
+    return out.getvalue()
 
 
 def update_beers_from_untpd():
-    return management.call_command("update_beers_from_untpd")
+    out = StringIO()
+    call_command("update_beers_from_untpd", stdout=out)
+    return out.getvalue()
 
 
 def update_stock_from_vmp():
-    return management.call_command("update_stock_from_vmp")
+    out = StringIO()
+    call_command("update_stock_from_vmp", stdout=out)
+    return out.getvalue()
 
 
 def update_stores_from_csv():
-    return management.call_command("update_stores_from_csv")
+    out = StringIO()
+    call_command("update_stores_from_csv", stdout=out)
+    return out.getvalue()
 
 
 def smart_update_untappd():
     # Match if unmatched exists, else update items
     beers = Beer.objects.filter(untpd_id__isnull=True, match_manually=False)
+    out = StringIO()
 
     if beers:
-        return management.call_command("match_untpd")
+        call_command("match_untpd", stdout=out)
     else:
-        return management.call_command("update_beers_from_untpd")
+        call_command("update_beers_from_untpd", stdout=out)
+
+    return out.getvalue()
 
 
 def deactivate_inactive():
-    return management.call_command("deactivate_inactive")
+    out = StringIO()
+    call_command("deactivate_inactive", stdout=out)
+    return out.getvalue()

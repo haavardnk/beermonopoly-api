@@ -21,6 +21,6 @@ class Command(BaseCommand):
 
         self.stdout.write(
             self.style.SUCCESS(
-                f"Set {beers.count()} beers inactive and deleted {stock_count} stocks!"
+                f"Set {beers.count()} beers inactive and deleted {stock_count} stocks"
             )
         )
