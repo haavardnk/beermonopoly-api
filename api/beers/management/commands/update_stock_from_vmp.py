@@ -15,7 +15,8 @@ def call_api(url, store_id, page):
     )
     scraper = cloudscraper.CloudScraper()
     request = scraper.get(req_url).text
-    response = xmltodict.parse(request)["productCategorySearchPage"]
+    response = xmltodict.parse(request)
+    response = response["productCategorySearchPage"]
     total_pages = response["pagination"]["totalPages"]
 
     return (response, total_pages)
@@ -87,6 +88,6 @@ class Command(BaseCommand):
 
         self.stdout.write(
             self.style.SUCCESS(
-                f"Successfully updated {updated} stocks, created {created} new stocks and deleted {deleted} stocks!"
+                f"Updated: {updated} Created: {created} Deleted: {deleted} Stores updated: {stores_updated}/{len(stores)}"
             )
         )
