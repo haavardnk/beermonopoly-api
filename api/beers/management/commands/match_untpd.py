@@ -120,4 +120,8 @@ class Command(BaseCommand):
             if int(api_remaining) <= 5:
                 break
 
-        self.stdout.write(self.style.SUCCESS(f"Successfully matched {matched} beers."))
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"Matched: {matched} Failed: {failed} API remaining: {api_remaining}"
+            )
+        )
