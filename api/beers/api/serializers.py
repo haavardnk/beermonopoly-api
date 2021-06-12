@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from beers.models import Beer, Stock, Store
+from rest_framework.reverse import reverse
 
 
 class BeerSerializer(serializers.ModelSerializer):
@@ -51,3 +52,25 @@ class StockSerializer(serializers.ModelSerializer):
             "quantity",
             "stock_updated",
         ]
+
+
+class MatchSerializer(serializers.HyperlinkedModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name="match-detail")
+
+    class Meta:
+        model = Beer
+        fields = [
+            "url",
+            "vmp_name",
+            "untpd_url",
+        ]
+
+    def update(self, instance, validated_data):
+        instance.vmp_name = self.validated_data["vmp_name"]
+        instance.untpd_url = self.validated_data["untpd_url"]
+        instance.untpd_id = instance.untpd_url.split("/")[-1]
+        instance.prioritize_recheck = True
+        instance.verified_match = True
+        instance.match_manually = False
+        instance.save()
+        return instance
