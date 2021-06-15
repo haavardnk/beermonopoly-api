@@ -35,7 +35,9 @@ def update_stores_from_csv():
 
 def smart_update_untappd():
     # Match if unmatched exists, else update items
-    beers = Beer.objects.filter(untpd_id__isnull=True, match_manually=False)
+    beers = Beer.objects.filter(
+        untpd_id__isnull=True, match_manually=False, active=True
+    )
     out = StringIO()
 
     if beers:
