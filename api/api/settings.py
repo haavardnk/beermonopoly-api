@@ -44,11 +44,13 @@ INSTALLED_APPS = [
     "django_q",
     "django_filters",
     "beers",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -145,6 +147,11 @@ Q_CLUSTER = {
     "attempt_count": 1,
     "label": "Django Q",
 }
+
+CORS_ALLOWED_ORIGINS = ["https://www.vinmonopolet.no", "https://app.vinmonopolet.no"]
+CORS_ALLOW_METHODS = [
+    "GET",
+]
 
 if "TRAVIS" in os.environ:
     DATABASES = {
