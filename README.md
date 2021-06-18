@@ -1,4 +1,4 @@
-# Vinmonopolet-x-Untappd
+# Beermonopoly API
 
-[![Codacy Badge](https://travis-ci.com/haavardnk/Vinmonopolet-x-Untappd.svg?branch=main)](https://travis-ci.com/github/haavardnk/Vinmonopolet-x-Untappd)
-[![codecov](https://codecov.io/gh/haavardnk/Vinmonopolet-x-Untappd/branch/main/graph/badge.svg?token=OCG3OGPMQ9)](https://codecov.io/gh/haavardnk/Vinmonopolet-x-Untappd)
+[![Codacy Badge](https://travis-ci.com/haavardnk/beermonopoly-api.svg?branch=main)](https://travis-ci.com/github/haavardnk/beermonopoly-api)
+[![codecov](https://codecov.io/gh/haavardnk/beermonopoly-api/branch/main/graph/badge.svg?token=OCG3OGPMQ9)](https://codecov.io/gh/haavardnk/beermonopoly-api)
