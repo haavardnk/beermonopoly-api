@@ -10,7 +10,7 @@ env:
 - DJANGO=3.1.12
 before_install:
 - export DJANGO_SETTINGS_MODULE=api.settings
-- export PYTHONPATH=$HOME/builds/haavardnk/vinmonopolet-x-untappd
+- export PYTHONPATH=$HOME/builds/haavardnk/beermonopoly-api
 - export PIP_USE_MIRRORS=true
 install:
 - pip install -r requirements.txt
