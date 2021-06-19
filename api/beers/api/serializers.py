@@ -1,9 +1,9 @@
 from rest_framework import serializers
 from beers.models import Beer, Stock, Store
-from rest_framework.reverse import reverse
+from drf_dynamic_fields import DynamicFieldsMixin
 
 
-class BeerSerializer(serializers.ModelSerializer):
+class BeerSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     class Meta:
         model = Beer
         fields = [
