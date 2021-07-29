@@ -33,23 +33,27 @@ class Command(BaseCommand):
             # Make query string
             querystring = beer.vmp_name
 
-            # Remove collab brewery
-            if " x " in querystring:
-                querywords = querystring.split()
-                index = querywords.index("x")
-                querystring = " ".join(querywords[:index] + querywords[index + 2 :])
+            # Run three times
+            for i in range(1, 4):
 
-            # Remove filter words (only if the word is more than two words long)
-            if len(querystring.split()) > 2:
-                for filter_word in filters:
-                    if filter_word in querystring.lower():
-                        querywords = querystring.split()
-                        resultwords = [
-                            word
-                            for word in querywords
-                            if word.lower() not in filter_word.split()
-                        ]
-                        querystring = " ".join(resultwords)
+                # Remove collab brewery
+                if " x " in querystring:
+                    querywords = querystring.split()
+                    index = querywords.index("x")
+                    querystring = " ".join(querywords[:index] + querywords[index + 2 :])
+
+                # Remove filter words (only if the word is more than two words long)
+                if len(querystring.split()) > 2:
+                    for filter_word in filters:
+                        if filter_word in querystring.lower():
+                            querywords = querystring.split()
+                            resultwords = [
+                                word
+                                for word in querywords
+                                if word.lower() not in filter_word.split()
+                            ]
+                            querystring = " ".join(resultwords)
+
             query = querystring
 
             url = (
