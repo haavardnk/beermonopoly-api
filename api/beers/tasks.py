@@ -41,7 +41,7 @@ def smart_update_untappd():
     out = StringIO()
 
     if beers:
-        call_command("match_untpd", stdout=out)
+        call_command("match_untpd_brute", stdout=out)
     else:
         call_command("update_beers_from_untpd", stdout=out)
 
