@@ -23,7 +23,6 @@ class Command(BaseCommand):
             filters.append(f.name)
         filters.sort(key=len, reverse=True)
 
-        brewery_list = []
         api_remaining = "100"
         matched = 0
         failed = 0
