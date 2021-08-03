@@ -1,7 +1,7 @@
 import pytest, responses
 from urllib.parse import quote
 from beers.models import Beer, ExternalAPI, MatchFilter
-from beers.tasks import smart_update_untappd
+from beers.tasks import match_untpd
 
 @pytest.fixture(autouse=True)
 def setup(db):
@@ -44,7 +44,7 @@ def test_match_correct_beer(mocked_responses):
                 headers={'X-Ratelimit-Remaining':'10'},
                 content_type='application/json')
     
-    smart_update_untappd()
+    match_untpd()
 
     beer = Beer.objects.get(vmp_id=12611502)
     assert beer.untpd_id == 100415
@@ -70,7 +70,7 @@ def test_no_match(mocked_responses):
                 headers={'X-Ratelimit-Remaining':'10'},
                 content_type='application/json')
     
-    smart_update_untappd()
+    match_untpd()
 
     beer = Beer.objects.get(vmp_id=12630102)
     assert beer.untpd_id == None
@@ -108,7 +108,7 @@ def test_bad_match(mocked_responses):
                 headers={'X-Ratelimit-Remaining':'10'},
                 content_type='application/json')
     
-    smart_update_untappd()
+    match_untpd()
 
     beer = Beer.objects.get(vmp_id=12512002)
     assert beer.untpd_id == None
@@ -123,7 +123,7 @@ def test_remove_collab_brewery():
     to match the naming style of Vinmonopolet
     """
     Beer.objects.create(vmp_id=12511702, vmp_name="Põhjala x Verdant Wind Forecast", active=True)
-    smart_update_untappd()
+    match_untpd()
     
     assert responses.calls[0].request.url == 'https://api.test.com/v4/search/beer?client_id=123&client_secret=321&q=P%C3%B5hjala%20Wind%20Forecast&limit=5'
 
@@ -138,7 +138,7 @@ def test_remove_beer_type():
     Beer.objects.create(vmp_id=10346602, vmp_name="De Tvende No excuses, all apologies New England IPA", active=True)
     MatchFilter.objects.create(name="ipa")
     MatchFilter.objects.create(name="new england ipa")
-    smart_update_untappd()
+    match_untpd()
 
     assert responses.calls[0].request.url == 'https://api.test.com/v4/search/beer?client_id=123&client_secret=321&q=De%20Tvende%20No%20excuses%2C%20all%20apologies&limit=5'
 
@@ -171,7 +171,7 @@ def test_stop_when_no_api_calls_remaining(mocked_responses):
                 headers={'X-Ratelimit-Remaining':'5'},
                 content_type='application/json')
 
-    smart_update_untappd()
+    match_untpd()
 
     beer1 = Beer.objects.get(vmp_id=12611502)
     beer2 = Beer.objects.get(vmp_id=12512002)
