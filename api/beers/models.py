@@ -78,6 +78,14 @@ class Stock(models.Model):
         return self.beer.vmp_name
 
 
+class WrongMatch(models.Model):
+    beer = models.ForeignKey(Beer, on_delete=models.CASCADE)
+    suggested_url = models.CharField(
+        max_length=250, validators=[URLValidator()], blank=True, null=True
+    )
+    accept_change = models.BooleanField(default=False)
+
+
 class ExternalAPI(models.Model):
     name = models.CharField(primary_key=True, max_length=50)
     baseurl = models.TextField(validators=[URLValidator()], blank=True, null=True)

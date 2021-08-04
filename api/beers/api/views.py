@@ -1,13 +1,14 @@
 from rest_framework import generics, permissions, filters
 from rest_framework.viewsets import ModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
-from beers.models import Beer, Stock, Store
+from beers.models import Beer, Stock, Store, WrongMatch
 from beers.api.pagination import Pagination
 from beers.api.serializers import (
     BeerSerializer,
     StockSerializer,
     StoreSerializer,
     MatchSerializer,
+    WrongMatchSerializer,
 )
 
 
@@ -68,3 +69,10 @@ class MatchViewSet(ModelViewSet):
     serializer_class = MatchSerializer
     pagination_class = Pagination
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+
+class WrongMatchViewSet(ModelViewSet):
+    queryset = WrongMatch.objects.all()
+    serializer_class = WrongMatchSerializer
+    pagination_class = Pagination
+    permission_classes = [permissions.AllowAny]
