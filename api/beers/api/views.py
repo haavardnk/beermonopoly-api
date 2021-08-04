@@ -65,7 +65,7 @@ class StockViewSet(ModelViewSet):
 
 
 class MatchViewSet(ModelViewSet):
-    queryset = Beer.objects.filter(match_manually=True)
+    queryset = Beer.objects.filter(match_manually=True, active=True)
     serializer_class = MatchSerializer
     pagination_class = Pagination
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
