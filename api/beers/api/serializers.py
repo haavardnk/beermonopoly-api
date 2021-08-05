@@ -4,9 +4,12 @@ from drf_dynamic_fields import DynamicFieldsMixin
 
 
 class BeerSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name="beer-detail")
+
     class Meta:
         model = Beer
         fields = [
+            "url",
             "vmp_id",
             "untpd_id",
             "vmp_name",
@@ -22,12 +25,13 @@ class BeerSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
             "sub_category",
             "style",
             "description",
+            "prioritize_recheck",
+            "verified_match",
             "vmp_url",
             "untpd_url",
             "label_url",
             "vmp_updated",
             "untpd_updated",
-            "prioritize_recheck",
             "created_at",
         ]
 
