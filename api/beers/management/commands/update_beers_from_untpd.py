@@ -1,6 +1,5 @@
 import requests, json
 from itertools import chain
-from urllib.parse import quote
 from beers.models import Beer, ExternalAPI
 from django.utils import timezone
 from datetime import timedelta
