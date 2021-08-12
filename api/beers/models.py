@@ -85,6 +85,9 @@ class WrongMatch(models.Model):
     )
     accept_change = models.BooleanField(default=False)
 
+    def __str__(self):
+        return self.beer.vmp_name
+
 
 class ExternalAPI(models.Model):
     name = models.CharField(primary_key=True, max_length=50)
