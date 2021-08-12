@@ -5,7 +5,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator, URLVali
 class Beer(models.Model):
     # Vinmonopolet info
     vmp_id = models.BigIntegerField(primary_key=True)  # ID number on Vinmonopolet
-    vmp_name = models.CharField(max_length=100)
+    vmp_name = models.CharField(max_length=150)
     main_category = models.CharField(max_length=50, blank=True, null=True)
     sub_category = models.CharField(max_length=50, blank=True, null=True)
     country = models.CharField(max_length=50, blank=True, null=True)
@@ -18,7 +18,7 @@ class Beer(models.Model):
 
     # Untappd info
     untpd_id = models.IntegerField(blank=True, null=True)
-    untpd_name = models.CharField(max_length=100, blank=True, null=True)
+    untpd_name = models.CharField(max_length=150, blank=True, null=True)
     untpd_url = models.CharField(
         max_length=250, validators=[URLValidator()], blank=True, null=True
     )
