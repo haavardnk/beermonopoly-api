@@ -1,6 +1,5 @@
 import cloudscraper, xmltodict
 from beers.models import Beer, ExternalAPI, Store, Stock
-from django.utils import timezone
 from django.core.management.base import BaseCommand
 
 
