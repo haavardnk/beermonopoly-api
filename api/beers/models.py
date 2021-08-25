@@ -99,6 +99,10 @@ class ExternalAPI(models.Model):
         return self.name
 
 
+class VmpNotReleased(models.Model):
+    id = models.IntegerField(primary_key=True)
+
+
 class MatchFilter(models.Model):
     name = models.CharField(max_length=50)
 

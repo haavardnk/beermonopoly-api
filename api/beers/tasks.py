@@ -52,3 +52,9 @@ def deactivate_inactive():
     out = StringIO()
     call_command("deactivate_inactive", stdout=out)
     return out.getvalue()
+
+
+def get_unreleased_beers_from_vmp():
+    out = StringIO()
+    call_command("get_unreleased_beers_from_vmp", stdout=out)
+    return out.getvalue()
