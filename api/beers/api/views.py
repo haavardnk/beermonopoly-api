@@ -10,6 +10,12 @@ from beers.api.serializers import (
     MatchSerializer,
     WrongMatchSerializer,
 )
+from allauth.socialaccount.providers.untappd.views import UntappdOAuth2Adapter
+from dj_rest_auth.registration.views import SocialLoginView
+
+
+class UntappdLogin(SocialLoginView):
+    adapter_class = UntappdOAuth2Adapter
 
 
 class BeerViewSet(ModelViewSet):
