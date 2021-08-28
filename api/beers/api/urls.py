@@ -1,3 +1,4 @@
+from beers.api.views import UntappdLogin
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from beers.api.views import (
@@ -17,4 +18,10 @@ router.register(r"wrongmatch", WrongMatchViewSet, basename="wrongmatch")
 
 urlpatterns = [
     path("", include(router.urls)),
+    path(
+        "auth/untappd/",
+        UntappdLogin.as_view(),
+        name="untappd_login",
+    ),
+    path("auth/", include("dj_rest_auth.urls")),
 ]
