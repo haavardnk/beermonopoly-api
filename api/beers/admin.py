@@ -7,6 +7,7 @@ from beers.models import (
     MatchFilter,
     WrongMatch,
     VmpNotReleased,
+    Checkin,
 )
 
 
@@ -45,6 +46,7 @@ class StockAdmin(admin.ModelAdmin):
     search_fields = ("store__name", "beer__vmp_name")
 
 
+admin.site.register(Checkin)
 admin.site.register(ExternalAPI)
 admin.site.register(MatchFilter)
 admin.site.register(WrongMatch)
