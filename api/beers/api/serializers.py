@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from beers.models import Beer, Stock, Store, WrongMatch
+from beers.models import Beer, Stock, Store, WrongMatch, Checkin
 from drf_dynamic_fields import DynamicFieldsMixin
 
 
@@ -34,6 +34,54 @@ class BeerSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
             "untpd_updated",
             "created_at",
         ]
+
+
+class AuthenticatedBeerSerializer(BeerSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name="beer-detail")
+    user_checked_in = serializers.SerializerMethodField("get_checkins")
+
+    def get_checkins(self, beer):
+        ci = Checkin.objects.filter(
+            user=self.context["request"].user, beer=beer
+        ).order_by("-created_at")[:1]
+        serializer = CheckinSerializer(instance=ci, many=True)
+        return serializer.data
+
+    class Meta:
+        model = Beer
+        fields = [
+            "url",
+            "vmp_id",
+            "untpd_id",
+            "vmp_name",
+            "untpd_name",
+            "brewery",
+            "product_selection",
+            "price",
+            "volume",
+            "abv",
+            "ibu",
+            "rating",
+            "checkins",
+            "sub_category",
+            "style",
+            "description",
+            "prioritize_recheck",
+            "verified_match",
+            "vmp_url",
+            "untpd_url",
+            "label_url",
+            "vmp_updated",
+            "untpd_updated",
+            "created_at",
+            "user_checked_in",
+        ]
+
+
+class CheckinSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Checkin
+        fields = ["checkin_id", "beer", "created_at", "rating", "checkin_url"]
 
 
 class StoreSerializer(serializers.ModelSerializer):
