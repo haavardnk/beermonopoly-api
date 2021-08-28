@@ -1,5 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator, URLValidator
+from django.db.models.deletion import CASCADE
+from django.contrib.auth.models import User
 
 
 class Beer(models.Model):
@@ -108,3 +110,16 @@ class MatchFilter(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Checkin(models.Model):
+    checkin_id = models.IntegerField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=CASCADE)
+    beer = models.ForeignKey(Beer, on_delete=CASCADE)
+    created_at = models.DateTimeField()
+    rating = models.FloatField(
+        validators=[MinValueValidator(0), MaxValueValidator(5)], blank=True, null=True
+    )
+    checkin_url = models.CharField(
+        max_length=250, validators=[URLValidator()], blank=True, null=True
+    )
