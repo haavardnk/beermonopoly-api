@@ -18,3 +18,4 @@ cloudscraper==1.2.58
 responses==0.13.3
 django-allauth==0.45.0
 dj-rest-auth==2.1.11
+django-dirtyfields==1.7.0

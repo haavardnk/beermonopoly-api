@@ -1,8 +1,7 @@
 from allauth.account.signals import user_signed_up
-from django.contrib.auth.models import User
-from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django_q.models import Schedule
+from beers.models import Beer, Checkin
 from django.db.models.signals import post_save
 
 
@@ -15,3 +14,9 @@ def get_checkins(request, user, **kwargs):
         args=str(user.id),
         schedule_type=Schedule.DAILY,
     )
+
+
+@receiver(post_save, sender=Beer)
+def delete_checkins_for_changed_untappd_id(sender, instance, created, **kwargs):
+    if "untpd_id" in instance.get_dirty_fields():
+        Checkin.objects.filter(beer=instance).delete()
