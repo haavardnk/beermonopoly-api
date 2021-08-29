@@ -64,3 +64,9 @@ def get_user_checkins(user):
     out = StringIO()
     call_command("get_user_checkins", user, stdout=out)
     return out.getvalue()
+
+
+def remove_match_manually():
+    out = StringIO()
+    call_command("remove_match_manually", stdout=out)
+    return out.getvalue()
