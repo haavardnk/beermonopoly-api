@@ -2,9 +2,10 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator, URLValidator
 from django.db.models.deletion import CASCADE
 from django.contrib.auth.models import User
+from dirtyfields import DirtyFieldsMixin
 
 
-class Beer(models.Model):
+class Beer(DirtyFieldsMixin, models.Model):
     # Vinmonopolet info
     vmp_id = models.BigIntegerField(primary_key=True)  # ID number on Vinmonopolet
     vmp_name = models.CharField(max_length=150)
