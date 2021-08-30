@@ -29,7 +29,7 @@ class Command(BaseCommand):
         # Third priority: under 500 checkins, but not more often than every 7 day
         time_threshold = timezone.now() - timedelta(days=7)
         beers3 = Beer.objects.filter(
-            vmp_updated__lte=time_threshold,
+            untpd_updated__lte=time_threshold,
             untpd_id__isnull=False,
             active=True,
             checkins__lte=500,
