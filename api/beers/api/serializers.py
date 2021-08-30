@@ -81,7 +81,7 @@ class AuthenticatedBeerSerializer(BeerSerializer):
 class CheckinSerializer(serializers.ModelSerializer):
     class Meta:
         model = Checkin
-        fields = ["checkin_id", "beer", "rating", "checkin_url"]
+        fields = ["checkin_id", "rating", "checkin_url"]
 
 
 class StoreSerializer(serializers.ModelSerializer):

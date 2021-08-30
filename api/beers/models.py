@@ -116,7 +116,7 @@ class MatchFilter(models.Model):
 class Checkin(models.Model):
     checkin_id = models.IntegerField(primary_key=True)
     user = models.ForeignKey(User, on_delete=CASCADE)
-    beer = models.ForeignKey(Beer, on_delete=CASCADE)
+    beer = models.ManyToManyField(Beer)
     rating = models.FloatField(
         validators=[MinValueValidator(0), MaxValueValidator(5)], blank=True, null=True
     )

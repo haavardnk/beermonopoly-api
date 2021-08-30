@@ -37,9 +37,6 @@ class Command(BaseCommand):
                         c = Checkin.objects.get(checkin_id=checkin["checkin_id"])
                         c.checkin_id = checkin["checkin_id"]
                         c.user = user
-                        c.beer = Beer.objects.filter(
-                            untpd_id=checkin["beer"]["bid"], active=True
-                        )[0]
                         c.rating = checkin["rating_score"]
                         c.checkin_url = (
                             "https://untappd.com/user/"
@@ -49,6 +46,11 @@ class Command(BaseCommand):
                             + str(checkin["checkin_id"])
                         )
                         c.save()
+                        c.beer.set(
+                            Beer.objects.filter(
+                                untpd_id=checkin["beer"]["bid"], active=True
+                            )
+                        )
 
                         updated += 1
 
@@ -57,11 +59,9 @@ class Command(BaseCommand):
                             untpd_id=checkin["beer"]["bid"], active=True
                         )
                         if beers:
-                            beer = beers[0]
-                            Checkin.objects.create(
+                            c = Checkin.objects.create(
                                 checkin_id=checkin["checkin_id"],
                                 user=user,
-                                beer=beer,
                                 rating=checkin["rating_score"],
                                 checkin_url="https://untappd.com/user/"
                                 + checkin["user"]["user_name"]
@@ -69,6 +69,7 @@ class Command(BaseCommand):
                                 + "checkin/"
                                 + str(checkin["checkin_id"]),
                             )
+                            c.beer.set(beers)
                             created += 1
                         else:
                             continue
