@@ -58,3 +58,9 @@ def get_unreleased_beers_from_vmp():
     out = StringIO()
     call_command("get_unreleased_beers_from_vmp", stdout=out)
     return out.getvalue()
+
+
+def get_user_checkins(user):
+    out = StringIO()
+    call_command("get_user_checkins", user, stdout=out)
+    return out.getvalue()
