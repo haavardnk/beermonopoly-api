@@ -43,7 +43,7 @@ class AuthenticatedBeerSerializer(BeerSerializer):
     def get_checkins(self, beer):
         ci = Checkin.objects.filter(
             user=self.context["request"].user, beer=beer
-        ).order_by("-created_at")[:1]
+        ).order_by("-checkin_id")[:1]
         serializer = CheckinSerializer(instance=ci, many=True)
         return serializer.data
 
@@ -81,7 +81,7 @@ class AuthenticatedBeerSerializer(BeerSerializer):
 class CheckinSerializer(serializers.ModelSerializer):
     class Meta:
         model = Checkin
-        fields = ["checkin_id", "beer", "created_at", "rating", "checkin_url"]
+        fields = ["checkin_id", "beer", "rating", "checkin_url"]
 
 
 class StoreSerializer(serializers.ModelSerializer):
