@@ -91,6 +91,20 @@ class WrongMatch(models.Model):
     def __str__(self):
         return self.beer.vmp_name
 
+    def save(self, *args, **kwargs):
+        if self.accept_change == True:
+            self.beer.untpd_url = self.suggested_url
+            self.beer.untpd_id = self.suggested_url.split("/")[-1]
+            self.beer.prioritize_recheck = True
+            self.beer.verified_match = True
+            self.beer.match_manually = False
+            self.beer.save()
+
+            self.delete()
+
+        else:
+            super(WrongMatch, self).save(*args, **kwargs)
+
 
 class ExternalAPI(models.Model):
     name = models.CharField(primary_key=True, max_length=50)
