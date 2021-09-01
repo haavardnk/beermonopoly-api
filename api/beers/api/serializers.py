@@ -143,22 +143,4 @@ class WrongMatchSerializer(serializers.ModelSerializer):
             "current_untpd_url",
             "current_untpd_id",
             "suggested_url",
-            "accept_change",
         ]
-
-    def update(self, instance, validated_data):
-        instance.beer = self.validated_data["beer"]
-        instance.suggested_url = self.validated_data["suggested_url"]
-        instance.accept_change = self.validated_data["accept_change"]
-
-        if instance.accept_change == True:
-            b = instance.beer
-            b.untpd_url = instance.suggested_url
-            b.untpd_id = instance.suggested_url.split("/")[-1]
-            b.prioritize_recheck = True
-            b.verified_match = True
-            b.match_manually = False
-            b.save()
-            instance.delete()
-
-        return instance
