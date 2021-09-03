@@ -60,9 +60,12 @@ def get_unreleased_beers_from_vmp():
     return out.getvalue()
 
 
-def get_user_checkins(user):
+def get_user_checkins(user, id=None):
     out = StringIO()
-    call_command("get_user_checkins", user, stdout=out)
+    if id:
+        call_command("get_user_checkins", user, max_id=id, stdout=out)
+    else:
+        call_command("get_user_checkins", user, stdout=out)
     return out.getvalue()
 
 
