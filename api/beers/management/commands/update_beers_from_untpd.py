@@ -59,7 +59,8 @@ class Command(BaseCommand):
                     + "&client_secret="
                     + api_client_secret
                 )
-                request = requests.get(url)
+                headers = {"User-Agent": "django:Beermonopoly"}
+                request = requests.get(url, headers=headers)
                 response = json.loads(request.text)
             except:
                 break

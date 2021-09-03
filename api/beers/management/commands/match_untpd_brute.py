@@ -47,8 +47,8 @@ class Command(BaseCommand):
                 if int(api_remaining) <= 5:
                     break
 
-                query = querystring.rsplit(' ', i)[0]
-            
+                query = querystring.rsplit(" ", i)[0]
+
                 print(query)
                 tries += 1
 
@@ -71,7 +71,8 @@ class Command(BaseCommand):
                 )
 
                 try:
-                    request = requests.get(url)
+                    headers = {"User-Agent": "django:Beermonopoly"}
+                    request = requests.get(url, headers=headers)
                     response = json.loads(request.text)
                     api_remaining = request.headers["X-Ratelimit-Remaining"]
                 except:
@@ -89,7 +90,9 @@ class Command(BaseCommand):
                             + " "
                             + r["beer"]["beer_name"]
                         )
-                    best_match = process.extractOne(beer2match, options, scorer=fuzz.ratio)
+                    best_match = process.extractOne(
+                        beer2match, options, scorer=fuzz.ratio
+                    )
 
                     # Only match if match is over 60 (Levenshtein distance)
                     if best_match[1] > 60:
@@ -112,7 +115,9 @@ class Command(BaseCommand):
                         break
 
                     else:
-                        print(f"Match of {beer} failed on try {tries}. Possible options: {options[0]}, {options[1]}, {options[2]}, {options[3]}, {options[4]}")
+                        print(
+                            f"Match of {beer} failed on try {tries}. Possible options: {options[0]}, {options[1]}, {options[2]}, {options[3]}, {options[4]}"
+                        )
                         continue
 
                 except:

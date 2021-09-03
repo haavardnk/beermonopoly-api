@@ -60,7 +60,7 @@ SITE_ID = 1
 
 SOCIALACCOUNT_PROVIDERS = {
     "untappd": {
-        "USER_AGENT": "django:Beermonopoly:1.0",
+        "USER_AGENT": "django:Beermonopoly",
     }
 }
 
