@@ -30,7 +30,8 @@ class Command(BaseCommand):
 
         while int(api_remaining) >= 5:
             try:
-                request = requests.get(url)
+                headers = {"User-Agent": "django:Beermonopoly"}
+                request = requests.get(url, headers=headers)
                 response = json.loads(request.text)
                 for checkin in response["response"]["checkins"]["items"]:
                     try:
