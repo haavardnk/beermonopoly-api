@@ -67,7 +67,8 @@ class Command(BaseCommand):
             )
 
             try:
-                request = requests.get(url)
+                headers = {"User-Agent": "django:Beermonopoly"}
+                request = requests.get(url, headers=headers)
                 response = json.loads(request.text)
                 api_remaining = request.headers["X-Ratelimit-Remaining"]
             except:
