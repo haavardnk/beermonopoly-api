@@ -3,11 +3,15 @@ from beers.models import Beer, ExternalAPI, Checkin
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 from allauth.socialaccount.models import SocialToken
+from datetime import timedelta
+from django.utils import timezone
+from django_q.models import Schedule
 
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("user", type=int)
+        parser.add_argument("--max_id", type=int)
 
     # Updates the database with information from Untappd.
     def handle(self, *args, **options):
@@ -23,10 +27,26 @@ class Command(BaseCommand):
         updated = 0
         created = 0
         failed = 0
+        response = {}
 
-        url = (
-            baseurl + "user/checkins/" + "?access_token=" + untappd_token + "&limit=50"
-        )
+        if options["max_id"]:
+            url = (
+                baseurl
+                + "user/checkins/"
+                + "?access_token="
+                + untappd_token
+                + "&limit=50"
+                + "&max_id="
+                + str(options["max_id"])
+            )
+        else:
+            url = (
+                baseurl
+                + "user/checkins/"
+                + "?access_token="
+                + untappd_token
+                + "&limit=50"
+            )
 
         while int(api_remaining) >= 5:
             try:
@@ -77,7 +97,6 @@ class Command(BaseCommand):
                     except:
                         failed += 1
                         continue
-
                 if response["response"]["pagination"]["next_url"]:
                     url = (
                         baseurl
@@ -97,6 +116,17 @@ class Command(BaseCommand):
 
             except:
                 break
+
+        if int(api_remaining) == 4 and response["response"]["pagination"]["next_url"]:
+            Schedule.objects.create(
+                name="get checkins over 4800 for user: " + user.username,
+                func="beers.tasks.get_user_checkins",
+                args=str(user.id)
+                + ","
+                + str(response["response"]["pagination"]["max_id"]),
+                schedule_type=Schedule.ONCE,
+                next_run=timezone.now() + timedelta(hours=2),
+            )
 
         self.stdout.write(
             self.style.SUCCESS(
