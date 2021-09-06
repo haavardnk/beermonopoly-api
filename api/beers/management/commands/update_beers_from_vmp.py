@@ -4,8 +4,8 @@ from django.utils import timezone
 from django.core.management.base import BaseCommand
 
 
-def call_api(url, page):
-    query = ":relevance:visibleInSearch:true:mainCategory:øl:"
+def call_api(url, page, product):
+    query = ":relevance:visibleInSearch:true:mainCategory:" + product + ":"
     req_url = (
         url + "?currentPage=" + str(page) + "&fields=FULL&pageSize=100&query=" + query
     )
@@ -27,47 +27,55 @@ class Command(BaseCommand):
         updated = 0
         created = 0
 
-        response, total_pages = call_api(url, 0)
-        for page in range(0, int(total_pages)):
-            try:
-                response, total_pages = call_api(url, page)
+        products = ["øl", "sider", "mjød"]
 
-                for b in response["products"]:
-                    try:
-                        beer = Beer.objects.get(vmp_id=int(b["code"]))
-                        beer.vmp_name = b["name"]
-                        beer.main_category = b["main_category"]["name"]
-                        beer.sub_category = b["main_sub_category"]["name"]
-                        beer.country = b["main_country"]["name"]
-                        beer.price = b["price"]["value"]
-                        beer.volume = b["volume"]["value"]
-                        beer.product_selection = b["product_selection"]
-                        beer.vmp_url = "https://www.vinmonopolet.no" + b["url"]
-                        beer.vmp_updated = timezone.now()
-                        if beer.active == False:
-                            beer.active = True
-                        beer.save()
+        for product in products:
+            response, total_pages = call_api(url, 0, product)
 
-                        updated += 1
+            for page in range(0, int(total_pages)):
+                try:
+                    response, total_pages = call_api(url, page, product)
 
-                    except Beer.DoesNotExist:
-                        beer = Beer.objects.create(
-                            vmp_id=int(b["code"]),
-                            vmp_name=b["name"],
-                            main_category=b["main_category"]["name"],
-                            sub_category=b["main_sub_category"]["name"],
-                            country=b["main_country"]["name"],
-                            price=b["price"]["value"],
-                            volume=b["volume"]["value"],
-                            product_selection=b["product_selection"],
-                            vmp_url="https://www.vinmonopolet.no" + b["url"],
-                            vmp_updated=timezone.now(),
-                        )
+                    for b in response["products"]:
+                        try:
+                            beer = Beer.objects.get(vmp_id=int(b["code"]))
+                            beer.vmp_name = b["name"]
+                            beer.main_category = b["main_category"]["name"]
+                            if b["main_sub_category"]:
+                                beer.sub_category = b["main_sub_category"]["name"]
+                            beer.country = b["main_country"]["name"]
+                            beer.price = b["price"]["value"]
+                            beer.volume = b["volume"]["value"]
+                            beer.product_selection = b["product_selection"]
+                            beer.vmp_url = "https://www.vinmonopolet.no" + b["url"]
+                            beer.vmp_updated = timezone.now()
+                            if beer.active == False:
+                                beer.active = True
+                            beer.save()
 
-                        created += 1
+                            updated += 1
 
-            except:
-                continue
+                        except Beer.DoesNotExist:
+                            beer = Beer.objects.create(
+                                vmp_id=int(b["code"]),
+                                vmp_name=b["name"],
+                                main_category=b["main_category"]["name"],
+                                country=b["main_country"]["name"],
+                                price=b["price"]["value"],
+                                volume=b["volume"]["value"],
+                                product_selection=b["product_selection"],
+                                vmp_url="https://www.vinmonopolet.no" + b["url"],
+                                vmp_updated=timezone.now(),
+                            )
+
+                            if b["main_sub_category"]:
+                                beer.sub_category = b["main_sub_category"]["name"]
+                                beer.save()
+
+                            created += 1
+
+                except:
+                    continue
 
         self.stdout.write(
             self.style.SUCCESS(
