@@ -15,7 +15,7 @@ from beers.models import (
 class BeerAdmin(admin.ModelAdmin):
     list_display = (
         "vmp_name",
-        "brewery",
+        "main_category",
         "untpd_name",
         "vmp_id",
         "untpd_id",
