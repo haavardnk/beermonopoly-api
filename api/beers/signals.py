@@ -12,7 +12,7 @@ def get_checkins(request, user, **kwargs):
         name="get checkins for user: " + user.username,
         func="beers.tasks.get_user_checkins",
         args=str(user.id),
-        schedule_type=Schedule.DAILY,
+        schedule_type=Schedule.ONCE,
     )
 
 
