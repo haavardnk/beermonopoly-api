@@ -69,6 +69,12 @@ def get_user_checkins(user, id=None):
     return out.getvalue()
 
 
+def get_all_users_last_checkins(loops):
+    out = StringIO()
+    call_command("get_all_users_last_checkins", loops, stdout=out)
+    return out.getvalue()
+
+
 def remove_match_manually():
     out = StringIO()
     call_command("remove_match_manually", stdout=out)
