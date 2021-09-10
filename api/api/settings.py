@@ -192,6 +192,6 @@ if not DEBUG:
     sentry_sdk.init(
         dsn="https://6d8c8869d8c64767b26de850f794bc4c@o985007.ingest.sentry.io/5941029",
         integrations=[DjangoIntegration()],
-        traces_sample_rate=1.0,
+        traces_sample_rate=0.2,
         send_default_pii=True,
     )
