@@ -14,6 +14,10 @@ class Command(BaseCommand):
 
     # Updates the database with information from Untappd.
     def handle(self, *args, **options):
+
+        if options["loops"] == 5:
+            Checkin.objects.all().delete()
+
         untappd = ExternalAPI.objects.get(name="untappd")
         baseurl = untappd.baseurl
 
