@@ -4,7 +4,6 @@ from beers.models import (
     ExternalAPI,
     Store,
     Stock,
-    MatchFilter,
     WrongMatch,
     VmpNotReleased,
     Checkin,
@@ -48,6 +47,5 @@ class StockAdmin(admin.ModelAdmin):
 
 admin.site.register(Checkin)
 admin.site.register(ExternalAPI)
-admin.site.register(MatchFilter)
 admin.site.register(WrongMatch)
 admin.site.register(VmpNotReleased)
