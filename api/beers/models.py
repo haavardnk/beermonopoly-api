@@ -92,7 +92,8 @@ class WrongMatch(models.Model):
         return self.beer.vmp_name
 
     def save(self, *args, **kwargs):
-        if self.accept_change == True:
+        if self.accept_change == True and self.suggested_url != self.beer.untpd_url:
+            Checkin.objects.filter(beer=self.beer).delete()
             self.beer.untpd_url = self.suggested_url
             self.beer.untpd_id = self.suggested_url.split("/")[-1]
             self.beer.prioritize_recheck = True
@@ -100,6 +101,9 @@ class WrongMatch(models.Model):
             self.beer.match_manually = False
             self.beer.save()
 
+            self.delete()
+
+        elif self.accept_change == True and self.suggested_url == self.beer.untpd_url:
             self.delete()
 
         else:
