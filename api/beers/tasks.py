@@ -11,7 +11,7 @@ def update_beers_from_vmp():
 
 def match_untpd():
     out = StringIO()
-    call_command("match_untpd", stdout=out)
+    call_command("match_untpd_brute", stdout=out)
     return out.getvalue()
 
 
