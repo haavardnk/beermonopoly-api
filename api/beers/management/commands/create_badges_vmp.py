@@ -1,5 +1,4 @@
 from beers.models import Beer, Badge
-
 from django.core.management.base import BaseCommand
 
 
@@ -8,7 +7,7 @@ class Command(BaseCommand):
         created = 0
 
         # Delete all current badges
-        Badge.objects.all().delete()
+        Badge.objects.filter(type="Top Style").delete()
 
         # Product types
         product_types = list(
@@ -22,10 +21,9 @@ class Command(BaseCommand):
 
             if product_type == "Øl":
                 beer_styles = list(
-                    Beer.objects.filter(main_category="Øl")
-                    .order_by("sub_category")
-                    .values_list("sub_category", flat=True)
-                    .distinct("sub_category")
+                    Beer.objects.order_by("style")
+                    .values_list("style", flat=True)
+                    .distinct("style")
                 )
 
                 for style in beer_styles:
@@ -34,18 +32,22 @@ class Command(BaseCommand):
                     ).order_by("-rating")
                     beer_count = beers.count()
 
-                    if beer_count >= 500:
-                        badge_count = 15
+                    if beer_count >= 300:
+                        badge_count = 25
                     elif beer_count >= 100:
+                        badge_count = 15
+                    elif beer_count >= 50:
                         badge_count = 10
                     elif beer_count >= 25:
                         badge_count = 5
-                    elif beer_count >= 3:
+                    elif beer_count >= 10:
                         badge_count = 3
 
                     for index, beer in enumerate(beers[:badge_count]):
                         Badge.objects.create(
-                            beer=beer, text="#" + str(index + 1) + " " + style
+                            beer=beer,
+                            text="#" + str(index + 1) + " " + style,
+                            type="Top Style",
                         )
                         created += 1
 
@@ -55,18 +57,22 @@ class Command(BaseCommand):
                 ).order_by("-rating")
                 product_count = products.count()
 
-                if product_count >= 500:
+                if product_count >= 300:
+                    badge_count = 25
+                elif product_count >= 15:
                     badge_count = 15
-                elif product_count >= 100:
+                elif product_count >= 50:
                     badge_count = 10
                 elif product_count >= 25:
                     badge_count = 5
-                elif product_count >= 3:
+                elif product_count >= 10:
                     badge_count = 3
 
                 for index, product in enumerate(products[:badge_count]):
                     Badge.objects.create(
-                        beer=product, text="#" + str(index + 1) + " " + product_type
+                        beer=product,
+                        text="#" + str(index + 1) + " " + product_type,
+                        type="Top Style",
                     )
                     created += 1
 
