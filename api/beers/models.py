@@ -134,3 +134,11 @@ class Checkin(models.Model):
     checkin_url = models.CharField(
         max_length=250, validators=[URLValidator()], blank=True, null=True
     )
+
+
+class Badge(models.Model):
+    beer = models.ForeignKey(Beer, on_delete=CASCADE)
+    text = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.text + " - " + self.beer.vmp_name
