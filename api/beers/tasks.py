@@ -48,9 +48,9 @@ def smart_update_untappd():
     return out.getvalue()
 
 
-def deactivate_inactive():
+def deactivate_inactive(days):
     out = StringIO()
-    call_command("deactivate_inactive", stdout=out)
+    call_command("deactivate_inactive", days, stdout=out)
     return out.getvalue()
 
 
