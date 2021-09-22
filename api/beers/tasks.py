@@ -81,7 +81,13 @@ def remove_match_manually():
     return out.getvalue()
 
 
-def create_badges():
+def create_badges_vmp():
+    out = StringIO()
+    call_command("create_badges", stdout=out)
+    return out.getvalue()
+
+
+def create_badges_untpd():
     out = StringIO()
     call_command("create_badges", stdout=out)
     return out.getvalue()
