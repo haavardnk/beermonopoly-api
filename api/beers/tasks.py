@@ -83,11 +83,33 @@ def remove_match_manually():
 
 def create_badges_vmp():
     out = StringIO()
-    call_command("create_badges", stdout=out)
+    call_command("create_badges_vmp", stdout=out)
     return out.getvalue()
 
 
 def create_badges_untpd():
     out = StringIO()
-    call_command("create_badges", stdout=out)
+    call_command("create_badges_untpd", stdout=out)
+    return out.getvalue()
+
+
+def create_badges_custom(products, badge_text, badge_type):
+    out = StringIO()
+    call_command(
+        "create_badges_custom",
+        products=products,
+        badge_text=badge_text,
+        badge_type=badge_type,
+        stdout=out,
+    )
+    return out.getvalue()
+
+
+def remove_badges(badge_type):
+    out = StringIO()
+    call_command(
+        "remove_badges",
+        badge_type,
+        stdout=out,
+    )
     return out.getvalue()
