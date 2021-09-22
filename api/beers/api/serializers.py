@@ -1,10 +1,16 @@
 from rest_framework import serializers
-from beers.models import Beer, Stock, Store, WrongMatch, Checkin
+from beers.models import Beer, Stock, Store, WrongMatch, Checkin, Badge
 from drf_dynamic_fields import DynamicFieldsMixin
 
 
 class BeerSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name="beer-detail")
+    badges = serializers.SerializerMethodField("get_badges")
+
+    def get_badges(self, beer):
+        ci = Badge.objects.filter(beer=beer)
+        serializer = BadgeSerializer(instance=ci, many=True)
+        return serializer.data
 
     class Meta:
         model = Beer
@@ -33,18 +39,25 @@ class BeerSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
             "vmp_updated",
             "untpd_updated",
             "created_at",
+            "badges",
         ]
 
 
 class AuthenticatedBeerSerializer(BeerSerializer):
     url = serializers.HyperlinkedIdentityField(view_name="beer-detail")
     user_checked_in = serializers.SerializerMethodField("get_checkins")
+    badges = serializers.SerializerMethodField("get_badges")
 
     def get_checkins(self, beer):
         ci = Checkin.objects.filter(
             user=self.context["request"].user, beer=beer
         ).order_by("-checkin_id")[:1]
         serializer = CheckinSerializer(instance=ci, many=True)
+        return serializer.data
+
+    def get_badges(self, beer):
+        ci = Badge.objects.filter(beer=beer)
+        serializer = BadgeSerializer(instance=ci, many=True)
         return serializer.data
 
     class Meta:
@@ -75,7 +88,14 @@ class AuthenticatedBeerSerializer(BeerSerializer):
             "untpd_updated",
             "created_at",
             "user_checked_in",
+            "badges",
         ]
+
+
+class BadgeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Badge
+        fields = ["text"]
 
 
 class CheckinSerializer(serializers.ModelSerializer):
