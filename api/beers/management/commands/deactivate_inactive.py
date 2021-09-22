@@ -5,9 +5,13 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    # Deactivates all beers which has not been updated for a month
+    # Deactivates all beers which has not been updated x days
+
+    def add_arguments(self, parser):
+        parser.add_argument("days", type=int)
+
     def handle(self, *args, **options):
-        time_threshold = timezone.now() - timedelta(days=30)
+        time_threshold = timezone.now() - timedelta(days=options["days"])
         beers = Beer.objects.filter(vmp_updated__lte=time_threshold, active=True)
 
         for beer in beers:
