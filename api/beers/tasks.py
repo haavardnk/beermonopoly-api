@@ -79,3 +79,9 @@ def remove_match_manually():
     out = StringIO()
     call_command("remove_match_manually", stdout=out)
     return out.getvalue()
+
+
+def create_badges():
+    out = StringIO()
+    call_command("create_badges", stdout=out)
+    return out.getvalue()
