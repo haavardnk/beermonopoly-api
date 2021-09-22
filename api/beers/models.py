@@ -139,6 +139,7 @@ class Checkin(models.Model):
 class Badge(models.Model):
     beer = models.ForeignKey(Beer, on_delete=CASCADE)
     text = models.CharField(max_length=100)
+    type = models.CharField(max_length=50)
 
     def __str__(self):
         return self.text + " - " + self.beer.vmp_name
