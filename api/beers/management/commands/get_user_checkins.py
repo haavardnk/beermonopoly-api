@@ -25,6 +25,7 @@ class Command(BaseCommand):
 
         api_remaining = "100"
         updated = 0
+        deleted = 0
         created = 0
         failed = 0
         response = {}
@@ -56,24 +57,47 @@ class Command(BaseCommand):
                 for checkin in response["response"]["checkins"]["items"]:
                     try:
                         c = Checkin.objects.get(checkin_id=checkin["checkin_id"])
-                        c.checkin_id = checkin["checkin_id"]
-                        c.user = user
-                        c.rating = checkin["rating_score"]
-                        c.checkin_url = (
-                            "https://untappd.com/user/"
-                            + checkin["user"]["user_name"]
-                            + "/"
-                            + "checkin/"
-                            + str(checkin["checkin_id"])
-                        )
-                        c.save()
-                        c.beer.set(
-                            Beer.objects.filter(
+                        if c.beer.all()[0].untpd_id == checkin["beer"]["bid"]:
+                            c.checkin_id = checkin["checkin_id"]
+                            c.user = user
+                            c.rating = checkin["rating_score"]
+                            c.checkin_url = (
+                                "https://untappd.com/user/"
+                                + checkin["user"]["user_name"]
+                                + "/"
+                                + "checkin/"
+                                + str(checkin["checkin_id"])
+                            )
+                            c.save()
+                            c.beer.set(
+                                Beer.objects.filter(
+                                    untpd_id=checkin["beer"]["bid"], active=True
+                                )
+                            )
+
+                            updated += 1
+                        else:
+                            c.delete()
+                            deleted += 1
+
+                            beers = Beer.objects.filter(
                                 untpd_id=checkin["beer"]["bid"], active=True
                             )
-                        )
-
-                        updated += 1
+                            if beers:
+                                c = Checkin.objects.create(
+                                    checkin_id=checkin["checkin_id"],
+                                    user=user,
+                                    rating=checkin["rating_score"],
+                                    checkin_url="https://untappd.com/user/"
+                                    + checkin["user"]["user_name"]
+                                    + "/"
+                                    + "checkin/"
+                                    + str(checkin["checkin_id"]),
+                                )
+                                c.beer.set(beers)
+                                created += 1
+                            else:
+                                continue
 
                     except Checkin.DoesNotExist:
                         beers = Beer.objects.filter(
@@ -117,9 +141,9 @@ class Command(BaseCommand):
             except:
                 break
 
-        if int(api_remaining) == 4 and response["response"]["pagination"]["next_url"]:
+        if int(api_remaining) <= 4 and response["response"]["pagination"]["next_url"]:
             Schedule.objects.create(
-                name="get checkins over 4800 for user: " + user.username,
+                name="get more checkins for user: " + user.username,
                 func="beers.tasks.get_user_checkins",
                 args=str(user.id)
                 + ","
@@ -130,6 +154,6 @@ class Command(BaseCommand):
 
         self.stdout.write(
             self.style.SUCCESS(
-                f"Updated {updated}, created {created} and failed {failed} checkins for user {user}. {api_remaining} api calls remaining"
+                f"Updated {updated}, created {created}, deleted {deleted} and failed {failed} checkins for user {user}. {api_remaining} api calls remaining"
             )
         )
