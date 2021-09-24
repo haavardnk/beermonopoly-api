@@ -40,7 +40,7 @@ class BeerViewSet(ModelViewSet):
     filterset_fields = ["style", "brewery"]
 
     def get_queryset(self):
-        queryset = Beer.objects.filter(active=True)
+        queryset = Beer.objects.all()
         beers = self.request.query_params.get("beers", None)
         if beers is not None:
             beers = list(int(v) for v in beers.split(","))
