@@ -34,9 +34,11 @@ class Command(BaseCommand):
                     beer = Beer.objects.get(vmp_id=int(response["code"]))
                     beer.vmp_name = response["name"]
                     beer.main_category = response["main_category"]["name"]
-                    beer.sub_category = response["main_sub_category"]["name"]
+                    if "main_sub_category" in response:
+                        beer.sub_category = response["main_sub_category"]["name"]
                     beer.country = response["main_country"]["name"]
-                    beer.price = response["price"]["value"]
+                    if "price" in response:
+                        beer.price = response["price"]["value"]
                     beer.volume = response["volume"]["value"]
                     beer.product_selection = response["product_selection"]
                     beer.vmp_url = "https://www.vinmonopolet.no" + response["url"]
@@ -53,14 +55,17 @@ class Command(BaseCommand):
                         vmp_id=int(response["code"]),
                         vmp_name=response["name"],
                         main_category=response["main_category"]["name"],
-                        sub_category=response["main_sub_category"]["name"],
                         country=response["main_country"]["name"],
-                        price=response["price"]["value"],
                         volume=response["volume"]["value"],
                         product_selection=response["product_selection"],
                         vmp_url="https://www.vinmonopolet.no" + response["url"],
                         vmp_updated=timezone.now(),
                     )
+                    if "main_sub_category" in response:
+                        beer.sub_category = response["main_sub_category"]["name"]
+                    if "price" in response:
+                        beer.price = response["price"]["value"]
+                    beer.save()
 
                     created += 1
                     product.delete()
