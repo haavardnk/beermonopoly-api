@@ -1,4 +1,5 @@
 import requests, json
+from json.decoder import JSONDecodeError
 from itertools import chain
 from beers.models import Beer, ExternalAPI
 from django.utils import timezone
@@ -62,7 +63,12 @@ class Command(BaseCommand):
                 headers = {"User-Agent": "django:Beermonopoly"}
                 request = requests.get(url, headers=headers)
                 response = json.loads(request.text)
-            except:
+
+            except JSONDecodeError:
+                continue
+
+            except Exception as e:
+                print(e)
                 break
 
             try:
