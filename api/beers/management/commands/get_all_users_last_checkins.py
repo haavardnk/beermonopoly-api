@@ -21,7 +21,6 @@ class Command(BaseCommand):
         users = User.objects.all().exclude(id=1)
 
         updated = 0
-        deleted = 0
         created = 0
         failed = 0
 
@@ -49,69 +48,50 @@ class Command(BaseCommand):
                     for checkin in response["response"]["checkins"]["items"]:
                         try:
                             c = Checkin.objects.get(checkin_id=checkin["checkin_id"])
-                            if c.beer.all()[0].untpd_id == checkin["beer"]["bid"]:
-                                c.checkin_id = checkin["checkin_id"]
-                                c.user = user
-                                c.rating = checkin["rating_score"]
-                                c.checkin_url = (
-                                    "https://untappd.com/user/"
-                                    + checkin["user"]["user_name"]
-                                    + "/"
-                                    + "checkin/"
-                                    + str(checkin["checkin_id"])
-                                )
-                                c.save()
-                                c.beer.set(
-                                    Beer.objects.filter(
-                                        untpd_id=checkin["beer"]["bid"], active=True
-                                    )
-                                )
+                            beers = Beer.objects.filter(untpd_id=checkin["beer"]["bid"])
 
-                                updated += 1
+                            c.checkin_id = checkin["checkin_id"]
+                            c.untpd_id = checkin["beer"]["bid"]
+                            c.user = user
+                            c.rating = checkin["rating_score"]
+                            c.checkin_url = (
+                                "https://untappd.com/user/"
+                                + checkin["user"]["user_name"]
+                                + "/"
+                                + "checkin/"
+                                + str(checkin["checkin_id"])
+                            )
+                            c.save()
 
-                            else:
-                                c.delete()
-                                deleted += 1
+                            if beers:
+                                c.beer.set(beers)
 
-                                beers = Beer.objects.filter(
-                                    untpd_id=checkin["beer"]["bid"], active=True
-                                )
-                                if beers:
-                                    c = Checkin.objects.create(
-                                        checkin_id=checkin["checkin_id"],
-                                        user=user,
-                                        rating=checkin["rating_score"],
-                                        checkin_url="https://untappd.com/user/"
-                                        + checkin["user"]["user_name"]
-                                        + "/"
-                                        + "checkin/"
-                                        + str(checkin["checkin_id"]),
-                                    )
-                                    c.beer.set(beers)
-                                    created += 1
-                                else:
-                                    continue
+                            updated += 1
 
                         except Checkin.DoesNotExist:
                             beers = Beer.objects.filter(
                                 untpd_id=checkin["beer"]["bid"], active=True
                             )
+
+                            c = Checkin.objects.create(
+                                checkin_id=checkin["checkin_id"],
+                                untpd_id=checkin["beer"]["bid"],
+                                user=user,
+                                rating=checkin["rating_score"],
+                                checkin_url="https://untappd.com/user/"
+                                + checkin["user"]["user_name"]
+                                + "/"
+                                + "checkin/"
+                                + str(checkin["checkin_id"]),
+                            )
+
                             if beers:
-                                c = Checkin.objects.create(
-                                    checkin_id=checkin["checkin_id"],
-                                    user=user,
-                                    rating=checkin["rating_score"],
-                                    checkin_url="https://untappd.com/user/"
-                                    + checkin["user"]["user_name"]
-                                    + "/"
-                                    + "checkin/"
-                                    + str(checkin["checkin_id"]),
-                                )
                                 c.beer.set(beers)
-                                created += 1
-                            else:
-                                continue
-                        except:
+
+                            created += 1
+
+                        except Exception as e:
+                            print(e)
                             failed += 1
                             continue
 
@@ -139,6 +119,9 @@ class Command(BaseCommand):
                 int(api_remaining) <= 4
                 and response["response"]["pagination"]["next_url"]
             ):
+                print(
+                    "Not enough api calls remaining, scheduling new run in two hours."
+                )
                 Schedule.objects.create(
                     name="get more checkins for user: " + user.username,
                     func="beers.tasks.get_user_checkins",
@@ -151,6 +134,6 @@ class Command(BaseCommand):
 
         self.stdout.write(
             self.style.SUCCESS(
-                f"Updated {updated}, created {created}, deleted {deleted} and failed {failed} checkins for {users.count()} users."
+                f"Updated {updated}, created {created} and failed {failed} checkins for {users.count()} users."
             )
         )
