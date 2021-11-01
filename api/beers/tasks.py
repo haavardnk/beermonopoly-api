@@ -113,3 +113,9 @@ def remove_badges(badge_type):
         stdout=out,
     )
     return out.getvalue()
+
+
+def update_checkin_matches():
+    out = StringIO()
+    call_command("update_checkin_matches", stdout=out)
+    return out.getvalue()
