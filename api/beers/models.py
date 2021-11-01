@@ -126,6 +126,7 @@ class VmpNotReleased(models.Model):
 
 class Checkin(models.Model):
     checkin_id = models.IntegerField(primary_key=True)
+    untpd_id = models.IntegerField(blank=True, null=True)
     user = models.ForeignKey(User, on_delete=CASCADE)
     beer = models.ManyToManyField(Beer)
     rating = models.FloatField(
