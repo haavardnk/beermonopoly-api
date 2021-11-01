@@ -23,6 +23,7 @@ class BeerAdmin(admin.ModelAdmin):
         "checkins",
         "vmp_updated",
         "untpd_updated",
+        "created_at",
         "match_manually",
         "active",
     )
@@ -46,8 +47,13 @@ class StockAdmin(admin.ModelAdmin):
     search_fields = ("store__name", "beer__vmp_name")
 
 
+@admin.register(Checkin)
+class CheckinAdmin(admin.ModelAdmin):
+    list_display = ("checkin_id", "untpd_id", "user")
+    search_fields = ("checkin_id", "untpd_id", "user")
+
+
 admin.site.register(Badge)
-admin.site.register(Checkin)
 admin.site.register(ExternalAPI)
 admin.site.register(WrongMatch)
 admin.site.register(VmpNotReleased)
