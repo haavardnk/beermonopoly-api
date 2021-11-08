@@ -8,6 +8,7 @@ from beers.api.views import (
     StockViewSet,
     MatchViewSet,
     WrongMatchViewSet,
+    ChromeAuthViewSet,
 )
 
 if settings.DEBUG:
@@ -20,6 +21,7 @@ router.register(r"stores", StoreViewSet, basename="store")
 router.register(r"stock", StockViewSet, basename="stock")
 router.register(r"match", MatchViewSet, basename="match")
 router.register(r"wrongmatch", WrongMatchViewSet, basename="wrongmatch")
+router.register(r"chrome", ChromeAuthViewSet, basename="chrome")
 
 urlpatterns = [
     path("", include(router.urls)),

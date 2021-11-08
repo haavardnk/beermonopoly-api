@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from beers.models import Beer, Stock, Store, WrongMatch, Checkin, Badge
+from beers.models import Beer, Stock, Store, WrongMatch, Checkin, Badge, ExternalAPI
 from drf_dynamic_fields import DynamicFieldsMixin
 
 
@@ -164,3 +164,9 @@ class WrongMatchSerializer(serializers.ModelSerializer):
             "current_untpd_id",
             "suggested_url",
         ]
+
+
+class ChromeAuthSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExternalAPI
+        fields = "__all__"
