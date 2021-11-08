@@ -1,4 +1,4 @@
-from rest_framework import permissions, filters
+from rest_framework import permissions, filters, renderers
 from rest_framework.viewsets import ModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 from beers.models import Beer, Stock, Store, WrongMatch
@@ -15,11 +15,22 @@ from allauth.socialaccount.providers.untappd.views import UntappdOAuth2Adapter
 from dj_rest_auth.registration.views import SocialLoginView
 
 
+class StaffBrowsableMixin(object):
+    def get_renderers(self):
+        """
+        Add Browsable API renderer if user is staff.
+        """
+        rends = self.renderer_classes
+        if self.request.user and self.request.user.is_staff:
+            rends.append(renderers.BrowsableAPIRenderer)
+        return [renderer() for renderer in rends]
+
+
 class UntappdLogin(SocialLoginView):
     adapter_class = UntappdOAuth2Adapter
 
 
-class BeerViewSet(ModelViewSet):
+class BeerViewSet(StaffBrowsableMixin, ModelViewSet):
     pagination_class = Pagination
     permission_classes = [permissions.DjangoModelPermissionsOrAnonReadOnly]
 
@@ -55,7 +66,7 @@ class BeerViewSet(ModelViewSet):
             return BeerSerializer
 
 
-class StoreViewSet(ModelViewSet):
+class StoreViewSet(StaffBrowsableMixin, ModelViewSet):
     queryset = Store.objects.all().order_by("name")
     serializer_class = StoreSerializer
     pagination_class = Pagination
@@ -67,7 +78,7 @@ class StoreViewSet(ModelViewSet):
     ordering = ["name"]
 
 
-class StockViewSet(ModelViewSet):
+class StockViewSet(StaffBrowsableMixin, ModelViewSet):
     queryset = Stock.objects.all().order_by("store__store_id")
     serializer_class = StockSerializer
     pagination_class = Pagination
@@ -76,14 +87,14 @@ class StockViewSet(ModelViewSet):
     filterset_fields = ["store", "beer"]
 
 
-class MatchViewSet(ModelViewSet):
+class MatchViewSet(StaffBrowsableMixin, ModelViewSet):
     queryset = Beer.objects.filter(match_manually=True, active=True)
     serializer_class = MatchSerializer
     pagination_class = Pagination
     permission_classes = [permissions.DjangoModelPermissionsOrAnonReadOnly]
 
 
-class WrongMatchViewSet(ModelViewSet):
+class WrongMatchViewSet(StaffBrowsableMixin, ModelViewSet):
     queryset = WrongMatch.objects.all()
     serializer_class = WrongMatchSerializer
     pagination_class = Pagination
