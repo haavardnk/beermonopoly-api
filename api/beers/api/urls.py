@@ -1,6 +1,7 @@
 from beers.api.views import UntappdLogin
 from django.urls import include, path
-from rest_framework.routers import DefaultRouter
+from rest_framework.routers import DefaultRouter, SimpleRouter
+from django.conf import settings
 from beers.api.views import (
     BeerViewSet,
     StoreViewSet,
@@ -9,7 +10,11 @@ from beers.api.views import (
     WrongMatchViewSet,
 )
 
-router = DefaultRouter()
+if settings.DEBUG:
+    router = DefaultRouter()
+else:
+    router = SimpleRouter()
+
 router.register(r"beers", BeerViewSet, basename="beer")
 router.register(r"stores", StoreViewSet, basename="store")
 router.register(r"stock", StockViewSet, basename="stock")
