@@ -1,7 +1,7 @@
 from rest_framework import permissions, filters, renderers
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
-from beers.models import Beer, Stock, Store, WrongMatch
+from beers.models import Beer, Stock, Store, WrongMatch, ExternalAPI
 from beers.api.pagination import Pagination
 from beers.api.serializers import (
     BeerSerializer,
@@ -10,6 +10,7 @@ from beers.api.serializers import (
     StoreSerializer,
     MatchSerializer,
     WrongMatchSerializer,
+    ChromeAuthSerializer,
 )
 from allauth.socialaccount.providers.untappd.views import UntappdOAuth2Adapter
 from dj_rest_auth.registration.views import SocialLoginView
@@ -98,4 +99,10 @@ class WrongMatchViewSet(StaffBrowsableMixin, ModelViewSet):
     queryset = WrongMatch.objects.all()
     serializer_class = WrongMatchSerializer
     pagination_class = Pagination
+    permission_classes = [permissions.AllowAny]
+
+
+class ChromeAuthViewSet(StaffBrowsableMixin, ReadOnlyModelViewSet):
+    queryset = ExternalAPI.objects.filter(name="untappd")
+    serializer_class = ChromeAuthSerializer
     permission_classes = [permissions.AllowAny]
