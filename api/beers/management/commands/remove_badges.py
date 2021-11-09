@@ -1,4 +1,4 @@
-from beers.models import Beer, Badge
+from beers.models import Badge
 from django.core.management.base import BaseCommand
 
 

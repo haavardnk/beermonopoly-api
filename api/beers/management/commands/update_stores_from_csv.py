@@ -1,7 +1,5 @@
-import csv
 import pandas as pd
 from beers.models import Store, ExternalAPI
-from django.utils import timezone
 from django.core.management.base import BaseCommand
 
 

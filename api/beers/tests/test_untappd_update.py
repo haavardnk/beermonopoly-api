@@ -1,6 +1,5 @@
 import pytest, responses
 from freezegun import freeze_time
-from urllib.parse import quote
 from django.utils import timezone
 from beers.models import Beer, ExternalAPI
 from beers.tasks import smart_update_untappd
@@ -25,7 +24,7 @@ def json_response():
                 "beer_label_hd":"https://api.test.com/site/beer_logos_hd/beer-100415_64d6e_hd.jpeg",
                 "brewery": {
                     "brewery_name":"Ayinger Privatbrauerei"
-                }             
+                }   
             }
         }
     }
@@ -49,13 +48,13 @@ def test_update_beer_correctly(mocked_responses,json_response):
                             prioritize_recheck=True
                             )
 
-    url = "https://api.test.com/v4/beer/info/"+str(beer.untpd_id)+"?client_id=123&client_secret=321"                    
+    url = "https://api.test.com/v4/beer/info/"+str(beer.untpd_id)+"?client_id=123&client_secret=321"  
     mocked_responses.add(responses.GET, url,
                 json=json_response,
                 status=200,
                 headers={'X-Ratelimit-Remaining':'10'},
                 content_type='application/json')
-    
+
     smart_update_untappd()
 
     beer = Beer.objects.get(vmp_id=12611502)
@@ -88,13 +87,13 @@ def test_update_beer_no_search_match(mocked_responses):
     url = "https://api.test.com/v4/beer/info/"+str(beer.untpd_id)+"?client_id=123&client_secret=321"                      
     mocked_responses.add(responses.GET, url,
                 json={"response":{
-                    "beer":{     
+                    "beer":{
                     }
                 }},
                 status=200,
                 headers={'X-Ratelimit-Remaining':'10'},
                 content_type='application/json')
-    
+
     smart_update_untappd()
 
     beer = Beer.objects.get(vmp_id=12611502)
