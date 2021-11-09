@@ -9,4 +9,4 @@ class Command(BaseCommand):
             beer.match_manually = False
             beer.save()
 
-        self.stdout.write(self.style.SUCCESS(f"Removed all match manually flags"))
+        self.stdout.write(self.style.SUCCESS("Removed all match manually flags"))
