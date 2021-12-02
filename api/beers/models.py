@@ -100,6 +100,15 @@ class WrongMatch(models.Model):
         return self.beer.vmp_name
 
     def save(self, *args, **kwargs):
+        super(WrongMatch, self).save(*args, **kwargs)
+
+        try:
+            auto_accept = Option.objects.get(name="auto_accept_wrong_match").active
+            if auto_accept:
+                self.accept_change = auto_accept
+        except:
+            pass
+
         if self.accept_change == True and self.suggested_url != self.beer.untpd_url:
             Checkin.objects.filter(beer=self.beer).delete()
             self.beer.untpd_url = self.suggested_url
@@ -113,9 +122,6 @@ class WrongMatch(models.Model):
 
         elif self.accept_change == True and self.suggested_url == self.beer.untpd_url:
             self.delete()
-
-        else:
-            super(WrongMatch, self).save(*args, **kwargs)
 
 
 class ExternalAPI(models.Model):
