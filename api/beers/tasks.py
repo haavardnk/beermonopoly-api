@@ -115,6 +115,19 @@ def remove_badges(badge_type):
     return out.getvalue()
 
 
+def add_release(products, badge_text, badge_type, days):
+    out = StringIO()
+    call_command(
+        "add_release",
+        products=products,
+        badge_text=badge_text,
+        badge_type=badge_type,
+        days=days,
+        stdout=out,
+    )
+    return out.getvalue()
+
+
 def update_checkin_matches():
     out = StringIO()
     call_command("update_checkin_matches", stdout=out)
