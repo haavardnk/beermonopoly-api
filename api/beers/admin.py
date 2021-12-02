@@ -1,5 +1,6 @@
 from django.contrib import admin
 from beers.models import (
+    Option,
     Beer,
     ExternalAPI,
     Store,
@@ -53,6 +54,7 @@ class CheckinAdmin(admin.ModelAdmin):
     search_fields = ("checkin_id", "untpd_id", "user")
 
 
+admin.site.register(Option)
 admin.site.register(Badge)
 admin.site.register(ExternalAPI)
 admin.site.register(WrongMatch)
