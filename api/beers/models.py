@@ -5,6 +5,14 @@ from django.contrib.auth.models import User
 from dirtyfields import DirtyFieldsMixin
 
 
+class Option(models.Model):
+    name = models.CharField(max_length=50, primary_key=True)
+    active = models.BooleanField()
+
+    def __str__(self):
+        return self.name
+
+
 class Beer(DirtyFieldsMixin, models.Model):
     # Vinmonopolet info
     vmp_id = models.BigIntegerField(primary_key=True)  # ID number on Vinmonopolet
