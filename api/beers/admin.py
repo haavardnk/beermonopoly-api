@@ -31,6 +31,30 @@ class BeerAdmin(admin.ModelAdmin):
     search_fields = ("vmp_name", "brewery", "vmp_id", "untpd_id", "style")
 
 
+class MatchManually(Beer):
+    class Meta:
+        proxy = True
+
+
+@admin.register(MatchManually)
+class MatchManallyAdmin(BeerAdmin):
+    list_display = (
+        "vmp_name",
+        "untpd_name",
+        "vmp_id",
+        "untpd_id",
+        "match_manually",
+        "active",
+    )
+    fields = (
+        "vmp_name",
+        "untpd_url",
+    )
+
+    def get_queryset(self, request):
+        return self.model.objects.filter(match_manually=True, active=True)
+
+
 class StockInline(admin.TabularInline):
     model = Stock
 

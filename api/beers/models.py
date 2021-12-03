@@ -59,6 +59,24 @@ class Beer(DirtyFieldsMixin, models.Model):
     def __str__(self):
         return self.vmp_name
 
+    def save(self, *args, **kwargs):
+        try:
+            dirty_fields = self.get_dirty_fields()
+            if (
+                "untpd_url" in dirty_fields
+                and len(dirty_fields) == 1
+                and self.untpd_id != self.untpd_url.split("/")[-1]
+            ):
+                self.untpd_id = self.untpd_url.split("/")[-1]
+                self.prioritize_recheck = True
+                self.verified_match = True
+                self.match_manually = False
+                self.save()
+        except:
+            pass
+
+        super(Beer, self).save(*args, **kwargs)
+
 
 class Store(models.Model):
     store_id = models.IntegerField(primary_key=True)
