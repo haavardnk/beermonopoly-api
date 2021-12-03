@@ -8,7 +8,6 @@ from beers.api.serializers import (
     AuthenticatedBeerSerializer,
     StockSerializer,
     StoreSerializer,
-    MatchSerializer,
     WrongMatchSerializer,
     ChromeAuthSerializer,
 )
@@ -86,13 +85,6 @@ class StockViewSet(StaffBrowsableMixin, ModelViewSet):
     permission_classes = [permissions.DjangoModelPermissionsOrAnonReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["store", "beer"]
-
-
-class MatchViewSet(StaffBrowsableMixin, ModelViewSet):
-    queryset = Beer.objects.filter(match_manually=True, active=True)
-    serializer_class = MatchSerializer
-    pagination_class = Pagination
-    permission_classes = [permissions.DjangoModelPermissionsOrAnonReadOnly]
 
 
 class WrongMatchViewSet(StaffBrowsableMixin, ModelViewSet):

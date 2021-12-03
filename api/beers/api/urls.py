@@ -6,7 +6,6 @@ from beers.api.views import (
     BeerViewSet,
     StoreViewSet,
     StockViewSet,
-    MatchViewSet,
     WrongMatchViewSet,
     ChromeAuthViewSet,
 )
@@ -19,7 +18,6 @@ else:
 router.register(r"beers", BeerViewSet, basename="beer")
 router.register(r"stores", StoreViewSet, basename="store")
 router.register(r"stock", StockViewSet, basename="stock")
-router.register(r"match", MatchViewSet, basename="match")
 router.register(r"wrongmatch", WrongMatchViewSet, basename="wrongmatch")
 router.register(r"chrome", ChromeAuthViewSet, basename="chrome")
 

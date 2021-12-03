@@ -126,28 +126,6 @@ class StockSerializer(serializers.ModelSerializer):
         ]
 
 
-class MatchSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name="match-detail")
-
-    class Meta:
-        model = Beer
-        fields = [
-            "url",
-            "vmp_name",
-            "untpd_url",
-        ]
-
-    def update(self, instance, validated_data):
-        instance.vmp_name = self.validated_data["vmp_name"]
-        instance.untpd_url = self.validated_data["untpd_url"]
-        instance.untpd_id = instance.untpd_url.split("/")[-1]
-        instance.prioritize_recheck = True
-        instance.verified_match = True
-        instance.match_manually = False
-        instance.save()
-        return instance
-
-
 class WrongMatchSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name="wrongmatch-detail")
     beer_name = serializers.CharField(read_only=True, source="beer.vmp_name")
