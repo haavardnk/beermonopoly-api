@@ -86,8 +86,6 @@ class Command(BaseCommand):
                     "https://untappd.com/b/" + b["beer_slug"] + "/" + str(b["bid"])
                 )
                 beer.untpd_updated = timezone.now()
-                if beer.prioritize_recheck == True:
-                    beer.verified_match = True
                 beer.prioritize_recheck = False
                 beer.save()
 
