@@ -81,7 +81,8 @@ class Command(BaseCommand):
                 beer.description = b["beer_description"]
                 beer.abv = b["beer_abv"]
                 beer.ibu = b["beer_ibu"]
-                beer.label_url = b["beer_label_hd"]
+                beer.label_hd_url = b["beer_label_hd"]
+                beer.label_sm_url = b["beer_label"]
                 beer.untpd_url = (
                     "https://untappd.com/b/" + b["beer_slug"] + "/" + str(b["bid"])
                 )

@@ -45,7 +45,10 @@ class Beer(DirtyFieldsMixin, models.Model):
     description = models.TextField(blank=True, null=True)
     abv = models.FloatField(blank=True, null=True)
     ibu = models.IntegerField(blank=True, null=True)
-    label_url = models.CharField(
+    label_hd_url = models.CharField(
+        max_length=250, validators=[URLValidator()], blank=True, null=True
+    )
+    label_sm_url = models.CharField(
         max_length=250, validators=[URLValidator()], blank=True, null=True
     )
 
