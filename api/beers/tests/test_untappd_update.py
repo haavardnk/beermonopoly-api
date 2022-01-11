@@ -30,6 +30,7 @@ def json_response():
                 "beer_abv": 6.7,
                 "beer_ibu": 28,
                 "beer_label_hd": "https://api.test.com/site/beer_logos_hd/beer-100415_64d6e_hd.jpeg",
+                "beer_label": "https://api.test.com/site/beer_logos_hd/beer-100415_64d6e_sm.jpeg",
                 "brewery": {"brewery_name": "Ayinger Privatbrauerei"},
             }
         }
@@ -83,8 +84,12 @@ def test_update_beer_correctly(mocked_responses, json_response):
     assert beer.abv == pytest.approx(6.7)
     assert beer.ibu == 28
     assert (
-        beer.label_url
+        beer.label_hd_url
         == "https://api.test.com/site/beer_logos_hd/beer-100415_64d6e_hd.jpeg"
+    )
+    assert (
+        beer.label_sm_url
+        == "https://api.test.com/site/beer_logos_hd/beer-100415_64d6e_sm.jpeg"
     )
     assert (
         beer.untpd_url
