@@ -14,11 +14,14 @@ class Command(BaseCommand):
         products = options["products"].split(",")
         # Create badges
         for product in products:
-            beer = Beer.objects.get(vmp_id=int(product))
+            try:
+                beer = Beer.objects.get(vmp_id=int(product))
+            except Beer.DoesNotExist:
+                continue
+
             try:
                 Badge.objects.get(beer=beer, text=options["badge_text"])
                 continue
-
             except Badge.DoesNotExist:
                 Badge.objects.create(
                     beer=beer,
