@@ -1,6 +1,7 @@
 from rest_framework import permissions, filters, renderers
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
+from beers.api.filters import NullsAlwaysLastOrderingFilter
 from beers.models import Beer, Stock, Store, WrongMatch, ExternalAPI
 from beers.api.pagination import Pagination
 from beers.api.serializers import (
@@ -36,7 +37,7 @@ class BeerViewSet(StaffBrowsableMixin, ModelViewSet):
 
     filter_backends = (
         filters.SearchFilter,
-        filters.OrderingFilter,
+        NullsAlwaysLastOrderingFilter,
         DjangoFilterBackend,
     )
     search_fields = [
