@@ -1,9 +1,10 @@
 from rest_framework import permissions, filters, renderers
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
-from beers.api.filters import NullsAlwaysLastOrderingFilter
+from django.db.models import Q
+from beers.api.filters import NullsAlwaysLastOrderingFilter, BeerFilter
 from beers.models import Beer, Stock, Store, WrongMatch, ExternalAPI
-from beers.api.pagination import Pagination
+from beers.api.pagination import Pagination, LargeResultPagination
 from beers.api.serializers import (
     BeerSerializer,
     AuthenticatedBeerSerializer,
@@ -49,7 +50,7 @@ class BeerViewSet(StaffBrowsableMixin, ModelViewSet):
         "untpd_id",
     ]
     ordering_fields = ["vmp_name", "brewery", "sub_category", "rating"]
-    filterset_fields = ["style", "brewery"]
+    filterset_class = BeerFilter
 
     def get_queryset(self):
         queryset = Beer.objects.all()
@@ -70,7 +71,7 @@ class BeerViewSet(StaffBrowsableMixin, ModelViewSet):
 class StoreViewSet(StaffBrowsableMixin, ModelViewSet):
     queryset = Store.objects.all().order_by("name")
     serializer_class = StoreSerializer
-    pagination_class = Pagination
+    pagination_class = LargeResultPagination
     permission_classes = [permissions.DjangoModelPermissionsOrAnonReadOnly]
 
     filter_backends = (filters.SearchFilter, filters.OrderingFilter)
