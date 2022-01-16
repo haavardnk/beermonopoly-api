@@ -55,14 +55,9 @@ class MatchManallyAdmin(BeerAdmin):
         return self.model.objects.filter(match_manually=True, active=True)
 
 
-class StockInline(admin.TabularInline):
-    model = Stock
-
-
 @admin.register(Store)
 class StoreAdmin(admin.ModelAdmin):
     list_display = ("name", "store_id", "address", "store_updated")
-    inlines = [StockInline]
     search_fields = ("name", "store_id")
 
 
