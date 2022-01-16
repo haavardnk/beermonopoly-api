@@ -6,11 +6,23 @@ from drf_dynamic_fields import DynamicFieldsMixin
 class BeerSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name="beer-detail")
     badges = serializers.SerializerMethodField("get_badges")
+    stock = serializers.SerializerMethodField("get_stock")
 
     def get_badges(self, beer):
         ci = Badge.objects.filter(beer=beer)
         serializer = BadgeSerializer(instance=ci, many=True)
         return serializer.data
+
+    def get_stock(self, beer):
+        store = self.context["request"].query_params.get("store")
+        if store is not None:
+            try:
+                ci = Stock.objects.get(beer=beer, store=store)
+            except Stock.DoesNotExist:
+                return None
+        else:
+            return None
+        return ci.quantity
 
     class Meta:
         model = Beer
@@ -28,6 +40,7 @@ class BeerSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
             "ibu",
             "rating",
             "checkins",
+            "main_category",
             "sub_category",
             "style",
             "description",
@@ -41,6 +54,7 @@ class BeerSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
             "untpd_updated",
             "created_at",
             "badges",
+            "stock",
         ]
 
 
@@ -48,6 +62,7 @@ class AuthenticatedBeerSerializer(BeerSerializer):
     url = serializers.HyperlinkedIdentityField(view_name="beer-detail")
     user_checked_in = serializers.SerializerMethodField("get_checkins")
     badges = serializers.SerializerMethodField("get_badges")
+    stock = serializers.SerializerMethodField("get_stock")
 
     def get_checkins(self, beer):
         ci = Checkin.objects.filter(
@@ -60,6 +75,17 @@ class AuthenticatedBeerSerializer(BeerSerializer):
         ci = Badge.objects.filter(beer=beer)
         serializer = BadgeSerializer(instance=ci, many=True)
         return serializer.data
+
+    def get_stock(self, beer):
+        store = self.context["request"].query_params.get("store")
+        if store is not None:
+            try:
+                ci = Stock.objects.get(beer=beer, store=store)
+            except Stock.DoesNotExist:
+                return None
+        else:
+            return None
+        return ci.quantity
 
     class Meta:
         model = Beer
@@ -77,6 +103,7 @@ class AuthenticatedBeerSerializer(BeerSerializer):
             "ibu",
             "rating",
             "checkins",
+            "main_category",
             "sub_category",
             "style",
             "description",
@@ -91,6 +118,7 @@ class AuthenticatedBeerSerializer(BeerSerializer):
             "created_at",
             "user_checked_in",
             "badges",
+            "stock",
         ]
 
 
