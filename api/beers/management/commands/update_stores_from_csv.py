@@ -17,10 +17,13 @@ class Command(BaseCommand):
                 store.name = row["Butikknavn"]
                 store.address = row["Gateadresse"]
                 store.zipcode = int(row["Gate_postnummer"])
+                store.area = row['Post_poststed']
                 store.category = row["Kategori"]
                 store.gps_lat = row["GPS_breddegrad"]
-                store.gps_long = float(row["GPS_lengdegrad"].replace(" ", ""))
+                store.gps_long = row["GPS_lengdegrad"]
                 store.save()
+
+                print("Updated: "+store.name)
 
             except Store.DoesNotExist:
                 store = Store.objects.create(
@@ -28,10 +31,12 @@ class Command(BaseCommand):
                     name=row["Butikknavn"],
                     address=row["Gateadresse"],
                     zipcode=int(row["Gate_postnummer"]),
+                    area = row['Post_poststed'],
                     category=row["Kategori"],
                     gps_lat=row["GPS_breddegrad"],
-                    gps_long=float(row["GPS_lengdegrad"].replace(" ", "")),
+                    gps_long=row["GPS_lengdegrad"]
                 )
+                print("Added store: "+store.name)
 
         self.stdout.write(
             self.style.SUCCESS("Successfully updated stores from Vinmonpolet CSV")

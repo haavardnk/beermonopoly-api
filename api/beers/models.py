@@ -86,6 +86,7 @@ class Store(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=100)
     zipcode = models.IntegerField()
+    area = models.CharField(max_length=100)
     category = models.CharField(max_length=50)
     gps_lat = models.FloatField()
     gps_long = models.FloatField()
