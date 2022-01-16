@@ -1,4 +1,5 @@
 import cloudscraper, xmltodict
+from django.utils import timezone
 from beers.models import Beer, ExternalAPI, Store, Stock
 from django.core.management.base import BaseCommand
 
@@ -24,6 +25,9 @@ def call_api(url, store_id, page):
 class Command(BaseCommand):
     # Updates the database with all beers from vinmonopolet
 
+    def add_arguments(self, parser):
+        parser.add_argument("stores", type=int)
+
     def handle(self, *args, **options):
         baseurl = ExternalAPI.objects.get(name="vinmonopolet").baseurl
         url = baseurl + "products/search/"
@@ -32,7 +36,8 @@ class Command(BaseCommand):
         created = 0
         deleted = 0
         stores_updated = 0
-        stores = Store.objects.all()
+        n = options["stores"]
+        stores = Store.objects.all().order_by("store_stock_updated")[:n]
 
         for store in stores.iterator():
             stocked_beer = []
@@ -78,6 +83,9 @@ class Command(BaseCommand):
             stocks = Stock.objects.filter(store=store).exclude(beer__in=stocked_beer)
             deleted += stocks.count()
             stocks.delete()
+
+            store.store_stock_updated = timezone.now()
+            store.save()
 
             stores_updated += 1
 

@@ -134,7 +134,7 @@ class CheckinSerializer(serializers.ModelSerializer):
         fields = ["checkin_id", "rating", "checkin_url"]
 
 
-class StoreSerializer(serializers.ModelSerializer):
+class StoreSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     class Meta:
         model = Store
         fields = "__all__"

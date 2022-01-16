@@ -92,6 +92,7 @@ class Store(models.Model):
     gps_long = models.FloatField()
 
     store_updated = models.DateTimeField(auto_now=True)
+    store_stock_updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
