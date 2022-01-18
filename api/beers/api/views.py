@@ -1,3 +1,4 @@
+from distutils.util import strtobool
 from rest_framework import permissions, filters, renderers
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
@@ -49,16 +50,38 @@ class BeerViewSet(StaffBrowsableMixin, ModelViewSet):
         "vmp_id",
         "untpd_id",
     ]
-    ordering_fields = ["vmp_name", "brewery", "sub_category", "rating"]
+    ordering_fields = [
+        "vmp_name",
+        "brewery",
+        "rating",
+        "price",
+        "created_at",
+        "abv",
+    ]
     filterset_class = BeerFilter
 
     def get_queryset(self):
         queryset = Beer.objects.all()
         beers = self.request.query_params.get("beers", None)
+        user_checkin = self.request.query_params.get("user_checkin", None)
         if beers is not None:
             beers = list(int(v) for v in beers.split(","))
             queryset = queryset.filter(vmp_id__in=beers)
-
+        elif (
+            user_checkin != None
+            and strtobool(user_checkin) == True
+            and self.request.user
+            and self.request.user.is_authenticated
+        ):
+            print("Inkludere")
+            queryset = queryset.filter(checkin__user=self.request.user)
+        elif (
+            user_checkin != None
+            and strtobool(user_checkin) == False
+            and self.request.user
+            and self.request.user.is_authenticated
+        ):
+            queryset = queryset.exclude(checkin__user=self.request.user)
         return queryset
 
     def get_serializer_class(self):

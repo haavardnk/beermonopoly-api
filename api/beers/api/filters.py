@@ -26,7 +26,10 @@ class NullsAlwaysLastOrderingFilter(filters.OrderingFilter):
 
 class BeerFilter(flt.FilterSet):
     style = flt.CharFilter(method="custom_style_filter")
-    store = flt.NumberFilter(field_name="stock__store", lookup_expr="exact")
+    product_selection = flt.CharFilter(method="custom_product_selection_filter")
+    store = flt.CharFilter(method="custom_store_filter")
+    price_high = flt.NumberFilter(field_name="price", lookup_expr="lte")
+    price_low = flt.NumberFilter(field_name="price", lookup_expr="gte")
 
     def custom_style_filter(self, queryset, name, value):
         query = Q()
@@ -34,6 +37,26 @@ class BeerFilter(flt.FilterSet):
             query |= Q(style__icontains=val)
         return queryset.filter(query)
 
+    def custom_product_selection_filter(self, queryset, name, value):
+        query = Q()
+        for val in value.split(","):
+            query |= Q(product_selection__iexact=val)
+        return queryset.filter(query)
+
+    def custom_store_filter(self, queryset, name, value):
+        query = Q()
+        for val in value.split(","):
+            query |= Q(stock__store__exact=int(val))
+        return queryset.filter(query)
+
     class Meta:
         model = Beer
-        fields = ["style", "brewery", "active", "store"]
+        fields = [
+            "style",
+            "brewery",
+            "product_selection",
+            "active",
+            "store",
+            "price_high",
+            "price_low",
+        ]
