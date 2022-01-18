@@ -1,3 +1,4 @@
+from distutils.util import strtobool
 from rest_framework import serializers
 from beers.models import Beer, Stock, Store, WrongMatch, Checkin, Badge, ExternalAPI
 from drf_dynamic_fields import DynamicFieldsMixin
@@ -7,6 +8,7 @@ class BeerSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name="beer-detail")
     badges = serializers.SerializerMethodField("get_badges")
     stock = serializers.SerializerMethodField("get_stock")
+    all_stock = serializers.SerializerMethodField("get_all_stock")
 
     def get_badges(self, beer):
         ci = Badge.objects.filter(beer=beer)
@@ -15,7 +17,7 @@ class BeerSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
 
     def get_stock(self, beer):
         store = self.context["request"].query_params.get("store")
-        if store is not None:
+        if store is not None and len(store.split(",")) < 2:
             try:
                 ci = Stock.objects.get(beer=beer, store=store)
             except Stock.DoesNotExist:
@@ -23,6 +25,18 @@ class BeerSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
         else:
             return None
         return ci.quantity
+
+    def get_all_stock(self, beer):
+        all_stock = self.context["request"].query_params.get("all_stock")
+        if all_stock and bool(strtobool(all_stock)):
+            try:
+                ci = Stock.objects.filter(beer=beer)
+                serializer = AllStockSerializer(instance=ci, many=True)
+            except Stock.DoesNotExist:
+                return None
+        else:
+            return None
+        return serializer.data
 
     class Meta:
         model = Beer
@@ -33,6 +47,7 @@ class BeerSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
             "vmp_name",
             "untpd_name",
             "brewery",
+            "country",
             "product_selection",
             "price",
             "volume",
@@ -55,6 +70,7 @@ class BeerSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
             "created_at",
             "badges",
             "stock",
+            "all_stock",
         ]
 
 
@@ -63,6 +79,7 @@ class AuthenticatedBeerSerializer(BeerSerializer):
     user_checked_in = serializers.SerializerMethodField("get_checkins")
     badges = serializers.SerializerMethodField("get_badges")
     stock = serializers.SerializerMethodField("get_stock")
+    all_stock = serializers.SerializerMethodField("get_all_stock")
 
     def get_checkins(self, beer):
         ci = Checkin.objects.filter(
@@ -78,14 +95,27 @@ class AuthenticatedBeerSerializer(BeerSerializer):
 
     def get_stock(self, beer):
         store = self.context["request"].query_params.get("store")
-        if store is not None:
+        if store is not None and len(store.split(",")) < 2:
             try:
+                print(store)
                 ci = Stock.objects.get(beer=beer, store=store)
             except Stock.DoesNotExist:
                 return None
         else:
             return None
         return ci.quantity
+
+    def get_all_stock(self, beer):
+        all_stock = self.context["request"].query_params.get("all_stock")
+        if all_stock and bool(strtobool(all_stock)):
+            try:
+                ci = Stock.objects.filter(beer=beer)
+                serializer = AllStockSerializer(instance=ci, many=True)
+            except Stock.DoesNotExist:
+                return None
+        else:
+            return None
+        return serializer.data
 
     class Meta:
         model = Beer
@@ -96,6 +126,7 @@ class AuthenticatedBeerSerializer(BeerSerializer):
             "vmp_name",
             "untpd_name",
             "brewery",
+            "country",
             "product_selection",
             "price",
             "volume",
@@ -119,7 +150,16 @@ class AuthenticatedBeerSerializer(BeerSerializer):
             "user_checked_in",
             "badges",
             "stock",
+            "all_stock",
         ]
+
+
+class AllStockSerializer(serializers.ModelSerializer):
+    store_name = serializers.CharField(read_only=True, source="store.name")
+
+    class Meta:
+        model = Stock
+        fields = ["store_name", "quantity"]
 
 
 class BadgeSerializer(serializers.ModelSerializer):
