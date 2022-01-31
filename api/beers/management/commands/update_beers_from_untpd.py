@@ -73,6 +73,7 @@ class Command(BaseCommand):
 
             try:
                 b = response["response"]["beer"]
+                beer.untpd_id = b["bid"]
                 beer.untpd_name = b["beer_name"]
                 beer.brewery = b["brewery"]["brewery_name"]
                 beer.rating = b["rating_score"]
