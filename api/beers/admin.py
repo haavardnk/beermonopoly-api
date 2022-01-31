@@ -67,10 +67,26 @@ class StockAdmin(admin.ModelAdmin):
     search_fields = ("store__name", "beer__vmp_name")
 
 
+class BeersInline(admin.TabularInline):
+    model = Checkin.beer.through
+
+
 @admin.register(Checkin)
 class CheckinAdmin(admin.ModelAdmin):
-    list_display = ("checkin_id", "untpd_id", "user")
-    search_fields = ("checkin_id", "untpd_id", "user")
+    inlines = [
+        BeersInline,
+    ]
+    exclude = ["beer"]
+    list_display = ("checkin_id", "get_beers", "untpd_id", "user")
+    search_fields = (
+        "checkin_id",
+        "untpd_id",
+        "user__username",
+        "beer__vmp_name",
+    )
+
+    def get_beers(self, obj):
+        return "\n".join([p.vmp_name for p in obj.beer.all()])
 
 
 admin.site.register(Option)
