@@ -46,6 +46,9 @@ class Command(BaseCommand):
                             beer.country = b["main_country"]["name"]
                             beer.price = b["price"]["value"]
                             beer.volume = b["volume"]["value"]
+                            beer.price_per_volume = float(b["price"]["value"]) / float(
+                                b["volume"]["value"]
+                            )
                             beer.product_selection = b["product_selection"]
                             beer.vmp_url = "https://www.vinmonopolet.no" + b["url"]
                             beer.vmp_updated = timezone.now()
@@ -63,6 +66,8 @@ class Command(BaseCommand):
                                 country=b["main_country"]["name"],
                                 price=b["price"]["value"],
                                 volume=b["volume"]["value"],
+                                price_per_volume=float(b["price"]["value"])
+                                / float(b["volume"]["value"]),
                                 product_selection=b["product_selection"],
                                 vmp_url="https://www.vinmonopolet.no" + b["url"],
                                 vmp_updated=timezone.now(),
