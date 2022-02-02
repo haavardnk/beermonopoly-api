@@ -57,6 +57,7 @@ class BeerViewSet(StaffBrowsableMixin, ModelViewSet):
         "price",
         "created_at",
         "abv",
+        "price_per_volume",
     ]
     filterset_class = BeerFilter
 
@@ -73,7 +74,6 @@ class BeerViewSet(StaffBrowsableMixin, ModelViewSet):
             and self.request.user
             and self.request.user.is_authenticated
         ):
-            print("Inkludere")
             queryset = queryset.filter(checkin__user=self.request.user)
         elif (
             user_checkin != None
