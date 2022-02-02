@@ -35,19 +35,19 @@ class BeerFilter(flt.FilterSet):
         query = Q()
         for val in value.split(","):
             query |= Q(style__icontains=val)
-        return queryset.filter(query)
+        return queryset.filter(query).distinct()
 
     def custom_product_selection_filter(self, queryset, name, value):
         query = Q()
         for val in value.split(","):
             query |= Q(product_selection__iexact=val)
-        return queryset.filter(query)
+        return queryset.filter(query).distinct()
 
     def custom_store_filter(self, queryset, name, value):
         query = Q()
         for val in value.split(","):
             query |= Q(stock__store__exact=int(val))
-        return queryset.filter(query)
+        return queryset.filter(query).distinct()
 
     class Meta:
         model = Beer
