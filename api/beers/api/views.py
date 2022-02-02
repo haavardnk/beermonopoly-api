@@ -58,6 +58,7 @@ class BeerViewSet(StaffBrowsableMixin, ModelViewSet):
         "created_at",
         "abv",
         "price_per_volume",
+        "checkin__rating",
     ]
     filterset_class = BeerFilter
 
