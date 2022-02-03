@@ -81,12 +81,6 @@ def remove_match_manually():
     return out.getvalue()
 
 
-def create_badges_vmp():
-    out = StringIO()
-    call_command("create_badges_vmp", stdout=out)
-    return out.getvalue()
-
-
 def create_badges_untpd():
     out = StringIO()
     call_command("create_badges_untpd", stdout=out)
@@ -115,10 +109,11 @@ def remove_badges(badge_type):
     return out.getvalue()
 
 
-def add_release(products, badge_text, badge_type, days):
+def add_release(name, products, badge_text, badge_type, days):
     out = StringIO()
     call_command(
         "add_release",
+        name=name,
         products=products,
         badge_text=badge_text,
         badge_type=badge_type,
@@ -137,4 +132,15 @@ def update_checkin_matches():
 def get_all_users_wishlist():
     out = StringIO()
     call_command("get_all_users_wishlist", stdout=out)
+    return out.getvalue()
+
+
+def create_release(name, products):
+    out = StringIO()
+    call_command(
+        "create_release",
+        name=name,
+        products=products,
+        stdout=out,
+    )
     return out.getvalue()

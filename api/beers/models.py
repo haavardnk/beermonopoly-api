@@ -187,3 +187,9 @@ class Badge(models.Model):
 class Wishlist(models.Model):
     user = models.OneToOneField(User, on_delete=CASCADE, primary_key=True)
     beer = models.ManyToManyField(Beer)
+
+
+class Release(models.Model):
+    name = models.CharField(max_length=50, primary_key=True, unique=True)
+    beer = models.ManyToManyField(Beer)
+    active = models.BooleanField(default=True)

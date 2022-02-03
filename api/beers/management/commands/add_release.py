@@ -7,6 +7,7 @@ from django_q.models import Schedule
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
+        parser.add_argument("--name", type=str)
         parser.add_argument("--products", type=str)
         parser.add_argument("--badge_text", type=str)
         parser.add_argument("--badge_type", type=str)
@@ -26,6 +27,19 @@ class Command(BaseCommand):
             func="beers.tasks.get_unreleased_beers_from_vmp",
             schedule_type=Schedule.ONCE,
             next_run=timezone.now(),
+        )
+
+        # Schedule adding release model
+        Schedule.objects.create(
+            name="Release: " + options["badge_text"] + " - Add release model",
+            func="beers.tasks.create_release",
+            kwargs="products='"
+            + options["products"]
+            + "', name='"
+            + options["name"]
+            + "'",
+            schedule_type=Schedule.ONCE,
+            next_run=timezone.now() + timedelta(minutes=10),
         )
 
         # Schedule adding badges

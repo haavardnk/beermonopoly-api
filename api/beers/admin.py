@@ -10,6 +10,7 @@ from beers.models import (
     Checkin,
     Badge,
     Wishlist,
+    Release,
 )
 
 
@@ -107,6 +108,11 @@ class WishlistAdmin(admin.ModelAdmin):
 
     def get_beers(self, obj):
         return "\n".join([p.vmp_name for p in obj.beer.all()])
+
+
+@admin.register(Release)
+class ReleaseAdmin(admin.ModelAdmin):
+    list_display = ("name",)
 
 
 admin.site.register(Option)
