@@ -9,6 +9,7 @@ from beers.models import (
     VmpNotReleased,
     Checkin,
     Badge,
+    Wishlist,
 )
 
 
@@ -67,14 +68,14 @@ class StockAdmin(admin.ModelAdmin):
     search_fields = ("store__name", "beer__vmp_name")
 
 
-class BeersInline(admin.TabularInline):
+class CheckinBeersInline(admin.TabularInline):
     model = Checkin.beer.through
 
 
 @admin.register(Checkin)
 class CheckinAdmin(admin.ModelAdmin):
     inlines = [
-        BeersInline,
+        CheckinBeersInline,
     ]
     exclude = ["beer"]
     list_display = ("checkin_id", "get_beers", "untpd_id", "user")
@@ -83,6 +84,25 @@ class CheckinAdmin(admin.ModelAdmin):
         "untpd_id",
         "user__username",
         "beer__vmp_name",
+    )
+
+    def get_beers(self, obj):
+        return "\n".join([p.vmp_name for p in obj.beer.all()])
+
+
+class WishlistBeersInline(admin.TabularInline):
+    model = Wishlist.beer.through
+
+
+@admin.register(Wishlist)
+class WishlistAdmin(admin.ModelAdmin):
+    inlines = [
+        WishlistBeersInline,
+    ]
+    exclude = ["beer"]
+    list_display = (
+        "user",
+        "get_beers",
     )
 
     def get_beers(self, obj):

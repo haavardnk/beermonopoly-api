@@ -182,3 +182,8 @@ class Badge(models.Model):
 
     def __str__(self):
         return self.text + " - " + self.beer.vmp_name
+
+
+class Wishlist(models.Model):
+    user = models.OneToOneField(User, on_delete=CASCADE, primary_key=True)
+    beer = models.ManyToManyField(Beer)

@@ -1,6 +1,15 @@
 from distutils.util import strtobool
 from rest_framework import serializers
-from beers.models import Beer, Stock, Store, WrongMatch, Checkin, Badge, ExternalAPI
+from beers.models import (
+    Beer,
+    Stock,
+    Store,
+    WrongMatch,
+    Checkin,
+    Badge,
+    ExternalAPI,
+    Wishlist,
+)
 from drf_dynamic_fields import DynamicFieldsMixin
 
 
@@ -78,6 +87,7 @@ class BeerSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
 class AuthenticatedBeerSerializer(BeerSerializer):
     url = serializers.HyperlinkedIdentityField(view_name="beer-detail")
     user_checked_in = serializers.SerializerMethodField("get_checkins")
+    user_wishlisted = serializers.SerializerMethodField("get_wishlist")
     badges = serializers.SerializerMethodField("get_badges")
     stock = serializers.SerializerMethodField("get_stock")
     all_stock = serializers.SerializerMethodField("get_all_stock")
@@ -88,6 +98,12 @@ class AuthenticatedBeerSerializer(BeerSerializer):
         ).order_by("-checkin_id")[:1]
         serializer = CheckinSerializer(instance=ci, many=True)
         return serializer.data
+
+    def get_wishlist(self, beer):
+        wishlist = Wishlist.objects.filter(user=self.context["request"].user, beer=beer)
+        if wishlist:
+            return True
+        return False
 
     def get_badges(self, beer):
         ci = Badge.objects.filter(beer=beer)
@@ -150,6 +166,7 @@ class AuthenticatedBeerSerializer(BeerSerializer):
             "untpd_updated",
             "created_at",
             "user_checked_in",
+            "user_wishlisted",
             "badges",
             "stock",
             "all_stock",

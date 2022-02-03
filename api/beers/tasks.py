@@ -132,3 +132,9 @@ def update_checkin_matches():
     out = StringIO()
     call_command("update_checkin_matches", stdout=out)
     return out.getvalue()
+
+
+def get_all_users_wishlist():
+    out = StringIO()
+    call_command("get_all_users_wishlist", stdout=out)
+    return out.getvalue()
