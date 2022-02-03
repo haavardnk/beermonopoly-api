@@ -66,10 +66,11 @@ class BeerViewSet(StaffBrowsableMixin, ModelViewSet):
         queryset = Beer.objects.all()
         beers = self.request.query_params.get("beers", None)
         user_checkin = self.request.query_params.get("user_checkin", None)
+        user_wishlisted = self.request.query_params.get("user_wishlisted", None)
         if beers is not None:
             beers = list(int(v) for v in beers.split(","))
             queryset = queryset.filter(vmp_id__in=beers)
-        elif (
+        if (
             user_checkin != None
             and strtobool(user_checkin) == True
             and self.request.user
@@ -83,6 +84,21 @@ class BeerViewSet(StaffBrowsableMixin, ModelViewSet):
             and self.request.user.is_authenticated
         ):
             queryset = queryset.exclude(checkin__user=self.request.user)
+        if (
+            user_wishlisted != None
+            and strtobool(user_wishlisted) == True
+            and self.request.user
+            and self.request.user.is_authenticated
+        ):
+            queryset = queryset.filter(wishlist__user=self.request.user)
+        elif (
+            user_wishlisted != None
+            and strtobool(user_wishlisted) == False
+            and self.request.user
+            and self.request.user.is_authenticated
+        ):
+            queryset = queryset.exclude(wishlist__user=self.request.user)
+
         return queryset
 
     def get_serializer_class(self):
