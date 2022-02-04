@@ -231,9 +231,3 @@ class WrongMatchSerializer(serializers.ModelSerializer):
             "current_untpd_id",
             "suggested_url",
         ]
-
-
-class ChromeAuthSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ExternalAPI
-        fields = "__all__"
