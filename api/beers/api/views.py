@@ -4,7 +4,7 @@ from rest_framework.viewsets import ModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Q
 from beers.api.filters import NullsAlwaysLastOrderingFilter, BeerFilter
-from beers.models import Beer, Stock, Store, WrongMatch
+from beers.models import Beer, Stock, Store, WrongMatch, Release
 from beers.api.pagination import Pagination, LargeResultPagination
 from beers.api.serializers import (
     BeerSerializer,
@@ -12,6 +12,7 @@ from beers.api.serializers import (
     StockSerializer,
     StoreSerializer,
     WrongMatchSerializer,
+    ReleaseSerializer,
 )
 from allauth.socialaccount.providers.untappd.views import UntappdOAuth2Adapter
 from dj_rest_auth.registration.views import SocialLoginView
@@ -131,5 +132,12 @@ class StockViewSet(StaffBrowsableMixin, ModelViewSet):
 class WrongMatchViewSet(StaffBrowsableMixin, ModelViewSet):
     queryset = WrongMatch.objects.all()
     serializer_class = WrongMatchSerializer
+    pagination_class = Pagination
+    permission_classes = [permissions.AllowAny]
+
+
+class ReleaseViewSet(StaffBrowsableMixin, ModelViewSet):
+    queryset = Release.objects.filter(active=True)
+    serializer_class = ReleaseSerializer
     pagination_class = Pagination
     permission_classes = [permissions.AllowAny]
