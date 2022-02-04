@@ -30,6 +30,7 @@ class BeerFilter(flt.FilterSet):
     store = flt.CharFilter(method="custom_store_filter")
     price_high = flt.NumberFilter(field_name="price", lookup_expr="lte")
     price_low = flt.NumberFilter(field_name="price", lookup_expr="gte")
+    release = flt.CharFilter(method="custom_release_filter")
 
     def custom_style_filter(self, queryset, name, value):
         query = Q()
@@ -49,6 +50,12 @@ class BeerFilter(flt.FilterSet):
             query |= Q(stock__store__exact=int(val))
         return queryset.filter(query).distinct()
 
+    def custom_release_filter(self, queryset, name, value):
+        query = Q()
+        for val in value.split(","):
+            query |= Q(release__name__iexact=val)
+        return queryset.filter(query).distinct()
+
     class Meta:
         model = Beer
         fields = [
@@ -59,4 +66,5 @@ class BeerFilter(flt.FilterSet):
             "store",
             "price_high",
             "price_low",
+            "release",
         ]

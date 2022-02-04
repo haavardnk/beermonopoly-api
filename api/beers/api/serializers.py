@@ -7,8 +7,8 @@ from beers.models import (
     WrongMatch,
     Checkin,
     Badge,
-    ExternalAPI,
     Wishlist,
+    Release,
 )
 from drf_dynamic_fields import DynamicFieldsMixin
 
@@ -231,3 +231,9 @@ class WrongMatchSerializer(serializers.ModelSerializer):
             "current_untpd_id",
             "suggested_url",
         ]
+
+
+class ReleaseSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
+    class Meta:
+        model = Release
+        fields = "__all__"

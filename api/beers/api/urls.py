@@ -7,6 +7,7 @@ from beers.api.views import (
     StoreViewSet,
     StockViewSet,
     WrongMatchViewSet,
+    ReleaseViewSet,
 )
 
 if settings.DEBUG:
@@ -18,6 +19,7 @@ router.register(r"beers", BeerViewSet, basename="beer")
 router.register(r"stores", StoreViewSet, basename="store")
 router.register(r"stock", StockViewSet, basename="stock")
 router.register(r"wrongmatch", WrongMatchViewSet, basename="wrongmatch")
+router.register(r"release", ReleaseViewSet, basename="release")
 
 urlpatterns = [
     path("", include(router.urls)),
