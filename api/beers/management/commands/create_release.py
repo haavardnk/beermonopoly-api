@@ -15,9 +15,9 @@ class Command(BaseCommand):
 
         # Create release
         try:
+            release = Release.objects.get(name=name)
+        except Release.DoesNotExist:
             release = Release.objects.create(name=name)
-        except:
-            raise Exception("Release with the name {name} already exists.")
 
         # Add beers
         for product in products:
