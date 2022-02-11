@@ -30,6 +30,10 @@ class BeerFilter(flt.FilterSet):
     store = flt.CharFilter(method="custom_store_filter")
     price_high = flt.NumberFilter(field_name="price", lookup_expr="lte")
     price_low = flt.NumberFilter(field_name="price", lookup_expr="gte")
+    ppv_high = flt.NumberFilter(field_name="price_per_volume", lookup_expr="lte")
+    ppv_low = flt.NumberFilter(field_name="price_per_volume", lookup_expr="gte")
+    abv_high = flt.NumberFilter(field_name="abv", lookup_expr="lte")
+    abv_low = flt.NumberFilter(field_name="abv", lookup_expr="gte")
     release = flt.CharFilter(method="custom_release_filter")
 
     def custom_style_filter(self, queryset, name, value):
@@ -66,5 +70,9 @@ class BeerFilter(flt.FilterSet):
             "store",
             "price_high",
             "price_low",
+            "ppv_high",
+            "ppv_low",
+            "abv_high",
+            "abv_low",
             "release",
         ]
