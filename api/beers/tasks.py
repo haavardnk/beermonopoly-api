@@ -123,9 +123,9 @@ def add_release(name, products, badge_text, badge_type, days):
     return out.getvalue()
 
 
-def update_checkin_matches():
+def update_checkin_matches(limit):
     out = StringIO()
-    call_command("update_checkin_matches", stdout=out)
+    call_command("update_checkin_matches", limit, stdout=out)
     return out.getvalue()
 
 

@@ -173,6 +173,7 @@ class Checkin(models.Model):
     checkin_url = models.CharField(
         max_length=250, validators=[URLValidator()], blank=True, null=True
     )
+    updated = models.DateTimeField(auto_now=True)
 
 
 class Badge(models.Model):
