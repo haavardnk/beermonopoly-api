@@ -1,4 +1,5 @@
 import cloudscraper, xmltodict
+from distutils.util import strtobool
 from beers.models import Beer, ExternalAPI, VmpNotReleased
 from django.utils import timezone
 from django.core.management.base import BaseCommand
@@ -42,6 +43,8 @@ class Command(BaseCommand):
                     beer.volume = response["volume"]["value"]
                     beer.product_selection = response["product_selection"]
                     beer.vmp_url = "https://www.vinmonopolet.no" + response["url"]
+                    beer.post_delivery = strtobool(response["availability"]["deliveryAvailability"]["available"])
+                    beer.store_delivery = response["availability"]["storeAvailability"]["mainText"] == "Kan bestilles til alle butikker"
                     beer.vmp_updated = timezone.now()
                     if beer.active == False:
                         beer.active = True
@@ -58,6 +61,8 @@ class Command(BaseCommand):
                         country=response["main_country"]["name"],
                         volume=response["volume"]["value"],
                         product_selection=response["product_selection"],
+                        post_delivery = strtobool(response["availability"]["deliveryAvailability"]["available"]),
+                        store_delivery = response["availability"]["storeAvailability"]["mainText"] == "Kan bestilles til alle butikker",
                         vmp_url="https://www.vinmonopolet.no" + response["url"],
                         vmp_updated=timezone.now(),
                     )

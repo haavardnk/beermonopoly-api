@@ -75,4 +75,6 @@ class BeerFilter(flt.FilterSet):
             "abv_high",
             "abv_low",
             "release",
+            "post_delivery",
+            "store_delivery",
         ]
