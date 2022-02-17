@@ -81,6 +81,8 @@ class BeerSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
             "badges",
             "stock",
             "all_stock",
+            "post_delivery",
+            "store_delivery",
         ]
 
 
@@ -170,6 +172,8 @@ class AuthenticatedBeerSerializer(BeerSerializer):
             "badges",
             "stock",
             "all_stock",
+            "post_delivery",
+            "store_delivery",
         ]
 
 

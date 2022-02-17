@@ -27,6 +27,8 @@ class Beer(DirtyFieldsMixin, models.Model):
     vmp_url = models.CharField(
         max_length=250, validators=[URLValidator()], blank=True, null=True
     )
+    post_delivery = models.BooleanField(blank=True, null=True)
+    store_delivery = models.BooleanField(blank=True, null=True)
 
     # Untappd info
     untpd_id = models.IntegerField(blank=True, null=True)
