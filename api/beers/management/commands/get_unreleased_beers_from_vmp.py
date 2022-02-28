@@ -38,9 +38,12 @@ class Command(BaseCommand):
                     if "main_sub_category" in response:
                         beer.sub_category = response["main_sub_category"]["name"]
                     beer.country = response["main_country"]["name"]
+                    beer.volume = response["volume"]["value"]
                     if "price" in response:
                         beer.price = response["price"]["value"]
-                    beer.volume = response["volume"]["value"]
+                        beer.price_per_volume = float(response["price"]["value"]) / float(
+                            response["volume"]["value"]
+                        )
                     beer.product_selection = response["product_selection"]
                     beer.vmp_url = "https://www.vinmonopolet.no" + response["url"]
                     beer.post_delivery = strtobool(response["availability"]["deliveryAvailability"]["available"])
@@ -70,6 +73,9 @@ class Command(BaseCommand):
                         beer.sub_category = response["main_sub_category"]["name"]
                     if "price" in response:
                         beer.price = response["price"]["value"]
+                        beer.price_per_volume = float(response["price"]["value"]) / float(
+                            response["volume"]["value"]
+                        )
                     beer.save()
 
                     created += 1
