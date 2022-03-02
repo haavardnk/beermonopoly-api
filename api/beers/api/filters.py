@@ -28,6 +28,7 @@ class BeerFilter(flt.FilterSet):
     style = flt.CharFilter(method="custom_style_filter")
     product_selection = flt.CharFilter(method="custom_product_selection_filter")
     store = flt.CharFilter(method="custom_store_filter")
+    country = flt.CharFilter(method="custom_country_filter")
     price_high = flt.NumberFilter(field_name="price", lookup_expr="lte")
     price_low = flt.NumberFilter(field_name="price", lookup_expr="gte")
     ppv_high = flt.NumberFilter(field_name="price_per_volume", lookup_expr="lte")
@@ -54,6 +55,12 @@ class BeerFilter(flt.FilterSet):
             query |= Q(stock__store__exact=int(val))
         return queryset.filter(query).distinct()
 
+    def custom_country_filter(self, queryset, name, value):
+        query = Q()
+        for val in value.split(","):
+            query |= Q(country__iexact=val)
+        return queryset.filter(query).distinct()
+
     def custom_release_filter(self, queryset, name, value):
         query = Q()
         for val in value.split(","):
@@ -68,6 +75,7 @@ class BeerFilter(flt.FilterSet):
             "product_selection",
             "active",
             "store",
+            "country",
             "price_high",
             "price_low",
             "ppv_high",
