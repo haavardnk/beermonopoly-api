@@ -6,10 +6,13 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    # Matches beers from beername to untappd ID.
+    def add_arguments(self, parser):
+        parser.add_argument('token', type=str, nargs='?', default="")
 
+    # Matches beers from beername to untappd ID.
     def handle(self, *args, **options):
         untappd = ExternalAPI.objects.get(name="untappd")
+        access_token = options["token"]
         api_client_id = untappd.api_client_id
         api_client_secret = untappd.api_client_secret
         baseurl = untappd.baseurl
@@ -58,17 +61,28 @@ class Command(BaseCommand):
                     failed += 1
                     failed_beers.append(beer)
                     break
+                
 
-                url = (
-                    baseurl
-                    + "search/beer?client_id="
-                    + api_client_id
-                    + "&client_secret="
-                    + api_client_secret
-                    + "&q="
-                    + quote(query)
-                    + "&limit=5"
-                )
+                if access_token:
+                    url = (
+                        baseurl
+                        + "search/beer?access_token="
+                        + access_token
+                        + "&q="
+                        + quote(query)
+                        + "&limit=5"
+                    )
+                else:
+                    url = (
+                        baseurl
+                        + "search/beer?client_id="
+                        + api_client_id
+                        + "&client_secret="
+                        + api_client_secret
+                        + "&q="
+                        + quote(query)
+                        + "&limit=5"
+                    )
 
                 try:
                     headers = {"User-Agent": "django:Beermonopoly"}

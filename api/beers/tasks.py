@@ -33,7 +33,9 @@ def update_stores_from_csv():
     return out.getvalue()
 
 
-def smart_update_untappd():
+def smart_update_untappd(**kwargs):
+    access_token = kwargs.get("token", None)
+
     # Match if unmatched exists, else update items
     beers = Beer.objects.filter(
         untpd_id__isnull=True, match_manually=False, active=True
@@ -41,12 +43,17 @@ def smart_update_untappd():
     out = StringIO()
 
     if beers:
-        call_command("match_untpd_brute", stdout=out)
+        if access_token is not None:
+            call_command("match_untpd_brute", access_token, stdout=out)
+        else:
+            call_command("match_untpd_brute", stdout=out)
     else:
-        call_command("update_beers_from_untpd", stdout=out)
+        if access_token is not None:
+            call_command("update_beers_from_untpd", access_token, stdout=out)
+        else:
+            call_command("update_beers_from_untpd", stdout=out)
 
     return out.getvalue()
-
 
 def deactivate_inactive(days):
     out = StringIO()
