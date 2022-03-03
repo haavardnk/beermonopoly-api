@@ -8,10 +8,13 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
+    def add_arguments(self, parser):
+        parser.add_argument('token', type=str, nargs='?', default="")
 
     # Updates the database with information from Untappd.
     def handle(self, *args, **options):
         untappd = ExternalAPI.objects.get(name="untappd")
+        access_token = options["token"]
         api_client_id = untappd.api_client_id
         api_client_secret = untappd.api_client_secret
         baseurl = untappd.baseurl
@@ -51,15 +54,24 @@ class Command(BaseCommand):
                 break
 
             try:
-                url = (
-                    baseurl
-                    + "beer/info/"
-                    + str(beer.untpd_id)
-                    + "?client_id="
-                    + api_client_id
-                    + "&client_secret="
-                    + api_client_secret
-                )
+                if access_token:
+                    url = (
+                        baseurl
+                        + "beer/info/"
+                        + str(beer.untpd_id)
+                        + "?access_token="
+                        + access_token
+                    )
+                else:
+                    url = (
+                        baseurl
+                        + "beer/info/"
+                        + str(beer.untpd_id)
+                        + "?client_id="
+                        + api_client_id
+                        + "&client_secret="
+                        + api_client_secret
+                    )
                 headers = {"User-Agent": "django:Beermonopoly"}
                 request = requests.get(url, headers=headers)
                 response = json.loads(request.text)
