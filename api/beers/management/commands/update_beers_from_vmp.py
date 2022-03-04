@@ -52,8 +52,13 @@ class Command(BaseCommand):
                             )
                             beer.product_selection = b["product_selection"]
                             beer.vmp_url = "https://www.vinmonopolet.no" + b["url"]
-                            beer.post_delivery = strtobool(b["availability"]["deliveryAvailability"]["available"])
-                            beer.store_delivery = b["availability"]["storeAvailability"]["mainText"] == "Kan bestilles til alle butikker"
+                            beer.post_delivery = strtobool(
+                                b["availability"]["deliveryAvailability"]["available"]
+                            )
+                            beer.store_delivery = (
+                                b["availability"]["storeAvailability"]["mainText"]
+                                == "Kan bestilles til alle butikker"
+                            )
                             beer.vmp_updated = timezone.now()
                             if beer.active == False:
                                 beer.active = True
@@ -72,8 +77,15 @@ class Command(BaseCommand):
                                 price_per_volume=float(b["price"]["value"])
                                 / float(b["volume"]["value"]),
                                 product_selection=b["product_selection"],
-                                post_delivery = strtobool(b["availability"]["deliveryAvailability"]["available"]),
-                                store_delivery = b["availability"]["storeAvailability"]["mainText"] == "Kan bestilles til alle butikker",
+                                post_delivery=strtobool(
+                                    b["availability"]["deliveryAvailability"][
+                                        "available"
+                                    ]
+                                ),
+                                store_delivery=b["availability"]["storeAvailability"][
+                                    "mainText"
+                                ]
+                                == "Kan bestilles til alle butikker",
                                 vmp_url="https://www.vinmonopolet.no" + b["url"],
                                 vmp_updated=timezone.now(),
                             )
