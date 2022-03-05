@@ -1,10 +1,12 @@
 from distutils.util import strtobool
 from rest_framework import permissions, filters, renderers
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import Q
 from beers.api.filters import NullsAlwaysLastOrderingFilter, BeerFilter
-from beers.models import Beer, Stock, Store, WrongMatch, Release
+from beers.models import Beer, Stock, Store, WrongMatch, Release, Wishlist
 from beers.api.pagination import Pagination, LargeResultPagination
 from beers.api.serializers import (
     BeerSerializer,
@@ -141,3 +143,47 @@ class ReleaseViewSet(StaffBrowsableMixin, ModelViewSet):
     serializer_class = ReleaseSerializer
     pagination_class = Pagination
     permission_classes = [permissions.AllowAny]
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def add_wishlist(request):
+    beer_id = request.query_params.get("beer_id", None)
+    if beer_id is not None:
+        try:
+            beer = Beer.objects.get(vmp_id=beer_id)
+            wishlist, created = Wishlist.objects.get_or_create(user=request.user)
+            if beer not in wishlist.beer.all():
+                wishlist.beer.add(beer)
+                message = {"message": "Beer added to wishlist"}
+            else:
+                message = {"message": "Beer already in wishlist"}
+            return Response(message, status=200)
+        except:
+            message = {"message": "An error occurred"}
+            return Response(message, status=500)
+    else:
+        message = {"message": "beer_id missing"}
+        return Response(message, status=400)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def remove_wishlist(request):
+    beer_id = request.query_params.get("beer_id", None)
+    if beer_id is not None:
+        try:
+            beer = Beer.objects.get(vmp_id=beer_id)
+            wishlist, created = Wishlist.objects.get_or_create(user=request.user)
+            if beer in wishlist.beer.all():
+                wishlist.beer.remove(beer)
+                message = {"message": "Beer removed from wishlist"}
+            else:
+                message = {"message": "Beer not in wishlist"}
+            return Response(message, status=200)
+        except:
+            message = {"message": "An error occurred"}
+            return Response(message, status=500)
+    else:
+        message = {"message": "beer_id missing"}
+        return Response(message, status=400)

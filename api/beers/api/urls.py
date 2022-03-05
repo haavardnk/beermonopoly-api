@@ -1,5 +1,6 @@
 from beers.api.views import UntappdLogin
 from django.urls import include, path
+from django.conf.urls import url
 from rest_framework.routers import DefaultRouter, SimpleRouter
 from django.conf import settings
 from beers.api.views import (
@@ -8,6 +9,8 @@ from beers.api.views import (
     StockViewSet,
     WrongMatchViewSet,
     ReleaseViewSet,
+    add_wishlist,
+    remove_wishlist,
 )
 
 if settings.DEBUG:
@@ -29,4 +32,6 @@ urlpatterns = [
         name="untappd_login",
     ),
     path("auth/", include("dj_rest_auth.urls")),
+    url(r"^add_wishlist", add_wishlist, name="add_wishlist"),
+    url(r"^remove_wishlist", remove_wishlist, name="remove_wishlist"),
 ]
