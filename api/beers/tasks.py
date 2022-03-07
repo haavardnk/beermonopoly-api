@@ -55,6 +55,7 @@ def smart_update_untappd(**kwargs):
 
     return out.getvalue()
 
+
 def deactivate_inactive(days):
     out = StringIO()
     call_command("deactivate_inactive", days, stdout=out)
@@ -67,10 +68,10 @@ def get_unreleased_beers_from_vmp():
     return out.getvalue()
 
 
-def get_user_checkins(user, id=None):
+def get_user_checkins(user, max_id=None):
     out = StringIO()
-    if id:
-        call_command("get_user_checkins", user, max_id=id, stdout=out)
+    if max_id:
+        call_command("get_user_checkins", user, max_id=max_id, stdout=out)
     else:
         call_command("get_user_checkins", user, stdout=out)
     return out.getvalue()

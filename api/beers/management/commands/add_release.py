@@ -1,6 +1,6 @@
 from beers.models import VmpNotReleased
 from django.core.management.base import BaseCommand
-from datetime import time, timedelta
+from datetime import timedelta
 from django.utils import timezone
 from django_q.models import Schedule
 
