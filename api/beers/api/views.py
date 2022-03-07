@@ -152,7 +152,7 @@ def add_wishlist(request):
     if beer_id is not None:
         try:
             beer = Beer.objects.get(vmp_id=beer_id)
-            wishlist, created = Wishlist.objects.get_or_create(user=request.user)
+            wishlist, _ = Wishlist.objects.get_or_create(user=request.user)
             if beer not in wishlist.beer.all():
                 wishlist.beer.add(beer)
                 message = {"message": "Beer added to wishlist"}
@@ -174,7 +174,7 @@ def remove_wishlist(request):
     if beer_id is not None:
         try:
             beer = Beer.objects.get(vmp_id=beer_id)
-            wishlist, created = Wishlist.objects.get_or_create(user=request.user)
+            wishlist, _ = Wishlist.objects.get_or_create(user=request.user)
             if beer in wishlist.beer.all():
                 wishlist.beer.remove(beer)
                 message = {"message": "Beer removed from wishlist"}

@@ -11,7 +11,7 @@ class Command(BaseCommand):
 
         df = pd.read_csv(url, sep=";")
 
-        for index, row in df.iterrows():
+        for _, row in df.iterrows():
             try:
                 store = Store.objects.get(store_id=int(row["Butikknummer"]))
                 store.name = row["Butikknavn"]

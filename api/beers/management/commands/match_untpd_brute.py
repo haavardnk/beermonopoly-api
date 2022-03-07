@@ -7,7 +7,7 @@ from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        parser.add_argument('token', type=str, nargs='?', default="")
+        parser.add_argument("token", type=str, nargs="?", default="")
 
     # Matches beers from beername to untappd ID.
     def handle(self, *args, **options):
@@ -61,7 +61,6 @@ class Command(BaseCommand):
                     failed += 1
                     failed_beers.append(beer)
                     break
-                
 
                 if access_token:
                     url = (
