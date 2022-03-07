@@ -1,32 +1,31 @@
-  
 language: python
 python:
-- 3.8.6
+  - 3.8.6
 addons:
   postgresql: "9.6"
 services:
-- docker
+  - docker
 env:
-- DJANGO=3.1.12
+  - DJANGO=3.1.12
 before_install:
-- export DJANGO_SETTINGS_MODULE=api.settings
-- export PYTHONPATH=$HOME/builds/haavardnk/beermonopoly-api
-- export PIP_USE_MIRRORS=true
+  - export DJANGO_SETTINGS_MODULE=api.settings
+  - export PYTHONPATH=$HOME/builds/haavardnk/beermonopoly-api
+  - export PIP_USE_MIRRORS=true
 install:
-- pip install -r requirements.txt
-- pip install coverage
-- pip install codecov
+  - pip install -r requirements.txt
+  - pip install coverage
+  - pip install codecov
 
 before_script:
-- cd api
-- psql -c "CREATE DATABASE mydb;" -U postgres
+  - cd api
+  - psql -c "CREATE DATABASE mydb;" -U postgres
 script:
-- coverage run --source='.' -m pytest
+  - coverage run --source='.' -m pytest
 after_success:
-- codecov
+  - codecov
 
 before_deploy:
-- cd ..
+  - cd ..
 deploy:
   provider: script
   script: bash .travis/deploy.sh

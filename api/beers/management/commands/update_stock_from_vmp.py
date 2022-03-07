@@ -17,7 +17,9 @@ def call_api(url, store_id, page, product):
     )
     scraper = cloudscraper.CloudScraper()
     request = scraper.get(req_url).text
+
     response = xmltodict.parse(request)
+
     response = response["productCategorySearchPage"]
     total_pages = response["pagination"]["totalPages"]
 
@@ -48,8 +50,8 @@ class Command(BaseCommand):
             for product in products:
                 try:
                     response, total_pages = call_api(url, store.store_id, 0, product)
-                except:
-                    break
+                except Exception as e:
+                    raise (e)
 
                 # Update all beers in stock
                 for page in range(0, int(total_pages)):
