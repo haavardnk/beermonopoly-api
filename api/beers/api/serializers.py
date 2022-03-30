@@ -83,6 +83,21 @@ class BeerSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
             "all_stock",
             "post_delivery",
             "store_delivery",
+            "year",
+            "fullness",
+            "sweetness",
+            "freshness",
+            "bitterness",
+            "sugar",
+            "acid",
+            "color",
+            "aroma",
+            "taste",
+            "storable",
+            "food_pairing",
+            "raw_materials",
+            "method",
+            "allergens",
         ]
 
 
@@ -174,6 +189,21 @@ class AuthenticatedBeerSerializer(BeerSerializer):
             "all_stock",
             "post_delivery",
             "store_delivery",
+            "year",
+            "fullness",
+            "sweetness",
+            "freshness",
+            "bitterness",
+            "sugar",
+            "acid",
+            "color",
+            "aroma",
+            "taste",
+            "storable",
+            "food_pairing",
+            "raw_materials",
+            "method",
+            "allergens",
         ]
 
 

@@ -21,6 +21,12 @@ def update_beers_from_untpd():
     return out.getvalue()
 
 
+def update_details_from_vmp(calls):
+    out = StringIO()
+    call_command("update_details_from_vmp", calls, stdout=out)
+    return out.getvalue()
+
+
 def update_stock_from_vmp(stores):
     out = StringIO()
     call_command("update_stock_from_vmp", stores, stdout=out)
