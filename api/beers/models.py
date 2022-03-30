@@ -30,6 +30,23 @@ class Beer(DirtyFieldsMixin, models.Model):
     post_delivery = models.BooleanField(blank=True, null=True)
     store_delivery = models.BooleanField(blank=True, null=True)
 
+    # Vinmonopolet detailed info
+    year = models.IntegerField(blank=True, null=True)
+    fullness = models.IntegerField(blank=True, null=True)
+    sweetness = models.IntegerField(blank=True, null=True)
+    freshness = models.IntegerField(blank=True, null=True)
+    bitterness = models.IntegerField(blank=True, null=True)
+    sugar = models.FloatField(blank=True, null=True)
+    acid = models.FloatField(blank=True, null=True)
+    color = models.CharField(max_length=100, blank=True, null=True)
+    aroma = models.CharField(max_length=100, blank=True, null=True)
+    taste = models.CharField(max_length=100, blank=True, null=True)
+    storable = models.CharField(max_length=100, blank=True, null=True)
+    food_pairing = models.CharField(max_length=100, blank=True, null=True)
+    raw_materials = models.CharField(max_length=150, blank=True, null=True)
+    allergens = models.CharField(max_length=100, blank=True, null=True)
+    method = models.CharField(max_length=200, blank=True, null=True)
+
     # Untappd info
     untpd_id = models.IntegerField(blank=True, null=True)
     untpd_name = models.CharField(max_length=150, blank=True, null=True)
@@ -57,6 +74,7 @@ class Beer(DirtyFieldsMixin, models.Model):
 
     # Server update times
     vmp_updated = models.DateTimeField(blank=True, null=True)
+    vmp_details_fetched = models.DateTimeField(blank=True, null=True)
     untpd_updated = models.DateTimeField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
