@@ -163,6 +163,7 @@ Q_CLUSTER = {
     "orm": "default",
     "timeout": 3600,
     "retry": 4000,
+    "save_limit": 1000,
     "ack_failures": True,
     "max_attempts": 1,
     "attempt_count": 1,
@@ -193,9 +194,7 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
     ],
-    'DEFAULT_FILTER_BACKENDS': (
-        'django_filters.rest_framework.DjangoFilterBackend',
-    ),
+    "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
 }
 
 if not DEBUG:
