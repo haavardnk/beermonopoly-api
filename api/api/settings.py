@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "django_q",
     "django_filters",
     "beers",
+    "notifications",
     "corsheaders",
     "dj_rest_auth.registration",
     "allauth",
