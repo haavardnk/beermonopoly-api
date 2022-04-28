@@ -9,6 +9,7 @@ from beers.models import (
     Badge,
     Wishlist,
     Release,
+    FriendList,
 )
 from drf_dynamic_fields import DynamicFieldsMixin
 
@@ -104,6 +105,7 @@ class BeerSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
 class AuthenticatedBeerSerializer(BeerSerializer):
     url = serializers.HyperlinkedIdentityField(view_name="beer-detail")
     user_checked_in = serializers.SerializerMethodField("get_checkins")
+    friends_checked_in = serializers.SerializerMethodField("get_friends_checkins")
     user_wishlisted = serializers.SerializerMethodField("get_wishlist")
     badges = serializers.SerializerMethodField("get_badges")
     stock = serializers.SerializerMethodField("get_stock")
@@ -114,6 +116,17 @@ class AuthenticatedBeerSerializer(BeerSerializer):
             user=self.context["request"].user, beer=beer
         ).order_by("-checkin_id")[:1]
         serializer = CheckinSerializer(instance=ci, many=True)
+        return serializer.data
+
+    def get_friends_checkins(self, beer):
+        try:
+            friends = FriendList.objects.get(user=self.context["request"].user)
+
+            ci = Checkin.objects.filter(beer=beer, user__in=friends.friend.all())
+            serializer = FriendCheckinSerializer(instance=ci, many=True)
+
+        except FriendList.DoesNotExist:
+            return None
         return serializer.data
 
     def get_wishlist(self, beer):
@@ -183,6 +196,7 @@ class AuthenticatedBeerSerializer(BeerSerializer):
             "untpd_updated",
             "created_at",
             "user_checked_in",
+            "friends_checked_in",
             "user_wishlisted",
             "badges",
             "stock",
@@ -225,6 +239,14 @@ class CheckinSerializer(serializers.ModelSerializer):
     class Meta:
         model = Checkin
         fields = ["checkin_id", "rating", "checkin_url"]
+
+
+class FriendCheckinSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(read_only=True, source="user.username")
+
+    class Meta:
+        model = Checkin
+        fields = ["username", "rating"]
 
 
 class StoreSerializer(DynamicFieldsMixin, serializers.ModelSerializer):

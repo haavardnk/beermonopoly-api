@@ -45,7 +45,7 @@ class Beer(DirtyFieldsMixin, models.Model):
     food_pairing = models.CharField(max_length=100, blank=True, null=True)
     raw_materials = models.CharField(max_length=150, blank=True, null=True)
     allergens = models.CharField(max_length=100, blank=True, null=True)
-    method = models.CharField(max_length=200, blank=True, null=True)
+    method = models.CharField(max_length=250, blank=True, null=True)
 
     # Untappd info
     untpd_id = models.IntegerField(blank=True, null=True)
@@ -208,6 +208,11 @@ class Badge(models.Model):
 class Wishlist(models.Model):
     user = models.OneToOneField(User, on_delete=CASCADE, primary_key=True)
     beer = models.ManyToManyField(Beer)
+
+
+class FriendList(models.Model):
+    user = models.OneToOneField(User, on_delete=CASCADE, primary_key=True)
+    friend = models.ManyToManyField(User, related_name="friends")
 
 
 class Release(models.Model):
