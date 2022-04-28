@@ -166,6 +166,8 @@ Q_CLUSTER = {
     "retry": 4000,
     "save_limit": 1000,
     "ack_failures": True,
+    "catch_up": False,
+    "recycle": 100,
     "max_attempts": 1,
     "attempt_count": 1,
     "label": "Django Q",
