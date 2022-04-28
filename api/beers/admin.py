@@ -10,6 +10,7 @@ from beers.models import (
     Checkin,
     Badge,
     Wishlist,
+    FriendList,
     Release,
 )
 
@@ -108,6 +109,24 @@ class WishlistAdmin(admin.ModelAdmin):
 
     def get_beers(self, obj):
         return "\n".join([p.vmp_name for p in obj.beer.all()])
+
+
+class FriendListFriendsInline(admin.TabularInline):
+    model = FriendList.friend.through
+
+
+@admin.register(FriendList)
+class FriendListAdmin(admin.ModelAdmin):
+    inlines = [
+        FriendListFriendsInline,
+    ]
+    list_display = (
+        "user",
+        "get_friends",
+    )
+
+    def get_friends(self, obj):
+        return "\n".join([f.username for f in obj.friend.all()])
 
 
 @admin.register(Release)

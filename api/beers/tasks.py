@@ -62,6 +62,23 @@ def smart_update_untappd(**kwargs):
     return out.getvalue()
 
 
+def get_users_friendlist(user=None, full=False):
+    out = StringIO()
+
+    if user is not None:
+        if full:
+            call_command("get_users_friendlist", user, "--full", stdout=out)
+        else:
+            call_command("get_users_friendlist", user, "--no-full", stdout=out)
+    else:
+        if full:
+            call_command("get_users_friendlist", "--full", stdout=out)
+        else:
+            call_command("get_users_friendlist", "--no-full", stdout=out)
+
+    return out.getvalue()
+
+
 def deactivate_inactive(days):
     out = StringIO()
     call_command("deactivate_inactive", days, stdout=out)
