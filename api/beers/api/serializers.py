@@ -11,7 +11,9 @@ from beers.models import (
     Release,
     FriendList,
 )
+from django.contrib.auth.models import User
 from drf_dynamic_fields import DynamicFieldsMixin
+from django.db.models import Avg, Count
 
 
 class BeerSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
@@ -112,9 +114,9 @@ class AuthenticatedBeerSerializer(BeerSerializer):
     all_stock = serializers.SerializerMethodField("get_all_stock")
 
     def get_checkins(self, beer):
-        ci = Checkin.objects.filter(
-            user=self.context["request"].user, beer=beer
-        ).order_by("-checkin_id")[:1]
+        ci = User.objects.filter(
+            id=self.context["request"].user.id, checkin__beer=beer
+        ).annotate(rating=Avg("checkin__rating"), count=Count("checkin__rating"))
         serializer = CheckinSerializer(instance=ci, many=True)
         return serializer.data
 
@@ -122,7 +124,9 @@ class AuthenticatedBeerSerializer(BeerSerializer):
         try:
             friends = FriendList.objects.get(user=self.context["request"].user)
 
-            ci = Checkin.objects.filter(beer=beer, user__in=friends.friend.all())
+            ci = friends.friend.filter(checkin__beer=beer).annotate(
+                rating=Avg("checkin__rating"), count=Count("checkin__rating")
+            )
             serializer = FriendCheckinSerializer(instance=ci, many=True)
 
         except FriendList.DoesNotExist:
@@ -236,17 +240,28 @@ class BadgeSerializer(serializers.ModelSerializer):
 
 
 class CheckinSerializer(serializers.ModelSerializer):
+    rating = serializers.FloatField()
+    count = serializers.IntegerField()
+
     class Meta:
-        model = Checkin
-        fields = ["checkin_id", "rating", "checkin_url"]
+        model = User
+        fields = ["rating", "count"]
 
 
 class FriendCheckinSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(read_only=True, source="user.username")
+    avatar = serializers.SerializerMethodField()
+    rating = serializers.FloatField()
+    count = serializers.IntegerField()
 
     class Meta:
-        model = Checkin
-        fields = ["username", "rating"]
+        model = User
+        fields = ["username", "rating", "count", "avatar"]
+
+    def get_avatar(self, instance):
+        avatar = instance.socialaccount_set.all()[0].extra_data["response"]["user"][
+            "user_avatar"
+        ]
+        return avatar
 
 
 class StoreSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
