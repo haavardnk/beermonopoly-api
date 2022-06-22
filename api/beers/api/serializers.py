@@ -18,9 +18,22 @@ from django.db.models import Avg, Count
 
 class BeerSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name="beer-detail")
+    app_rating = serializers.SerializerMethodField("get_app_rating")
     badges = serializers.SerializerMethodField("get_badges")
     stock = serializers.SerializerMethodField("get_stock")
     all_stock = serializers.SerializerMethodField("get_all_stock")
+
+    def get_app_rating(self, beer):
+        ci = (
+            User.objects.filter(checkin__beer=beer)
+            .annotate(
+                user_rating=Avg("checkin__rating"), user_count=Count("checkin__rating")
+            )
+            .aggregate(rating=Avg("user_rating"), count=Count("user_rating"))
+        )
+
+        serializer = AppRatingSerializer(instance=ci)
+        return serializer.data
 
     def get_badges(self, beer):
         ci = Badge.objects.filter(beer=beer)
@@ -81,6 +94,7 @@ class BeerSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
             "vmp_updated",
             "untpd_updated",
             "created_at",
+            "app_rating",
             "badges",
             "stock",
             "all_stock",
@@ -108,6 +122,7 @@ class AuthenticatedBeerSerializer(BeerSerializer):
     url = serializers.HyperlinkedIdentityField(view_name="beer-detail")
     user_checked_in = serializers.SerializerMethodField("get_checkins")
     friends_checked_in = serializers.SerializerMethodField("get_friends_checkins")
+    app_rating = serializers.SerializerMethodField("get_app_rating")
     user_wishlisted = serializers.SerializerMethodField("get_wishlist")
     badges = serializers.SerializerMethodField("get_badges")
     stock = serializers.SerializerMethodField("get_stock")
@@ -131,6 +146,18 @@ class AuthenticatedBeerSerializer(BeerSerializer):
 
         except FriendList.DoesNotExist:
             return None
+        return serializer.data
+
+    def get_app_rating(self, beer):
+        ci = (
+            User.objects.filter(checkin__beer=beer)
+            .annotate(
+                user_rating=Avg("checkin__rating"), user_count=Count("checkin__rating")
+            )
+            .aggregate(rating=Avg("user_rating"), count=Count("user_rating"))
+        )
+
+        serializer = AppRatingSerializer(instance=ci)
         return serializer.data
 
     def get_wishlist(self, beer):
@@ -201,6 +228,7 @@ class AuthenticatedBeerSerializer(BeerSerializer):
             "created_at",
             "user_checked_in",
             "friends_checked_in",
+            "app_rating",
             "user_wishlisted",
             "badges",
             "stock",
@@ -262,6 +290,15 @@ class FriendCheckinSerializer(serializers.ModelSerializer):
             "user_avatar"
         ]
         return avatar
+
+
+class AppRatingSerializer(serializers.ModelSerializer):
+    rating = serializers.FloatField()
+    count = serializers.IntegerField()
+
+    class Meta:
+        model = User
+        fields = ["rating", "count"]
 
 
 class StoreSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
