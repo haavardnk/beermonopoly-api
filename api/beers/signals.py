@@ -16,6 +16,18 @@ def get_checkins(request, user, **kwargs):
     )
 
 
+@receiver(user_signed_up)
+def get_friendlist(request, user, **kwargs):
+
+    Schedule.objects.create(
+        name="get friendlist for user: " + user.username,
+        func="beers.tasks.get_users_friendlist",
+        args=str(user.id),
+        kwargs="full=True",
+        schedule_type=Schedule.ONCE,
+    )
+
+
 @receiver(post_save, sender=Beer)
 def delete_checkins_for_changed_untappd_id(sender, instance, created, **kwargs):
     if "untpd_id" in instance.get_dirty_fields():
