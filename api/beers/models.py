@@ -1,3 +1,4 @@
+import requests
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator, URLValidator
 from django.db.models.deletion import CASCADE
@@ -146,6 +147,14 @@ class WrongMatch(models.Model):
     def save(self, *args, **kwargs):
         super(WrongMatch, self).save(*args, **kwargs)
 
+        if "https://untp.beer/" in self.suggested_url:
+            try:
+                suggested_url = requests.head(self.suggested_url).headers["location"]
+            except:
+                suggested_url = self.suggested_url
+        else:
+            suggested_url = self.suggested_url
+
         try:
             auto_accept = Option.objects.get(name="auto_accept_wrong_match").active
             if auto_accept:
@@ -153,10 +162,10 @@ class WrongMatch(models.Model):
         except:
             pass
 
-        if self.accept_change == True and self.suggested_url != self.beer.untpd_url:
+        if self.accept_change == True and suggested_url != self.beer.untpd_url:
             Checkin.objects.filter(beer=self.beer).delete()
-            self.beer.untpd_url = self.suggested_url
-            self.beer.untpd_id = self.suggested_url.split("/")[-1]
+            self.beer.untpd_url = suggested_url
+            self.beer.untpd_id = suggested_url.split("/")[-1]
             self.beer.prioritize_recheck = True
             self.beer.verified_match = True
             self.beer.match_manually = False
@@ -164,7 +173,7 @@ class WrongMatch(models.Model):
 
             self.delete()
 
-        elif self.accept_change == True and self.suggested_url == self.beer.untpd_url:
+        elif self.accept_change == True and suggested_url == self.beer.untpd_url:
             self.delete()
 
 
