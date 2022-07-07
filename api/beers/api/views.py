@@ -1,5 +1,6 @@
 from distutils.util import strtobool
 from rest_framework import permissions, filters, renderers
+from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
@@ -186,4 +187,19 @@ def remove_wishlist(request):
             return Response(message, status=500)
     else:
         message = {"message": "beer_id missing"}
+        return Response(message, status=400)
+
+
+class DeleteAccount(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, *args, **kwargs):
+        try:
+            user = self.request.user
+            user.delete()
+
+            message = {"message": "User deleted"}
+            return Response(message, status=200)
+        except:
+            message = {"message": "Failed to delete user"}
         return Response(message, status=400)
