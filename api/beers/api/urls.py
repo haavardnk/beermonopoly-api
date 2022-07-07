@@ -11,6 +11,7 @@ from beers.api.views import (
     ReleaseViewSet,
     add_wishlist,
     remove_wishlist,
+    DeleteAccount,
 )
 
 if settings.DEBUG:
@@ -31,6 +32,7 @@ urlpatterns = [
         UntappdLogin.as_view(),
         name="untappd_login",
     ),
+    path("auth/delete/", DeleteAccount.as_view(), name="delete_account"),
     path("auth/", include("dj_rest_auth.urls")),
     url(r"^add_wishlist", add_wishlist, name="add_wishlist"),
     url(r"^remove_wishlist", remove_wishlist, name="remove_wishlist"),
