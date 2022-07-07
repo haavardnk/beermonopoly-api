@@ -36,6 +36,7 @@ class BeerFilter(flt.FilterSet):
     abv_high = flt.NumberFilter(field_name="abv", lookup_expr="lte")
     abv_low = flt.NumberFilter(field_name="abv", lookup_expr="gte")
     release = flt.CharFilter(method="custom_release_filter")
+    exclude_allergen = flt.CharFilter(method="custom_allergen_filter")
 
     def custom_style_filter(self, queryset, name, value):
         query = Q()
@@ -67,6 +68,12 @@ class BeerFilter(flt.FilterSet):
             query |= Q(release__name__iexact=val)
         return queryset.filter(query).distinct()
 
+    def custom_allergen_filter(self, queryset, name, value):
+        query = Q()
+        for val in value.split(","):
+            query |= Q(allergens__icontains=val)
+        return queryset.exclude(query).distinct()
+
     class Meta:
         model = Beer
         fields = [
@@ -83,6 +90,7 @@ class BeerFilter(flt.FilterSet):
             "abv_high",
             "abv_low",
             "release",
+            "exclude_allergen",
             "post_delivery",
             "store_delivery",
         ]
