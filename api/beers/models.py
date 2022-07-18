@@ -50,7 +50,7 @@ class Beer(DirtyFieldsMixin, models.Model):
 
     # Untappd info
     untpd_id = models.IntegerField(blank=True, null=True)
-    untpd_name = models.CharField(max_length=150, blank=True, null=True)
+    untpd_name = models.CharField(max_length=200, blank=True, null=True)
     untpd_url = models.CharField(
         max_length=250, validators=[URLValidator()], blank=True, null=True
     )
