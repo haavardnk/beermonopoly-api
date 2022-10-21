@@ -1,5 +1,5 @@
 
-FROM python:3.8.6-slim
+FROM python:3.8.15-slim
 
 COPY requirements.txt /app/requirements.txt
 
