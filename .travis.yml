@@ -1,12 +1,12 @@
 language: python
 python:
-  - 3.8.6
+  - 3.9
 addons:
   postgresql: "9.6"
 services:
   - docker
 env:
-  - DJANGO=3.1.12
+  - DJANGO=3.1.16
 before_install:
   - export DJANGO_SETTINGS_MODULE=api.settings
   - export PYTHONPATH=$HOME/builds/haavardnk/beermonopoly-api

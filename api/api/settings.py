@@ -171,6 +171,11 @@ Q_CLUSTER = {
     "max_attempts": 1,
     "attempt_count": 1,
     "label": "Django Q",
+    "error_reporter": {
+        "sentry": {
+            "dsn": "https://6d8c8869d8c64767b26de850f794bc4c@o985007.ingest.sentry.io/5941029"
+        }
+    },
 }
 
 CORS_ALLOWED_ORIGINS = ["https://www.vinmonopolet.no", "https://app.vinmonopolet.no"]
