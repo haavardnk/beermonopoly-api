@@ -148,6 +148,25 @@ class ReleaseViewSet(StaffBrowsableMixin, ModelViewSet):
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
+def get_checked_in_styles(request):
+    try:
+        user = request.user
+        styles = list(
+            Beer.objects.filter(checkin__user=user)
+            .order_by()
+            .values_list("style", flat=True)
+            .distinct()
+        )
+
+        data = {"checked_in_styles": styles}
+        return Response(data, status=200)
+    except:
+        message = {"message": "An error occurred"}
+        return Response(message, status=500)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
 def add_wishlist(request):
     beer_id = request.query_params.get("beer_id", None)
     if beer_id is not None:
