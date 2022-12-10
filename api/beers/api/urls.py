@@ -11,6 +11,7 @@ from beers.api.views import (
     ReleaseViewSet,
     add_wishlist,
     remove_wishlist,
+    get_checked_in_styles,
     DeleteAccount,
 )
 
@@ -36,4 +37,5 @@ urlpatterns = [
     path("auth/", include("dj_rest_auth.urls")),
     url(r"^add_wishlist", add_wishlist, name="add_wishlist"),
     url(r"^remove_wishlist", remove_wishlist, name="remove_wishlist"),
+    url(r"^auth/checked_in_styles", get_checked_in_styles, name="checked_in_styles"),
 ]
