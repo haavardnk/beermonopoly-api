@@ -199,9 +199,13 @@ class Checkin(models.Model):
     rating = models.FloatField(
         validators=[MinValueValidator(0), MaxValueValidator(5)], blank=True, null=True
     )
+    name = models.CharField(max_length=200, blank=True, null=True)
+    style = models.CharField(max_length=50, blank=True, null=True)
+    abv = models.FloatField(blank=True, null=True)
     checkin_url = models.CharField(
         max_length=250, validators=[URLValidator()], blank=True, null=True
     )
+    checkin_date = models.DateTimeField(blank=True, null=True)
     updated = models.DateTimeField(auto_now=True)
 
 

@@ -54,12 +54,22 @@ class Command(BaseCommand):
                             c.untpd_id = checkin["beer"]["bid"]
                             c.user = user
                             c.rating = checkin["rating_score"]
+                            c.name = (
+                                checkin["brewery"]["brewery_name"]
+                                + " "
+                                + checkin["beer"]["beer_name"]
+                            )
+                            c.style = checkin["beer"]["beer_style"]
+                            c.abv = checkin["beer"]["beer_abv"]
                             c.checkin_url = (
                                 "https://untappd.com/user/"
                                 + checkin["user"]["user_name"]
                                 + "/"
                                 + "checkin/"
                                 + str(checkin["checkin_id"])
+                            )
+                            c.checkin_date = timezone.datetime.strptime(
+                                checkin["created_at"], "%a, %d %b %Y %H:%M:%S %z"
                             )
                             c.save()
 
@@ -78,11 +88,21 @@ class Command(BaseCommand):
                                 untpd_id=checkin["beer"]["bid"],
                                 user=user,
                                 rating=checkin["rating_score"],
+                                name=(
+                                    checkin["brewery"]["brewery_name"]
+                                    + " "
+                                    + checkin["beer"]["beer_name"]
+                                ),
+                                style=checkin["beer"]["beer_style"],
+                                abv=checkin["beer"]["beer_abv"],
                                 checkin_url="https://untappd.com/user/"
                                 + checkin["user"]["user_name"]
                                 + "/"
                                 + "checkin/"
                                 + str(checkin["checkin_id"]),
+                                checkin_date=timezone.datetime.strptime(
+                                    checkin["created_at"], "%a, %d %b %Y %H:%M:%S %z"
+                                ),
                             )
 
                             if beers:
