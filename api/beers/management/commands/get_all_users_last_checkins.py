@@ -32,20 +32,49 @@ class Command(BaseCommand):
 
             api_remaining = "100"
 
-            url = (
-                baseurl
-                + "user/checkins/"
-                + "?access_token="
-                + untappd_token
-                + "&limit=50"
-            )
+            try:
+                id = Checkin.objects.filter(user=user).latest("checkin_id").checkin_id
+                url = (
+                    baseurl
+                    + "user/checkins/"
+                    + "?access_token="
+                    + untappd_token
+                    + "&limit=50"
+                    + "&min_id="
+                    + str(id)
+                )
+            except Checkin.DoesNotExist:
+                url = (
+                    baseurl
+                    + "user/checkins/"
+                    + "?access_token="
+                    + untappd_token
+                    + "&limit=50"
+                )
 
             while int(api_remaining) >= options["loops"]:
                 try:
                     headers = {"User-Agent": "django:Beermonopoly"}
                     request = requests.get(url, headers=headers)
                     response = json.loads(request.text)
-                    for checkin in response["response"]["checkins"]["items"]:
+                    if (
+                        response["meta"]["code"] == 400
+                        and "Your 'min_id' is too low"
+                        in response["meta"]["error_detail"]
+                    ):
+                        url = (
+                            baseurl
+                            + "user/checkins/"
+                            + "?access_token="
+                            + untappd_token
+                            + "&limit=50"
+                        )
+                        continue
+                    if "min_id" in url:
+                        checkins = response["response"]["items"]
+                    else:
+                        checkins = response["response"]["checkins"]["items"]
+                    for checkin in checkins:
                         try:
                             c = Checkin.objects.get(checkin_id=checkin["checkin_id"])
                             beers = Beer.objects.filter(untpd_id=checkin["beer"]["bid"])
