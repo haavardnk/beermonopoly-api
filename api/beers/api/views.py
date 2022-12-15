@@ -7,7 +7,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 from beers.api.filters import NullsAlwaysLastOrderingFilter, BeerFilter
-from beers.models import Beer, Stock, Store, WrongMatch, Release, Wishlist
+from beers.models import Beer, Stock, Store, WrongMatch, Release, Wishlist, Checkin
 from beers.api.pagination import Pagination, LargeResultPagination
 from beers.api.serializers import (
     BeerSerializer,
@@ -152,8 +152,8 @@ def get_checked_in_styles(request):
     try:
         user = request.user
         styles = list(
-            Beer.objects.filter(checkin__user=user)
-            .order_by()
+            Checkin.objects.filter(user=user)
+            .order_by("style")
             .values_list("style", flat=True)
             .distinct()
         )
