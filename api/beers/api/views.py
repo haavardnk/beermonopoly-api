@@ -154,6 +154,7 @@ def get_checked_in_styles(request):
         styles = list(
             Checkin.objects.filter(user=user)
             .order_by("style")
+            .exclude(style__isnull=True)
             .values_list("style", flat=True)
             .distinct()
         )
