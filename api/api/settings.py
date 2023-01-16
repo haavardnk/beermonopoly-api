@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "django_q",
     "django_filters",
+    "django_extensions",
     "beers",
     "notifications",
     "corsheaders",
@@ -205,6 +206,20 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
 }
+
+NOTEBOOK_ARGUMENTS = [
+    "--ip",
+    "0.0.0.0",
+    "--port",
+    "8888",
+    "--allow-root",
+    "--no-browser",
+]
+
+IPYTHON_ARGUMENTS = [
+    "--ext",
+    "django_extensions.management.notebook_extension",
+]
 
 if not DEBUG:
     sentry_sdk.init(
