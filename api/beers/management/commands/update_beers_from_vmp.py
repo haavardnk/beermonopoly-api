@@ -46,9 +46,9 @@ class Command(BaseCommand):
                                 beer.sub_category = b["main_sub_category"]["name"]
                             beer.country = b["main_country"]["name"]
                             beer.price = b["price"]["value"]
-                            beer.volume = b["volume"]["value"]
-                            beer.price_per_volume = float(b["price"]["value"]) / float(
-                                b["volume"]["value"]
+                            beer.volume = float(b["volume"]["value"]) / 100.0
+                            beer.price_per_volume = float(b["price"]["value"]) / (
+                                float(b["volume"]["value"]) / 100.0
                             )
                             beer.product_selection = b["product_selection"]
                             beer.vmp_url = "https://www.vinmonopolet.no" + b["url"]
@@ -73,9 +73,9 @@ class Command(BaseCommand):
                                 main_category=b["main_category"]["name"],
                                 country=b["main_country"]["name"],
                                 price=b["price"]["value"],
-                                volume=b["volume"]["value"],
+                                volume=float(b["volume"]["value"]) / 100.0,
                                 price_per_volume=float(b["price"]["value"])
-                                / float(b["volume"]["value"]),
+                                / (float(b["volume"]["value"]) / 100.0),
                                 product_selection=b["product_selection"],
                                 post_delivery=strtobool(
                                     b["availability"]["deliveryAvailability"][
