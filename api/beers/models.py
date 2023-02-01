@@ -126,6 +126,7 @@ class Stock(models.Model):
     quantity = models.IntegerField()
 
     stock_updated = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = [["store", "beer"]]
