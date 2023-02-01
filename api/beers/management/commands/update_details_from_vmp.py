@@ -1,4 +1,4 @@
-import cloudscraper, xmltodict
+import re, cloudscraper, xmltodict
 from beers.models import Beer, ExternalAPI
 from django.utils import timezone
 from django.core.management.base import BaseCommand
@@ -48,7 +48,10 @@ class Command(BaseCommand):
                     product.bitterness = response["bitterness"]
                 if "sugar" in response:
                     product.sugar = float(
-                        response["sugar"].replace("<", "").replace(",", ".")
+                        response["sugar"]
+                        .replace("<", "")
+                        .replace(",", ".")
+                        .split(" ")[-1]
                     )
                 if "acid" in response:
                     product.acid = float(response["acid"].replace(",", "."))
