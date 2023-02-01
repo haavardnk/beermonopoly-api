@@ -1,6 +1,6 @@
 # Beermonopoly API
 
-[![Travis Badge](https://travis-ci.com/haavardnk/beermonopoly-api.svg?branch=main)](https://travis-ci.com/github/haavardnk/beermonopoly-api)
+[![Deploy](https://github.com/haavardnk/beermonopoly-api/actions/workflows/main.yml/badge.svg)](https://github.com/haavardnk/beermonopoly-api/actions/workflows/main.yml)
 [![codecov](https://codecov.io/gh/haavardnk/beermonopoly-api/branch/main/graph/badge.svg?token=OCG3OGPMQ9)](https://codecov.io/gh/haavardnk/beermonopoly-api)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/80674013051c4e1aab75664e0c19fa68)](https://www.codacy.com/gh/haavardnk/beermonopoly-api/dashboard?utm_source=github.com&utm_medium=referral&utm_content=haavardnk/beermonopoly-api&utm_campaign=Badge_Grade)
 
