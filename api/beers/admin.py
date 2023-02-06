@@ -31,7 +31,14 @@ class BeerAdmin(admin.ModelAdmin):
         "match_manually",
         "active",
     )
-    search_fields = ("vmp_name", "brewery", "vmp_id", "untpd_id", "style")
+    search_fields = (
+        "vmp_name",
+        "brewery",
+        "vmp_id",
+        "untpd_id",
+        "style",
+    )
+    ordering = ("-created_at",)
 
 
 class MatchManually(Beer):
@@ -131,7 +138,12 @@ class FriendListAdmin(admin.ModelAdmin):
 
 @admin.register(Release)
 class ReleaseAdmin(admin.ModelAdmin):
-    list_display = ("name",)
+    list_display = (
+        "name",
+        "active",
+        "release_date",
+    )
+    ordering = ("-release_date",)
 
 
 admin.site.register(Option)
