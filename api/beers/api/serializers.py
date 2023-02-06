@@ -55,7 +55,7 @@ class BeerSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
         all_stock = self.context["request"].query_params.get("all_stock")
         if all_stock and bool(strtobool(all_stock)):
             try:
-                ci = Stock.objects.filter(beer=beer)
+                ci = Stock.objects.filter(beer=beer).exclude(quantity=0)
                 serializer = AllStockSerializer(instance=ci, many=True)
             except Stock.DoesNotExist:
                 return None
@@ -187,7 +187,7 @@ class AuthenticatedBeerSerializer(BeerSerializer):
         all_stock = self.context["request"].query_params.get("all_stock")
         if all_stock and bool(strtobool(all_stock)):
             try:
-                ci = Stock.objects.filter(beer=beer)
+                ci = Stock.objects.filter(beer=beer).exclude(quantity=0)
                 serializer = AllStockSerializer(instance=ci, many=True)
             except Stock.DoesNotExist:
                 return None

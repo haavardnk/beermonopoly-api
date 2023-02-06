@@ -37,8 +37,8 @@ class Command(BaseCommand):
         url = baseurl + "products/search/"
 
         updated = 0
-        created = 0
-        deleted = 0
+        stocked = 0
+        unstocked = 0
         stores_updated = 0
         n = options["stores"]
         stores = Store.objects.all().order_by("store_stock_updated")[:n]
@@ -73,6 +73,8 @@ class Command(BaseCommand):
 
                             try:
                                 stock = Stock.objects.get(store=store, beer=beer)
+                                if stock.quantity == 0 and quantity != 0:
+                                    stock.stocked_at = timezone.now()
                                 stock.quantity = quantity
                                 stock.save()
 
@@ -83,9 +85,10 @@ class Command(BaseCommand):
                                     store=store,
                                     beer=beer,
                                     quantity=quantity,
+                                    stocked_at=timezone.now(),
                                 )
 
-                                created += 1
+                                stocked += 1
 
                     except:
                         continue
@@ -94,9 +97,12 @@ class Command(BaseCommand):
             if len(stocked_beer) != 0:
                 stocks = Stock.objects.filter(store=store).exclude(
                     beer__in=stocked_beer
-                )
-                deleted += stocks.count()
-                stocks.delete()
+                ).exclude(quantity=0)
+                unstocked += stocks.count()
+                for stock in stocks:
+                    stock.quantity = 0
+                    stock.unstocked_at = timezone.now()
+                    stock.save()
 
             store.store_stock_updated = timezone.now()
             store.save()
@@ -104,11 +110,11 @@ class Command(BaseCommand):
             stores_updated += 1
 
             print(
-                f"Updated: {updated} Created: {created} Deleted: {deleted} Stores updated: {stores_updated}/{len(stores)}"
+                f"Updated stock: {updated} Stocked: {stocked} Out of stock: {unstocked} Stores updated: {stores_updated}/{len(stores)}"
             )
 
         self.stdout.write(
             self.style.SUCCESS(
-                f"Updated: {updated} Created: {created} Deleted: {deleted} Stores updated: {stores_updated}/{len(stores)}"
+                f"Updated stock: {updated} Stocked: {stocked} Out of stock: {unstocked} Stores updated: {stores_updated}/{len(stores)}"
             )
         )
