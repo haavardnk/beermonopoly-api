@@ -21,10 +21,13 @@ class Command(BaseCommand):
         # Delete stock for inactive beers
         stocks = Stock.objects.filter(beer__in=beers)
         stock_count = stocks.count()
-        stocks.delete()
+        for stock in stocks:
+            stock.quantity = 0
+            stock.unstocked_at = timezone.now()
+            stock.save()
 
         self.stdout.write(
             self.style.SUCCESS(
-                f"Set {beers.count()} beers inactive and deleted {stock_count} stocks"
+                f"Set {beers.count()} beers inactive and unstocked {stock_count} beers"
             )
         )
