@@ -234,3 +234,5 @@ class Release(models.Model):
     name = models.CharField(max_length=50, primary_key=True, unique=True)
     beer = models.ManyToManyField(Beer)
     active = models.BooleanField(default=True)
+    release_date = models.DateTimeField(blank=True, null=True)
+    product_selection = models.CharField(max_length=150, blank=True, null=True)
