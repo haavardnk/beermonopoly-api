@@ -9,6 +9,7 @@ from beers.api.views import (
     StockViewSet,
     WrongMatchViewSet,
     ReleaseViewSet,
+    StockChangeViewSet,
     add_wishlist,
     remove_wishlist,
     get_checked_in_styles,
@@ -25,6 +26,7 @@ router.register(r"stores", StoreViewSet, basename="store")
 router.register(r"stock", StockViewSet, basename="stock")
 router.register(r"wrongmatch", WrongMatchViewSet, basename="wrongmatch")
 router.register(r"release", ReleaseViewSet, basename="release")
+router.register(r"stockchange", StockChangeViewSet, basename="stockchange")
 
 urlpatterns = [
     path("", include(router.urls)),

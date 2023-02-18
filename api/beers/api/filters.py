@@ -1,7 +1,7 @@
 from rest_framework import filters
 from django.db.models import F
 from django_filters import rest_framework as flt
-from beers.models import Beer
+from beers.models import Beer, Stock
 from django.db.models import Q
 
 
@@ -93,4 +93,19 @@ class BeerFilter(flt.FilterSet):
             "exclude_allergen",
             "post_delivery",
             "store_delivery",
+        ]
+
+
+class StockChangeFilter(flt.FilterSet):
+    store = flt.CharFilter(method="custom_store_filter")
+
+    def custom_store_filter(self, queryset, name, value):
+        query = Q()
+        query |= Q(store__exact=int(value))
+        return queryset.filter(query).distinct()
+
+    class Meta:
+        model = Stock
+        fields = [
+            "store",
         ]
