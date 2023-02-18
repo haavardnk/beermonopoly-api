@@ -5,7 +5,6 @@ from beers.models import (
     Stock,
     Store,
     WrongMatch,
-    Checkin,
     Badge,
     Wishlist,
     Release,
@@ -119,14 +118,9 @@ class BeerSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
 
 
 class AuthenticatedBeerSerializer(BeerSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name="beer-detail")
     user_checked_in = serializers.SerializerMethodField("get_checkins")
     friends_checked_in = serializers.SerializerMethodField("get_friends_checkins")
-    app_rating = serializers.SerializerMethodField("get_app_rating")
     user_wishlisted = serializers.SerializerMethodField("get_wishlist")
-    badges = serializers.SerializerMethodField("get_badges")
-    stock = serializers.SerializerMethodField("get_stock")
-    all_stock = serializers.SerializerMethodField("get_all_stock")
 
     def get_checkins(self, beer):
         ci = User.objects.filter(
@@ -148,52 +142,11 @@ class AuthenticatedBeerSerializer(BeerSerializer):
             return None
         return serializer.data
 
-    def get_app_rating(self, beer):
-        ci = (
-            User.objects.filter(checkin__beer=beer)
-            .annotate(
-                user_rating=Avg("checkin__rating"), user_count=Count("checkin__rating")
-            )
-            .aggregate(rating=Avg("user_rating"), count=Count("user_rating"))
-        )
-
-        serializer = AppRatingSerializer(instance=ci)
-        return serializer.data
-
     def get_wishlist(self, beer):
         wishlist = Wishlist.objects.filter(user=self.context["request"].user, beer=beer)
         if wishlist:
             return True
         return False
-
-    def get_badges(self, beer):
-        ci = Badge.objects.filter(beer=beer)
-        serializer = BadgeSerializer(instance=ci, many=True)
-        return serializer.data
-
-    def get_stock(self, beer):
-        store = self.context["request"].query_params.get("store")
-        if store is not None and len(store.split(",")) < 2:
-            try:
-                print(store)
-                ci = Stock.objects.get(beer=beer, store=store)
-            except Stock.DoesNotExist:
-                return None
-        else:
-            return None
-        return ci.quantity
-
-    def get_all_stock(self, beer):
-        all_stock = self.context["request"].query_params.get("all_stock")
-        if all_stock and bool(strtobool(all_stock)):
-            try:
-                ci = Stock.objects.filter(beer=beer).exclude(quantity=0)
-                serializer = AllStockSerializer(instance=ci, many=True)
-            except Stock.DoesNotExist:
-                return None
-        else:
-            return None
-        return serializer.data
 
     class Meta:
         model = Beer
@@ -250,6 +203,86 @@ class AuthenticatedBeerSerializer(BeerSerializer):
             "raw_materials",
             "method",
             "allergens",
+        ]
+
+
+class StockChangeBeerSerializer(BeerSerializer):
+    class Meta:
+        model = Beer
+        fields = [
+            "vmp_id",
+            "vmp_name",
+            "price",
+            "rating",
+            "checkins",
+            "label_sm_url",
+            "main_category",
+            "sub_category",
+            "style",
+            "stock",
+            "abv",
+            "volume",
+            "price_per_volume",
+            "vmp_url",
+            "untpd_url",
+            "untpd_id",
+            "country",
+        ]
+
+
+class AuthenticatedStockChangeBeerSerializer(AuthenticatedBeerSerializer):
+    class Meta:
+        model = Beer
+        fields = [
+            "vmp_id",
+            "vmp_name",
+            "price",
+            "rating",
+            "checkins",
+            "label_sm_url",
+            "main_category",
+            "sub_category",
+            "style",
+            "stock",
+            "abv",
+            "volume",
+            "price_per_volume",
+            "vmp_url",
+            "untpd_url",
+            "untpd_id",
+            "country",
+            "user_checked_in",
+            "user_wishlisted",
+        ]
+
+
+class StockChangeSerializer(serializers.ModelSerializer):
+    beer = StockChangeBeerSerializer()
+
+    class Meta:
+        model = Stock
+        fields = [
+            "store",
+            "quantity",
+            "stock_updated",
+            "stocked_at",
+            "unstocked_at",
+            "beer",
+        ]
+
+
+class AuthenticatedStockChangeSerializer(serializers.ModelSerializer):
+    beer = AuthenticatedStockChangeBeerSerializer()
+
+    class Meta:
+        model = Stock
+        fields = [
+            "store",
+            "quantity",
+            "stock_updated",
+            "stocked_at",
+            "unstocked_at",
+            "beer",
         ]
 
 

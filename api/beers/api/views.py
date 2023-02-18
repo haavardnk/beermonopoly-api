@@ -1,4 +1,6 @@
 from distutils.util import strtobool
+from django.db.models import F, Q
+from django.db.models.functions import Greatest
 from rest_framework import permissions, filters, renderers
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
@@ -6,7 +8,11 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
-from beers.api.filters import NullsAlwaysLastOrderingFilter, BeerFilter
+from beers.api.filters import (
+    NullsAlwaysLastOrderingFilter,
+    BeerFilter,
+    StockChangeFilter,
+)
 from beers.models import Beer, Stock, Store, WrongMatch, Release, Wishlist, Checkin
 from beers.api.pagination import Pagination, LargeResultPagination
 from beers.api.serializers import (
@@ -16,6 +22,8 @@ from beers.api.serializers import (
     StoreSerializer,
     WrongMatchSerializer,
     ReleaseSerializer,
+    StockChangeSerializer,
+    AuthenticatedStockChangeSerializer,
 )
 from allauth.socialaccount.providers.untappd.views import UntappdOAuth2Adapter
 from dj_rest_auth.registration.views import SocialLoginView
@@ -109,6 +117,31 @@ class BeerViewSet(StaffBrowsableMixin, ModelViewSet):
             return AuthenticatedBeerSerializer
         else:
             return BeerSerializer
+
+
+class StockChangeViewSet(StaffBrowsableMixin, ModelViewSet):
+    pagination_class = Pagination
+    permission_classes = [permissions.DjangoModelPermissionsOrAnonReadOnly]
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = StockChangeFilter
+
+    def get_queryset(self):
+        queryset = (
+            Stock.objects.all()
+            .exclude(Q(stocked_at=None) & Q(unstocked_at=None))
+            .annotate(stock_unstock_at=Greatest("stocked_at", "unstocked_at"))
+            .order_by(
+                F("stock_unstock_at__date").desc(),
+                F("stocked_at").desc(nulls_last=True),
+            )
+        )
+        return queryset
+
+    def get_serializer_class(self):
+        if self.request.user and self.request.user.is_authenticated:
+            return AuthenticatedStockChangeSerializer
+        else:
+            return StockChangeSerializer
 
 
 class StoreViewSet(StaffBrowsableMixin, ModelViewSet):
