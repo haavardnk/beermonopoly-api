@@ -38,16 +38,21 @@ class Command(BaseCommand):
                     if "main_sub_category" in response:
                         beer.sub_category = response["main_sub_category"]["name"]
                     beer.country = response["main_country"]["name"]
-                    beer.volume = response["volume"]["value"]
+                    beer.volume = float(response["volume"]["value"]) / 100.0
                     if "price" in response:
                         beer.price = response["price"]["value"]
-                        beer.price_per_volume = float(response["price"]["value"]) / float(
-                            response["volume"]["value"]
-                        )
+                        beer.price_per_volume = float(
+                            response["price"]["value"]
+                        ) / float(response["volume"]["value"])
                     beer.product_selection = response["product_selection"]
                     beer.vmp_url = "https://www.vinmonopolet.no" + response["url"]
-                    beer.post_delivery = strtobool(response["availability"]["deliveryAvailability"]["available"])
-                    beer.store_delivery = response["availability"]["storeAvailability"]["mainText"] == "Kan bestilles til alle butikker"
+                    beer.post_delivery = strtobool(
+                        response["availability"]["deliveryAvailability"]["available"]
+                    )
+                    beer.store_delivery = (
+                        response["availability"]["storeAvailability"]["mainText"]
+                        == "Kan bestilles til alle butikker"
+                    )
                     beer.vmp_updated = timezone.now()
                     if beer.active == False:
                         beer.active = True
@@ -62,10 +67,17 @@ class Command(BaseCommand):
                         vmp_name=response["name"],
                         main_category=response["main_category"]["name"],
                         country=response["main_country"]["name"],
-                        volume=response["volume"]["value"],
+                        volume=float(response["volume"]["value"]) / 100.0,
                         product_selection=response["product_selection"],
-                        post_delivery = strtobool(response["availability"]["deliveryAvailability"]["available"]),
-                        store_delivery = response["availability"]["storeAvailability"]["mainText"] == "Kan bestilles til alle butikker",
+                        post_delivery=strtobool(
+                            response["availability"]["deliveryAvailability"][
+                                "available"
+                            ]
+                        ),
+                        store_delivery=response["availability"]["storeAvailability"][
+                            "mainText"
+                        ]
+                        == "Kan bestilles til alle butikker",
                         vmp_url="https://www.vinmonopolet.no" + response["url"],
                         vmp_updated=timezone.now(),
                     )
@@ -73,9 +85,9 @@ class Command(BaseCommand):
                         beer.sub_category = response["main_sub_category"]["name"]
                     if "price" in response:
                         beer.price = response["price"]["value"]
-                        beer.price_per_volume = float(response["price"]["value"]) / float(
-                            response["volume"]["value"]
-                        )
+                        beer.price_per_volume = float(
+                            response["price"]["value"]
+                        ) / float(response["volume"]["value"])
                     beer.save()
 
                     created += 1
