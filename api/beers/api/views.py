@@ -173,7 +173,7 @@ class WrongMatchViewSet(StaffBrowsableMixin, ModelViewSet):
 
 
 class ReleaseViewSet(StaffBrowsableMixin, ModelViewSet):
-    queryset = Release.objects.filter(active=True)
+    queryset = Release.objects.filter(active=True).order_by("-release_date")
     serializer_class = ReleaseSerializer
     pagination_class = Pagination
     permission_classes = [permissions.AllowAny]
