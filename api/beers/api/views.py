@@ -45,7 +45,7 @@ class UntappdLogin(SocialLoginView):
 
 
 class BeerViewSet(StaffBrowsableMixin, ModelViewSet):
-    pagination_class = Pagination
+    pagination_class = LargeResultPagination
     permission_classes = [permissions.DjangoModelPermissionsOrAnonReadOnly]
 
     filter_backends = (
