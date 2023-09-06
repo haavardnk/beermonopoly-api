@@ -183,7 +183,8 @@ Q_CLUSTER = {
 CORS_ALLOWED_ORIGINS = [
     "https://www.vinmonopolet.no",
     "https://app.vinmonopolet.no",
-    "http://213.162.246.229:2369",
+    "https://olmonopolet.app",
+    "https://www.olmonopolet.app",
 ]
 CORS_ALLOW_METHODS = [
     "GET",
