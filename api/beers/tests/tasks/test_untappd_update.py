@@ -55,6 +55,7 @@ def test_update_beer_correctly(mocked_responses, json_response):
         vmp_name="Ayinger Winterbock",
         active=True,
         untpd_id=100415,
+        volume=0.5,
         prioritize_recheck=True,
     )
 
@@ -83,6 +84,7 @@ def test_update_beer_correctly(mocked_responses, json_response):
     assert beer.description == "Test description"
     assert beer.abv == pytest.approx(6.7)
     assert beer.ibu == 28
+    assert beer.alcohol_units == 2.2333333333333334
     assert (
         beer.label_hd_url
         == "https://api.test.com/site/beer_logos_hd/beer-100415_64d6e_hd.jpeg"
@@ -109,6 +111,7 @@ def test_update_beer_no_search_match(mocked_responses):
         vmp_name="Ayinger Winterbock",
         active=True,
         untpd_id=100415,
+        volume=0.5,
         prioritize_recheck=True,
     )
 
@@ -138,10 +141,18 @@ def test_stop_when_no_api_calls_remaining(mocked_responses, json_response):
     Tests that the algorithm stops when only 5 api calls left
     """
     Beer.objects.create(
-        vmp_id=12611503, vmp_name="Ayinger Winterbock", active=True, untpd_id=100415
+        vmp_id=12611503,
+        vmp_name="Ayinger Winterbock",
+        active=True,
+        untpd_id=100415,
+        volume=0.5,
     )
     Beer.objects.create(
-        vmp_id=12611504, vmp_name="Ayinger Winterbock", active=True, untpd_id=100415
+        vmp_id=12611504,
+        vmp_name="Ayinger Winterbock",
+        active=True,
+        untpd_id=100415,
+        volume=0.5,
     )
 
     url = "https://api.test.com/v4/beer/info/100415?client_id=123&client_secret=321"
