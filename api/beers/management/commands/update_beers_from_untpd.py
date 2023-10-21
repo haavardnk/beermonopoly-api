@@ -9,7 +9,7 @@ from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        parser.add_argument('token', type=str, nargs='?', default="")
+        parser.add_argument("token", type=str, nargs="?", default="")
 
     # Updates the database with information from Untappd.
     def handle(self, *args, **options):
@@ -101,6 +101,7 @@ class Command(BaseCommand):
                 )
                 beer.untpd_updated = timezone.now()
                 beer.prioritize_recheck = False
+                beer.alcohol_units = (beer.volume * 1000 * beer.abv / 100 * 0.8) / 12
                 beer.save()
 
                 api_remaining = request.headers["X-Ratelimit-Remaining"]

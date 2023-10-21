@@ -73,6 +73,9 @@ class Beer(DirtyFieldsMixin, models.Model):
         max_length=250, validators=[URLValidator()], blank=True, null=True
     )
 
+    # Calculated info
+    alcohol_units = models.FloatField(blank=True, null=True)
+
     # Server update times
     vmp_updated = models.DateTimeField(blank=True, null=True)
     vmp_details_fetched = models.DateTimeField(blank=True, null=True)
