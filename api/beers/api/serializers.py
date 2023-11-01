@@ -378,10 +378,17 @@ class WrongMatchSerializer(serializers.ModelSerializer):
 
 class ReleaseSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     beer_count = serializers.SerializerMethodField("get_beer_count")
+    product_selections = serializers.SerializerMethodField("get_product_selections")
 
     def get_beer_count(self, release):
         beer_count = release.beer.all().count()
         return beer_count
+
+    def get_product_selections(self, release):
+        product_selections = (
+            release.beer.all().values_list("product_selection", flat=True).distinct()
+        )
+        return product_selections
 
     class Meta:
         model = Release
@@ -391,5 +398,6 @@ class ReleaseSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
             "release_date",
             "beer_count",
             "product_selection",
+            "product_selections",
             "beer",
         ]
