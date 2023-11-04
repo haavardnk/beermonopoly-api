@@ -1,6 +1,7 @@
 import cloudscraper, xmltodict
 from django.utils import timezone
 from beers.models import Beer, ExternalAPI, Store, Stock
+import re
 from django.core.management.base import BaseCommand
 
 
@@ -60,16 +61,20 @@ class Command(BaseCommand):
                             url, store.store_id, page, product
                         )
 
-                        for r in response["products"]:
+                        for res in response["products"]:
                             # Find beer
-                            beer = Beer.objects.get(vmp_id=int(r["code"]))
+                            beer = Beer.objects.get(vmp_id=int(res["code"]))
                             stocked_beer.append(beer)
 
-                            quantity = int(
-                                r["availability"]["storeAvailability"][
-                                    "mainText"
-                                ].split()[1]
-                            )
+                            quantity = [
+                                int(s)
+                                for s in re.findall(
+                                    r"\b\d+\b",
+                                    res["availability"]["storeAvailability"][
+                                        "mainText"
+                                    ],
+                                )
+                            ][0]
 
                             try:
                                 stock = Stock.objects.get(store=store, beer=beer)
@@ -95,9 +100,11 @@ class Command(BaseCommand):
 
             # Remove all beers no longer in stock in the store
             if len(stocked_beer) != 0:
-                stocks = Stock.objects.filter(store=store).exclude(
-                    beer__in=stocked_beer
-                ).exclude(quantity=0)
+                stocks = (
+                    Stock.objects.filter(store=store)
+                    .exclude(beer__in=stocked_beer)
+                    .exclude(quantity=0)
+                )
                 unstocked += stocks.count()
                 for stock in stocks:
                     stock.quantity = 0
