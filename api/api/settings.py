@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.untappd",
+    "django_admin_shell",
 ]
 
 SITE_ID = 1
