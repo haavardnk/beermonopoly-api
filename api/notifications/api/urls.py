@@ -1,6 +1,6 @@
-from django.conf.urls import url
+from django.urls import re_path
 from notifications.api.views import set_token
 
 urlpatterns = [
-    url(r"set_token", set_token, name="set_token"),
+    re_path(r"set_token", set_token, name="set_token"),
 ]

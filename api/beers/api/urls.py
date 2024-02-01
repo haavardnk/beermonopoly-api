@@ -1,6 +1,6 @@
 from beers.api.views import UntappdLogin
 from django.urls import include, path
-from django.conf.urls import url
+from django.urls import re_path
 from rest_framework.routers import DefaultRouter, SimpleRouter
 from django.conf import settings
 from beers.api.views import (
@@ -37,7 +37,7 @@ urlpatterns = [
     ),
     path("auth/delete/", DeleteAccount.as_view(), name="delete_account"),
     path("auth/", include("dj_rest_auth.urls")),
-    url(r"^add_wishlist", add_wishlist, name="add_wishlist"),
-    url(r"^remove_wishlist", remove_wishlist, name="remove_wishlist"),
-    url(r"^auth/checked_in_styles", get_checked_in_styles, name="checked_in_styles"),
+    re_path(r"^add_wishlist", add_wishlist, name="add_wishlist"),
+    re_path(r"^remove_wishlist", remove_wishlist, name="remove_wishlist"),
+    re_path(r"^auth/checked_in_styles", get_checked_in_styles, name="checked_in_styles"),
 ]
