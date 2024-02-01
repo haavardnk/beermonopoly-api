@@ -149,7 +149,6 @@ TIME_ZONE = "Europe/Paris"
 
 USE_I18N = True
 
-USE_L10N = True
 
 USE_TZ = True
 
@@ -194,7 +193,7 @@ CORS_ALLOW_METHODS = [
 if "TRAVIS" in os.environ:
     DATABASES = {
         "default": {
-            "ENGINE": "django.db.backends.postgresql_psycopg2",
+            "ENGINE": "django.db.backends.postgresql",
             "NAME": "travisci",
             "USER": "postgres",
             "PASSWORD": "",
