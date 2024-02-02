@@ -190,6 +190,9 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_METHODS = [
     "GET",
 ]
+CSRF_TRUSTED_ORIGINS = [
+    "https://api.beermonopoly.com",
+]
 
 if "TRAVIS" in os.environ:
     DATABASES = {
