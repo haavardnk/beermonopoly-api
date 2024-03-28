@@ -100,8 +100,32 @@ class Beer(DirtyFieldsMixin, models.Model):
                 self.verified_match = True
                 self.match_manually = False
                 self.save()
-        except:
-            pass
+
+            if (
+                "match_manually" in dirty_fields
+                and len(dirty_fields) == 1
+                and self.match_manually == True
+            ):
+                self.untpd_id = None
+                self.untpd_name = None
+                self.untpd_url = None
+                self.verified_match = False
+                self.prioritize_recheck = False
+                self.brewery = None
+                self.rating = None
+                self.checkins = None
+                self.style = None
+                self.description = None
+                self.abv = None
+                self.ibu = None
+                self.label_hd_url = None
+                self.label_sm_url = None
+                self.alcohol_units = None
+                self.untpd_updated = None
+                self.save()
+
+        except Exception as error:
+            print(error)
 
         super(Beer, self).save(*args, **kwargs)
 
