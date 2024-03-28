@@ -40,6 +40,11 @@ class BeerAdmin(admin.ModelAdmin):
     )
     ordering = ("-created_at",)
 
+    list_editable = (
+        "match_manually",
+        "active",
+    )
+
 
 class MatchManually(Beer):
     class Meta:

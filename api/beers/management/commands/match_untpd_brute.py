@@ -56,6 +56,7 @@ class Command(BaseCommand):
                 tries += 1
 
                 if len(query.split()) == 1:
+                    beer.description = "Missing on Untappd."
                     beer.match_manually = True
                     beer.save()
                     failed += 1
