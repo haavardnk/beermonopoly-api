@@ -6,13 +6,22 @@ from django.core.management.base import BaseCommand
 
 
 def call_api(url, store_id, page, product):
-    query = (
-        ":name-asc:visibleInSearch:true:mainCategory:"
-        + product
-        + ":availableInStores:"
-        + str(store_id)
-        + ":"
-    )
+    if "alkoholfritt" in product:
+        query = (
+            ":name-asc:visibleInSearch:true:mainCategory:alkoholfritt:mainSubCategory:"
+            + product
+            + ":availableInStores:"
+            + str(store_id)
+            + ":"
+        )
+    else:
+        query = (
+            ":name-asc:visibleInSearch:true:mainCategory:"
+            + product
+            + ":availableInStores:"
+            + str(store_id)
+            + ":"
+        )
     req_url = (
         url + "?currentPage=" + str(page) + "&fields=FULL&pageSize=100&query=" + query
     )
@@ -43,7 +52,14 @@ class Command(BaseCommand):
         stores_updated = 0
         n = options["stores"]
         stores = Store.objects.all().order_by("store_stock_updated")[:n]
-        products = ["øl", "sider", "mjød"]
+        products = [
+            "øl",
+            "sider",
+            "mjød",
+            "alkoholfritt_alkoholfritt_øl",
+            "alkoholfritt_alkoholfri_ingefærøl",
+            "alkoholfritt_alkoholfri_sider",
+        ]
 
         for store in stores.iterator():
             stocked_beer = []

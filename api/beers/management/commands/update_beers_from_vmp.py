@@ -6,7 +6,14 @@ from django.core.management.base import BaseCommand
 
 
 def call_api(url, page, product):
-    query = ":relevance:visibleInSearch:true:mainCategory:" + product + ":"
+    if "alkoholfritt" in product:
+        query = (
+            ":relevance:visibleInSearch:true:mainCategory:alkoholfritt:mainSubCategory:"
+            + product
+            + ":"
+        )
+    else:
+        query = ":relevance:visibleInSearch:true:mainCategory:" + product + ":"
     req_url = (
         url + "?currentPage=" + str(page) + "&fields=FULL&pageSize=100&query=" + query
     )
@@ -28,7 +35,14 @@ class Command(BaseCommand):
         updated = 0
         created = 0
 
-        products = ["øl", "sider", "mjød"]
+        products = [
+            "øl",
+            "sider",
+            "mjød",
+            "alkoholfritt_alkoholfritt_øl",
+            "alkoholfritt_alkoholfri_ingefærøl",
+            "alkoholfritt_alkoholfri_sider",
+        ]
 
         for product in products:
             response, total_pages = call_api(url, 0, product)
