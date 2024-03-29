@@ -169,3 +169,9 @@ def create_release(name, products):
         stdout=out,
     )
     return out.getvalue()
+
+
+def check_missing_checkins():
+    out = StringIO()
+    call_command("check_missing_checkins", stdout=out)
+    return out.getvalue()
