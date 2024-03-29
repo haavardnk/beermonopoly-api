@@ -1,5 +1,5 @@
 import pytest
-from pytest_django.asserts import assertQuerysetEqual
+from pytest_django.asserts import assertQuerySetEqual
 from beers.models import Beer, Checkin
 from django.contrib.auth.models import User
 from beers.tasks import update_checkin_matches
@@ -39,15 +39,15 @@ def test_update_checkin_matches():
     Test that checkin matches gets updated correctly.
     """
     update_checkin_matches(3)
-    assertQuerysetEqual(
+    assertQuerySetEqual(
         Checkin.objects.get(checkin_id=12345).beer.all(),
         Beer.objects.filter(untpd_id=123),
     )
-    assertQuerysetEqual(
+    assertQuerySetEqual(
         Checkin.objects.get(checkin_id=23456).beer.all().order_by("untpd_id"),
         Beer.objects.filter(untpd_id=333).order_by("untpd_id"),
     )
-    assertQuerysetEqual(
+    assertQuerySetEqual(
         list(Checkin.objects.get(checkin_id=34567).beer.all()),
         list(Beer.objects.filter(untpd_id=234)),
     )
