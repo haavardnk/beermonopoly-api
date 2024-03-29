@@ -4,13 +4,22 @@ from beers.tasks import update_stock_from_vmp
 
 
 def create_query_url(product, store_id, page):
-    query = (
-        ":name-asc:visibleInSearch:true:mainCategory:"
-        + product
-        + ":availableInStores:"
-        + str(store_id)
-        + ":"
-    )
+    if "alkoholfritt" in product:
+        query = (
+            ":name-asc:visibleInSearch:true:mainCategory:alkoholfritt:mainSubCategory:"
+            + product
+            + ":availableInStores:"
+            + str(store_id)
+            + ":"
+        )
+    else:
+        query = (
+            ":name-asc:visibleInSearch:true:mainCategory:"
+            + product
+            + ":availableInStores:"
+            + str(store_id)
+            + ":"
+        )
     req_url = (
         "https://api.test.com/v4/products/search/?currentPage="
         + str(page)
@@ -93,6 +102,21 @@ def setup(db):
         vmp_name="Mjøderiet Maple Temptation",
         active=True,
     )
+    Beer.objects.create(
+        vmp_id=11983702,
+        vmp_name="Lervig No Worries Alcohol Free IPA",
+        active=True,
+    )
+    Beer.objects.create(
+        vmp_id=15697202,
+        vmp_name="XO Ingefærøl Alkoholfri",
+        active=True,
+    )
+    Beer.objects.create(
+        vmp_id=14439202,
+        vmp_name="Edru Harding",
+        active=True,
+    )
 
 
 @pytest.fixture
@@ -107,7 +131,14 @@ def test_add_stock(mocked_responses):
     Test that stock gets added correctly
     """
     stores = Store.objects.all()
-    products = ["øl", "sider", "mjød"]
+    products = [
+        "øl",
+        "sider",
+        "mjød",
+        "alkoholfritt_alkoholfritt_øl",
+        "alkoholfritt_alkoholfri_ingefærøl",
+        "alkoholfritt_alkoholfri_sider",
+    ]
 
     for store in stores:
         for product in products:
@@ -132,14 +163,42 @@ def test_add_stock(mocked_responses):
                     body=xml_response(13863804, 33),
                     status=200,
                 )
+            if product == "alkoholfritt_alkoholfritt_øl":
+                mocked_responses.add(
+                    responses.GET,
+                    create_query_url(product, store.store_id, 0),
+                    body=xml_response(11983702, 44),
+                    status=200,
+                )
+            if product == "alkoholfritt_alkoholfri_ingefærøl":
+                mocked_responses.add(
+                    responses.GET,
+                    create_query_url(product, store.store_id, 0),
+                    body=xml_response(15697202, 55),
+                    status=200,
+                )
+            if product == "alkoholfritt_alkoholfri_sider":
+                mocked_responses.add(
+                    responses.GET,
+                    create_query_url(product, store.store_id, 0),
+                    body=xml_response(14439202, 66),
+                    status=200,
+                )
+
     update_stock_from_vmp(2)
 
     assert Stock.objects.get(store=123, beer=12611502).quantity == 11
     assert Stock.objects.get(store=123, beer=14194601).quantity == 22
     assert Stock.objects.get(store=123, beer=13863804).quantity == 33
+    assert Stock.objects.get(store=123, beer=11983702).quantity == 44
+    assert Stock.objects.get(store=123, beer=15697202).quantity == 55
+    assert Stock.objects.get(store=123, beer=14439202).quantity == 66
     assert Stock.objects.get(store=321, beer=12611502).quantity == 11
     assert Stock.objects.get(store=321, beer=14194601).quantity == 22
     assert Stock.objects.get(store=321, beer=13863804).quantity == 33
+    assert Stock.objects.get(store=321, beer=11983702).quantity == 44
+    assert Stock.objects.get(store=321, beer=15697202).quantity == 55
+    assert Stock.objects.get(store=321, beer=14439202).quantity == 66
 
 
 @pytest.mark.django_db
@@ -148,7 +207,14 @@ def test_update_and_remove_stock(mocked_responses):
     Test that stock gets updated and removed correctly
     """
     stores = Store.objects.all()
-    products = ["øl", "sider", "mjød"]
+    products = [
+        "øl",
+        "sider",
+        "mjød",
+        "alkoholfritt_alkoholfritt_øl",
+        "alkoholfritt_alkoholfri_ingefærøl",
+        "alkoholfritt_alkoholfri_sider",
+    ]
 
     # Update and delete stocks
     for store in stores:
@@ -174,10 +240,33 @@ def test_update_and_remove_stock(mocked_responses):
                     body=xml_response(13863804, 0),
                     status=200,
                 )
+            if product == "alkoholfritt_alkoholfritt_øl":
+                mocked_responses.add(
+                    responses.GET,
+                    create_query_url(product, store.store_id, 0),
+                    body=xml_response(11983702, 11),
+                    status=200,
+                )
+            if product == "alkoholfritt_alkoholfri_ingefærøl":
+                mocked_responses.add(
+                    responses.GET,
+                    create_query_url(product, store.store_id, 0),
+                    body=xml_response(15697202, 0),
+                    status=200,
+                )
+            if product == "alkoholfritt_alkoholfri_sider":
+                mocked_responses.add(
+                    responses.GET,
+                    create_query_url(product, store.store_id, 0),
+                    body=xml_response(14439202, 0),
+                    status=200,
+                )
     update_stock_from_vmp(2)
 
     assert Stock.objects.get(store=123, beer=12611502).quantity == 22
     assert Stock.objects.get(store=321, beer=12611502).quantity == 22
+    assert Stock.objects.get(store=123, beer=11983702).quantity == 11
+    assert Stock.objects.get(store=321, beer=11983702).quantity == 11
     with pytest.raises(Stock.DoesNotExist):
         Stock.objects.get(store=123, beer=14194601)
     with pytest.raises(Stock.DoesNotExist):
@@ -186,3 +275,11 @@ def test_update_and_remove_stock(mocked_responses):
         Stock.objects.get(store=321, beer=14194601)
     with pytest.raises(Stock.DoesNotExist):
         Stock.objects.get(store=321, beer=13863804)
+    with pytest.raises(Stock.DoesNotExist):
+        Stock.objects.get(store=123, beer=15697202)
+    with pytest.raises(Stock.DoesNotExist):
+        Stock.objects.get(store=123, beer=14439202)
+    with pytest.raises(Stock.DoesNotExist):
+        Stock.objects.get(store=321, beer=15697202)
+    with pytest.raises(Stock.DoesNotExist):
+        Stock.objects.get(store=321, beer=14439202)
