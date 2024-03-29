@@ -1,4 +1,4 @@
-import re, cloudscraper, xmltodict
+import cloudscraper, xmltodict
 from beers.models import Beer, ExternalAPI
 from django.utils import timezone
 from django.core.management.base import BaseCommand

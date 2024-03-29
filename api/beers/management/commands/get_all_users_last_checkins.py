@@ -33,7 +33,9 @@ class Command(BaseCommand):
             api_remaining = "100"
 
             try:
-                id = Checkin.objects.filter(user=user).latest("checkin_id").checkin_id
+                checkin_id = (
+                    Checkin.objects.filter(user=user).latest("checkin_id").checkin_id
+                )
                 url = (
                     baseurl
                     + "user/checkins/"
@@ -41,7 +43,7 @@ class Command(BaseCommand):
                     + untappd_token
                     + "&limit=50"
                     + "&min_id="
-                    + str(id)
+                    + str(checkin_id)
                 )
             except Checkin.DoesNotExist:
                 url = (
