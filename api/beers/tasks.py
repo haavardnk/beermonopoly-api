@@ -33,9 +33,9 @@ def update_stock_from_vmp(stores):
     return out.getvalue()
 
 
-def update_stores_from_csv():
+def update_stores_from_vmp():
     out = StringIO()
-    call_command("update_stores_from_csv", stdout=out)
+    call_command("update_stores_from_vmp", stdout=out)
     return out.getvalue()
 
 
