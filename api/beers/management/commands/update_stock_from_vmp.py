@@ -25,7 +25,7 @@ def call_api(url, store_id, page, product):
     req_url = (
         url + "?currentPage=" + str(page) + "&fields=FULL&pageSize=100&query=" + query
     )
-    scraper = cloudscraper.CloudScraper()
+    scraper = cloudscraper.create_scraper(interpreter="nodejs")
     request = scraper.get(req_url).text
 
     response = xmltodict.parse(request)
