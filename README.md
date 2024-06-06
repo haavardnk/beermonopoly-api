@@ -8,7 +8,7 @@
 
 ![Beermonopoly Logo](https://i.imgur.com/MHce8RD.png)
 
-Beermonopoly API is the information provider for all Beermonopoly services, currently a Chrome Extension under the same name.
+Beermonopoly API is the information provider for all Beermonopoly services, currently a iOS app, Android App and aChrome Extension all under the name of Ølmonopolet.
 
 ## License
 
