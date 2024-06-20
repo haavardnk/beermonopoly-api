@@ -46,9 +46,11 @@ def xml_response(product_id, stock):
                     "products": [
                         {
                             "code": product_id,
-                            "availability": {
-                                "storeAvailability": {
-                                    "mainText": "Lager: " + str(stock),
+                            "productAvailability": {
+                                "storesAvailability": {
+                                    "infos": {
+                                        "availability": "Lager: " + str(stock),
+                                    }
                                 }
                             },
                         },

@@ -86,9 +86,9 @@ class Command(BaseCommand):
                                 int(s)
                                 for s in re.findall(
                                     r"\b\d+\b",
-                                    res["availability"]["storeAvailability"][
-                                        "mainText"
-                                    ],
+                                    res["productAvailability"]["storesAvailability"][
+                                        "infos"
+                                    ]["availability"],
                                 )
                             ][0]
 
