@@ -18,7 +18,7 @@ class Command(BaseCommand):
     # For use before releases.
 
     def handle(self, *args, **options):
-        baseurl = ExternalAPI.objects.get(name="vinmonopolet").baseurl
+        baseurl = ExternalAPI.objects.get(name="vinmonopolet_v3").baseurl
 
         updated = 0
         created = 0
@@ -27,7 +27,6 @@ class Command(BaseCommand):
 
         for product in products:
             url = baseurl + "products/" + str(product.id)
-            print(url)
             try:
                 response = call_api(url)["product"]
 
@@ -46,13 +45,6 @@ class Command(BaseCommand):
                         )
                     beer.product_selection = response["product_selection"]
                     beer.vmp_url = "https://www.vinmonopolet.no" + response["url"]
-                    beer.post_delivery = strtobool(
-                        response["availability"]["deliveryAvailability"]["available"]
-                    )
-                    beer.store_delivery = (
-                        response["availability"]["storeAvailability"]["mainText"]
-                        == "Kan bestilles til alle butikker"
-                    )
                     beer.vmp_updated = timezone.now()
                     if beer.active == False:
                         beer.active = True
@@ -69,15 +61,6 @@ class Command(BaseCommand):
                         country=response["main_country"]["name"],
                         volume=float(response["volume"]["value"]) / 100.0,
                         product_selection=response["product_selection"],
-                        post_delivery=strtobool(
-                            response["availability"]["deliveryAvailability"][
-                                "available"
-                            ]
-                        ),
-                        store_delivery=response["availability"]["storeAvailability"][
-                            "mainText"
-                        ]
-                        == "Kan bestilles til alle butikker",
                         vmp_url="https://www.vinmonopolet.no" + response["url"],
                         vmp_updated=timezone.now(),
                     )

@@ -18,7 +18,7 @@ class Command(BaseCommand):
         parser.add_argument("calls", type=int)
 
     def handle(self, *args, **options):
-        baseurl = ExternalAPI.objects.get(name="vinmonopolet").baseurl
+        baseurl = ExternalAPI.objects.get(name="vinmonopolet_v3").baseurl
         url = baseurl + "products/"
 
         updated = 0
