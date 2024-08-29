@@ -15,9 +15,23 @@ def match_untpd():
     return out.getvalue()
 
 
+def match_untpd_scrape(**kwargs):
+    calls = kwargs.get("calls", 50)
+    out = StringIO()
+    call_command("match_untpd_scrape", calls, stdout=out)
+    return out.getvalue()
+
+
 def update_beers_from_untpd():
     out = StringIO()
     call_command("update_beers_from_untpd", stdout=out)
+    return out.getvalue()
+
+
+def update_beers_from_untpd_scrape(**kwargs):
+    calls = kwargs.get("calls", 50)
+    out = StringIO()
+    call_command("update_beers_from_untpd_scrape", calls, stdout=out)
     return out.getvalue()
 
 
@@ -58,6 +72,23 @@ def smart_update_untappd(**kwargs):
             call_command("update_beers_from_untpd", access_token, stdout=out)
         else:
             call_command("update_beers_from_untpd", stdout=out)
+
+    return out.getvalue()
+
+
+def smart_update_untappd_scrape(**kwargs):
+    calls = kwargs.get("calls", 50)
+
+    # Match if unmatched exists, else update items
+    beers = Beer.objects.filter(
+        untpd_id__isnull=True, match_manually=False, active=True
+    )
+    out = StringIO()
+
+    if beers:
+        call_command("match_untpd_scrape", calls, stdout=out)
+    else:
+        call_command("update_beers_from_untpd_scrape", calls, stdout=out)
 
     return out.getvalue()
 
