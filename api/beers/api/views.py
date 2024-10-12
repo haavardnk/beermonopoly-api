@@ -2,7 +2,6 @@ from distutils.util import strtobool
 from django.db.models import F, Q
 from django.db.models.functions import Greatest
 from rest_framework import permissions, filters, renderers
-from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
@@ -25,8 +24,6 @@ from beers.api.serializers import (
     StockChangeSerializer,
     AuthenticatedStockChangeSerializer,
 )
-from allauth.socialaccount.providers.untappd.views import UntappdOAuth2Adapter
-from dj_rest_auth.registration.views import SocialLoginView
 
 
 class StaffBrowsableMixin(object):
@@ -38,10 +35,6 @@ class StaffBrowsableMixin(object):
         if self.request.user and self.request.user.is_staff:
             rends.append(renderers.BrowsableAPIRenderer)
         return [renderer() for renderer in rends]
-
-
-class UntappdLogin(SocialLoginView):
-    adapter_class = UntappdOAuth2Adapter
 
 
 class BeerViewSet(StaffBrowsableMixin, ModelViewSet):
@@ -240,19 +233,4 @@ def remove_wishlist(request):
             return Response(message, status=500)
     else:
         message = {"message": "beer_id missing"}
-        return Response(message, status=400)
-
-
-class DeleteAccount(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def delete(self, request, *args, **kwargs):
-        try:
-            user = self.request.user
-            user.delete()
-
-            message = {"message": "User deleted"}
-            return Response(message, status=200)
-        except:
-            message = {"message": "Failed to delete user"}
         return Response(message, status=400)
