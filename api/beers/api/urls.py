@@ -1,4 +1,3 @@
-from beers.api.views import UntappdLogin
 from django.urls import include, path
 from django.urls import re_path
 from rest_framework.routers import DefaultRouter, SimpleRouter
@@ -13,7 +12,6 @@ from beers.api.views import (
     add_wishlist,
     remove_wishlist,
     get_checked_in_styles,
-    DeleteAccount,
 )
 
 if settings.DEBUG:
@@ -30,14 +28,9 @@ router.register(r"stockchange", StockChangeViewSet, basename="stockchange")
 
 urlpatterns = [
     path("", include(router.urls)),
-    path(
-        "auth/untappd/",
-        UntappdLogin.as_view(),
-        name="untappd_login",
-    ),
-    path("auth/delete/", DeleteAccount.as_view(), name="delete_account"),
-    path("auth/", include("dj_rest_auth.urls")),
     re_path(r"^add_wishlist", add_wishlist, name="add_wishlist"),
     re_path(r"^remove_wishlist", remove_wishlist, name="remove_wishlist"),
-    re_path(r"^auth/checked_in_styles", get_checked_in_styles, name="checked_in_styles"),
+    re_path(
+        r"^auth/checked_in_styles", get_checked_in_styles, name="checked_in_styles"
+    ),
 ]
