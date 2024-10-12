@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "allauth.socialaccount.providers.untappd",
     "allauth.socialaccount.providers.apple",
+    "allauth.socialaccount.providers.google",
     "allauth.headless",
     "django_admin_shell",
     "anymail",
@@ -80,6 +81,12 @@ SOCIALACCOUNT_PROVIDERS = {
                 },
             },
         ]
+    },
+    "google": {
+        "AUTH_PARAMS": {
+            "access_type": "offline",
+        },
+        "OAUTH_PKCE_ENABLED": True,
     },
 }
 

@@ -4,7 +4,7 @@ django-cors-headers==4.4.0
 django-q2==1.6.2
 django-extensions==3.2.3
 django-admin-shell==2.0.1
-django-allauth==64.2.1
+django-allauth==65.0.2
 django-dirtyfields==1.9.3
 django-anymail==12.0
 djangorestframework==3.15.2
