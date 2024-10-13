@@ -7,8 +7,9 @@ from sentry_sdk.integrations.django import DjangoIntegration
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dummykey")
 DEBUG = int(os.getenv("DEBUG_VALUE", 1))
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1").split(",")
-
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "api.localhost,auth.localhost").split(
+    ","
+)
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -24,6 +25,9 @@ INSTALLED_APPS = [
     "django_q",
     "django_filters",
     "django_extensions",
+    "django_hosts",
+    "django_admin_shell",
+    "accounts",
     "beers",
     "notifications",
     "corsheaders",
@@ -34,7 +38,6 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.apple",
     "allauth.socialaccount.providers.google",
     "allauth.headless",
-    "django_admin_shell",
     "anymail",
 ]
 
@@ -101,6 +104,7 @@ SERVER_EMAIL = os.getenv("SERVER_EMAIL")
 
 
 MIDDLEWARE = [
+    "django_hosts.middleware.HostsRequestMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -110,9 +114,12 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_hosts.middleware.HostsResponseMiddleware",
 ]
 
 ROOT_URLCONF = "api.urls"
+ROOT_HOSTCONF = "api.hosts"
+DEFAULT_HOST = "api"
 
 TEMPLATES = [
     {
@@ -224,6 +231,7 @@ CORS_ALLOW_METHODS = [
 ]
 CSRF_TRUSTED_ORIGINS = [
     "https://api.beermonopoly.com",
+    "https://auth.beermonopoly.com",
 ]
 
 if "TRAVIS" in os.environ:
