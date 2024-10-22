@@ -48,18 +48,62 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
+MIDDLEWARE = [
+    "django_hosts.middleware.HostsRequestMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_hosts.middleware.HostsResponseMiddleware",
+]
 
+ROOT_URLCONF = "api.urls"
+ROOT_HOSTCONF = "api.hosts"
+DEFAULT_HOST = "api"
+
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [
+            BASE_DIR / "accounts/templates/account",
+        ],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ],
+        },
+    },
+]
+
+WSGI_APPLICATION = "api.wsgi.application"
+
+AUTH_URL = os.getenv("AUTH_URL", "http://auth.localhost:8000")
 HEADLESS_TOKEN_STRATEGY = "api.token.AccessTokenStrategy"
+HEADLESS_ONLY = True
+HEADLESS_FRONTEND_URLS = {
+    "account_confirm_email": AUTH_URL + "/confirm-email/{key}",
+    "account_reset_password": AUTH_URL + "/password/reset",
+    "account_reset_password_from_key": AUTH_URL + "/password/reset/key/{key}",
+}
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "optional"
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_SESSION_REMEMBER = True
-
-
+ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = "/email-confirmed"
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = "/email-confirmed"
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1000
 SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
 SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
 SOCIALACCOUNT_STORE_TOKENS = True
-
 SOCIALACCOUNT_PROVIDERS = {
     "untappd": {
         "USER_AGENT": "django:Beermonopoly",
@@ -102,47 +146,6 @@ EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
 SERVER_EMAIL = os.getenv("SERVER_EMAIL")
 
-
-MIDDLEWARE = [
-    "django_hosts.middleware.HostsRequestMiddleware",
-    "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
-    "allauth.account.middleware.AccountMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django_hosts.middleware.HostsResponseMiddleware",
-]
-
-ROOT_URLCONF = "api.urls"
-ROOT_HOSTCONF = "api.hosts"
-DEFAULT_HOST = "api"
-
-TEMPLATES = [
-    {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
-        "APP_DIRS": True,
-        "OPTIONS": {
-            "context_processors": [
-                "django.template.context_processors.debug",
-                "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
-            ],
-        },
-    },
-]
-
-WSGI_APPLICATION = "api.wsgi.application"
-
-
-# Database
-# https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 DATABASES = {
@@ -159,28 +162,11 @@ DATABASES = {
     }
 }
 
-
-# Password validation
-# https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
 ]
-
-
-# Internationalization
-# https://docs.djangoproject.com/en/3.1/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
 
@@ -188,13 +174,7 @@ TIME_ZONE = "Europe/Paris"
 
 USE_I18N = True
 
-
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.1/howto/static-files/
-
 
 STATIC_ROOT = "/static2"
 STATIC_URL = "/static2/"
