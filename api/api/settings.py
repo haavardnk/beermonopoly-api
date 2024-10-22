@@ -234,18 +234,6 @@ CSRF_TRUSTED_ORIGINS = [
     "https://auth.beermonopoly.com",
 ]
 
-if "TRAVIS" in os.environ:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": "travisci",
-            "USER": "postgres",
-            "PASSWORD": "",
-            "HOST": "localhost",
-            "PORT": "",
-        }
-    }
-
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.TokenAuthentication",
