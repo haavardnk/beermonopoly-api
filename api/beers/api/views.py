@@ -12,7 +12,16 @@ from beers.api.filters import (
     BeerFilter,
     StockChangeFilter,
 )
-from beers.models import Beer, Stock, Store, WrongMatch, Release, Wishlist, Checkin
+from beers.models import (
+    Beer,
+    Stock,
+    Store,
+    WrongMatch,
+    Release,
+    Wishlist,
+    Checkin,
+    Tasted,
+)
 from beers.api.pagination import Pagination, LargeResultPagination
 from beers.api.serializers import (
     BeerSerializer,
@@ -63,6 +72,7 @@ class BeerViewSet(StaffBrowsableMixin, ModelViewSet):
         "abv",
         "price_per_volume",
         "checkin__rating",
+        "tasted__rating",
     ]
     filterset_class = BeerFilter
 
@@ -70,37 +80,54 @@ class BeerViewSet(StaffBrowsableMixin, ModelViewSet):
         queryset = Beer.objects.all()
         beers = self.request.query_params.get("beers", None)
         user_checkin = self.request.query_params.get("user_checkin", None)
+        user_tasted = self.request.query_params.get("user_tasted", None)
         user_wishlisted = self.request.query_params.get("user_wishlisted", None)
         if beers is not None:
             beers = list(int(v) for v in beers.split(","))
             queryset = queryset.filter(vmp_id__in=beers)
         if (
-            user_checkin != None
-            and strtobool(user_checkin) == True
+            user_checkin is not None
+            and strtobool(user_checkin)
             and self.request.user
             and self.request.user.is_authenticated
         ):
             queryset = queryset.filter(checkin__user=self.request.user)
         elif (
-            user_checkin != None
-            and strtobool(user_checkin) == False
+            user_checkin is not None
+            and not strtobool(user_checkin)
             and self.request.user
             and self.request.user.is_authenticated
         ):
             queryset = queryset.exclude(checkin__user=self.request.user)
         if (
-            user_wishlisted != None
-            and strtobool(user_wishlisted) == True
+            user_tasted is not None
+            and strtobool(user_tasted)
             and self.request.user
             and self.request.user.is_authenticated
         ):
+            queryset = queryset.filter(tasted__user=self.request.user)
+        elif (
+            user_tasted is not None
+            and not strtobool(user_tasted)
+            and self.request.user
+            and self.request.user.is_authenticated
+        ):
+            queryset = queryset.exclude(tasted__user=self.request.user)
+        if (
+            user_wishlisted is not None
+            and strtobool(user_wishlisted)
+            and self.request.user
+            and self.request.user.is_authenticated
+        ):
+            print("test")
             queryset = queryset.filter(wishlist__user=self.request.user)
         elif (
-            user_wishlisted != None
-            and strtobool(user_wishlisted) == False
+            user_wishlisted is not None
+            and not strtobool(user_wishlisted)
             and self.request.user
             and self.request.user.is_authenticated
         ):
+            print("teset")
             queryset = queryset.exclude(wishlist__user=self.request.user)
 
         return queryset
@@ -190,6 +217,46 @@ def get_checked_in_styles(request):
     except:
         message = {"message": "An error occurred"}
         return Response(message, status=500)
+
+
+@api_view(["POST", "DELETE"])
+@permission_classes([IsAuthenticated])
+def add_remove_tasted(request) -> Response:
+    user = request.user
+    beer_id = request.query_params.get("beer_id", None)
+    rating = request.query_params.get("rating", None)
+
+    if beer_id is None:
+        message = {"message": "beer_id missing"}
+        return Response(message, status=400)
+
+    beers = []
+    beers.append(Beer.objects.get(vmp_id=beer_id))
+    if beers[0].untpd_id:
+        beers = Beer.objects.filter(untpd_id=beers[0].untpd_id)
+    if request.method == "POST":
+        try:
+            for beer in beers:
+                tasted, _ = Tasted.objects.get_or_create(user=user, beer=beer)
+                tasted.rating = rating
+                tasted.save()
+            message = {
+                "message": f"{beer.vmp_name} marked as tasted with rating {rating}"
+            }
+            return Response(message, status=200)
+        except Exception as e:
+            message = {"message": str(e)}
+            return Response(message, status=500)
+
+    elif request.method == "DELETE":
+        try:
+            for beer in beers:
+                Tasted.objects.get(user=user, beer=beer).delete()
+            message = {"message": f"{beer.vmp_name} unmarked as tasted"}
+            return Response(message, status=200)
+        except Exception as e:
+            message = {"message": str(e)}
+            return Response(message, status=500)
 
 
 @api_view(["POST"])

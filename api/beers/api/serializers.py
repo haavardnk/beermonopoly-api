@@ -9,6 +9,7 @@ from beers.models import (
     Wishlist,
     Release,
     FriendList,
+    Tasted,
 )
 from django.contrib.auth.models import User
 from drf_dynamic_fields import DynamicFieldsMixin
@@ -120,6 +121,7 @@ class BeerSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
 
 class AuthenticatedBeerSerializer(BeerSerializer):
     user_checked_in = serializers.SerializerMethodField("get_checkins")
+    user_tasted = serializers.SerializerMethodField("get_tasted")
     friends_checked_in = serializers.SerializerMethodField("get_friends_checkins")
     user_wishlisted = serializers.SerializerMethodField("get_wishlist")
 
@@ -130,6 +132,14 @@ class AuthenticatedBeerSerializer(BeerSerializer):
         serializer = CheckinSerializer(instance=ci, many=True)
         return serializer.data
 
+    def get_tasted(self, beer):
+        try:
+            ci = Tasted.objects.get(user=self.context["request"].user, beer=beer)
+            serializer = TastedSerializer(instance=ci)
+        except Tasted().DoesNotExist:
+            return None
+        return serializer.data
+
     def get_friends_checkins(self, beer):
         try:
             friends = FriendList.objects.get(user=self.context["request"].user)
@@ -138,7 +148,6 @@ class AuthenticatedBeerSerializer(BeerSerializer):
                 rating=Avg("checkin__rating"), count=Count("checkin__rating")
             )
             serializer = FriendCheckinSerializer(instance=ci, many=True)
-
         except FriendList.DoesNotExist:
             return None
         return serializer.data
@@ -182,6 +191,7 @@ class AuthenticatedBeerSerializer(BeerSerializer):
             "untpd_updated",
             "created_at",
             "user_checked_in",
+            "user_tasted",
             "friends_checked_in",
             "app_rating",
             "user_wishlisted",
@@ -309,6 +319,14 @@ class CheckinSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["rating", "count"]
+
+
+class TastedSerializer(serializers.ModelSerializer):
+    rating = serializers.FloatField()
+
+    class Meta:
+        model = Tasted
+        fields = ["rating"]
 
 
 class FriendCheckinSerializer(serializers.ModelSerializer):
