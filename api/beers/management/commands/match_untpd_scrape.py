@@ -1,4 +1,5 @@
-import re, time
+import re
+import time
 from googlesearch import search
 from fuzzywuzzy import process, fuzz
 from beers.models import Beer

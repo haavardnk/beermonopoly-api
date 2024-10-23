@@ -12,6 +12,7 @@ from beers.api.views import (
     add_wishlist,
     remove_wishlist,
     get_checked_in_styles,
+    add_remove_tasted,
 )
 
 if settings.DEBUG:
@@ -33,4 +34,5 @@ urlpatterns = [
     re_path(
         r"^auth/checked_in_styles", get_checked_in_styles, name="checked_in_styles"
     ),
+    re_path(r"^beers/add_remove_tasted", add_remove_tasted, name="add_remove_tasted"),
 ]
