@@ -8,6 +8,7 @@ from beers.models import (
     WrongMatch,
     VmpNotReleased,
     Checkin,
+    Tasted,
     Badge,
     Wishlist,
     FriendList,
@@ -102,6 +103,33 @@ class CheckinAdmin(admin.ModelAdmin):
 
     def get_beers(self, obj):
         return "\n".join([p.vmp_name for p in obj.beer.all()])
+
+
+@admin.register(Tasted)
+class Tasted(admin.ModelAdmin):
+
+    exclude = ["beer"]
+    list_display = (
+        "user",
+        "beer",
+        "get_beer_vmp_id",
+        "get_beer_untpd_id",
+        "rating",
+    )
+    search_fields = (
+        "checkin_id",
+        "untpd_id",
+        "user__username",
+        "beer__vmp_name",
+    )
+
+    @admin.display(description="vmp_id", ordering="beer__vmp_id")
+    def get_beer_vmp_id(self, obj):
+        return obj.beer.vmp_id
+
+    @admin.display(description="untpd_id", ordering="beer__untpd_id")
+    def get_beer_untpd_id(self, obj):
+        return obj.beer.untpd_id
 
 
 class WishlistBeersInline(admin.TabularInline):

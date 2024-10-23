@@ -238,6 +238,14 @@ class Checkin(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
 
+class Tasted(models.Model):
+    user = models.ForeignKey(User, on_delete=CASCADE)
+    beer = models.ForeignKey(Beer, on_delete=CASCADE)
+    rating = models.FloatField(
+        validators=[MinValueValidator(0), MaxValueValidator(5)], blank=True, null=True
+    )
+
+
 class Badge(models.Model):
     beer = models.ForeignKey(Beer, on_delete=CASCADE)
     text = models.CharField(max_length=100)
