@@ -1,37 +1,27 @@
 
-FROM python:3.9.18-slim
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
 
-COPY requirements.txt /app/requirements.txt
-
-RUN set -ex \
-    && RUN_DEPS=" \
-    libpcre3 \
-    mime-support \
-    postgresql-client \
-    " \
-    && seq 1 8 | xargs -I{} mkdir -p /usr/share/man/man{} \
-    && apt-get update && apt-get install -y --no-install-recommends $RUN_DEPS \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN set -ex \
-    && BUILD_DEPS=" \
-    build-essential \
-    libpcre3-dev \
-    libpq-dev \
-    " \
-    && apt-get update && apt-get install -y --no-install-recommends $BUILD_DEPS \
-    && pip install --no-cache-dir -r /app/requirements.txt \
-    \
-    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $BUILD_DEPS \
-    && rm -rf /var/lib/apt/lists/*
-
-COPY api /app
 WORKDIR /app
+# Enable bytecode compilation
+ENV UV_COMPILE_BYTECODE=1
+
+# Copy from the cache instead of linking since it's a mounted volume
+ENV UV_LINK_MODE=copy
+
+# Install the project's dependencies using the lockfile and settings
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --frozen --no-install-project --no-dev
+
+# Then, add the rest of the project source code and install it
+# Installing separately from its dependencies allows optimal layer caching
+
+ADD api /app
+
+ENTRYPOINT []
 
 RUN chmod +x run.sh
-
-ENV VIRTUAL_ENV /env
-ENV PATH /env/bin:$PATH
 
 EXPOSE 7000
 
