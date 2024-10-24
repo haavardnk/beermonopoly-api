@@ -138,13 +138,13 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 ANYMAIL = {
-    "MAILGUN_API_KEY": os.getenv("MAILGUN_API_KEY"),
-    "MAILGUN_SENDER_DOMAIN": os.getenv("MAILGUN_SENDER_DOMAIN"),
-    "MAILGUN_API_URL": os.getenv("MAILGUN_API_URL"),
+    "MAILGUN_API_KEY": "5aec0900cf9ad6cbf77c29299d12ce44-7a3af442-dc97fb28",
+    "MAILGUN_SENDER_DOMAIN": "olmonopolet.app",
+    "MAILGUN_API_URL": "https://api.eu.mailgun.net/v3",
 }
 EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
-SERVER_EMAIL = os.getenv("SERVER_EMAIL")
+DEFAULT_FROM_EMAIL = "Ølmonopolet <noreply@olmonopolet.app>"
+SERVER_EMAIL = "Ølmonopolet <noreply@olmonopolet.app>"
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
