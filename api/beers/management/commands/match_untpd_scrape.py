@@ -26,11 +26,8 @@ class Command(BaseCommand):
             options = []
             indexes = {}
 
-            results = list(
-                search(
-                    beer2match + " site:https://untappd.com/b/", 4, "no", advanced=True
-                )
-            )
+            results = list(search(beer2match, advanced=True))
+            results = [result for result in results if "untappd" in result.url]
             for result in results:
                 options.append(result.title)
                 indexes[result.title] = result.url
@@ -41,7 +38,7 @@ class Command(BaseCommand):
             # Updates database
             try:
                 if (
-                    best_match[1] > 40
+                    best_match[1] > 35
                     and "https://untappd.com/b/" in indexes[best_match[0]]
                 ):
                     beer.untpd_id = int(
