@@ -24,7 +24,7 @@ class Beer(DirtyFieldsMixin, models.Model):
     price = models.FloatField(blank=True, null=True)
     volume = models.FloatField(blank=True, null=True)
     price_per_volume = models.FloatField(blank=True, null=True)
-    product_selection = models.CharField(max_length=50, blank=True, null=True)
+    product_selection = models.CharField(max_length=50, default="Tilleggsutvalget")
     vmp_url = models.CharField(
         max_length=250, validators=[URLValidator()], blank=True, null=True
     )
