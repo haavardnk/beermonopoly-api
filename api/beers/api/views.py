@@ -1,7 +1,7 @@
 from django.db.models import F, Q, Count
 from django.db.models.functions import Greatest
 from django.contrib.postgres.aggregates import ArrayAgg
-from rest_framework import permissions, filters, renderers
+from rest_framework import permissions, filters
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
@@ -34,20 +34,18 @@ from beers.api.serializers import (
     AuthenticatedStockChangeSerializer,
 )
 from .utils import parse_bool
+from rest_framework.renderers import BrowsableAPIRenderer
 
 
-class StaffBrowsableMixin(object):
+class BrowsableMixin(object):
     def get_renderers(self):
-        """
-        Add Browsable API renderer if user is staff.
-        """
-        rends = self.renderer_classes
-        if self.request.user and self.request.user.is_staff:
-            rends.append(renderers.BrowsableAPIRenderer)
+        rends = self.renderer_classes  # type: ignore
+        if self.request.user:  # type: ignore
+            rends.append(BrowsableAPIRenderer)
         return [renderer() for renderer in rends]
 
 
-class BeerViewSet(StaffBrowsableMixin, ModelViewSet):
+class BeerViewSet(BrowsableMixin, ModelViewSet):
     pagination_class = LargeResultPagination
     permission_classes = [permissions.DjangoModelPermissionsOrAnonReadOnly]
 
@@ -79,10 +77,10 @@ class BeerViewSet(StaffBrowsableMixin, ModelViewSet):
 
     def get_queryset(self):
         queryset = Beer.objects.all()
-        beers = self.request.query_params.get("beers", None)
-        user_checkin = self.request.query_params.get("user_checkin", None)
-        user_tasted = self.request.query_params.get("user_tasted", None)
-        user_wishlisted = self.request.query_params.get("user_wishlisted", None)
+        beers = self.request.query_params.get("beers", None)  # type: ignore[attr-defined]
+        user_checkin = self.request.query_params.get("user_checkin", None)  # type: ignore[attr-defined]
+        user_tasted = self.request.query_params.get("user_tasted", None)  # type: ignore[attr-defined]
+        user_wishlisted = self.request.query_params.get("user_wishlisted", None)  # type: ignore[attr-defined]
         if beers is not None:
             beers = list(int(v) for v in beers.split(","))
             queryset = queryset.filter(vmp_id__in=beers)
@@ -140,7 +138,7 @@ class BeerViewSet(StaffBrowsableMixin, ModelViewSet):
             return BeerSerializer
 
 
-class StockChangeViewSet(StaffBrowsableMixin, ModelViewSet):
+class StockChangeViewSet(BrowsableMixin, ModelViewSet):
     pagination_class = Pagination
     permission_classes = [permissions.DjangoModelPermissionsOrAnonReadOnly]
     filter_backends = (DjangoFilterBackend,)
@@ -165,7 +163,7 @@ class StockChangeViewSet(StaffBrowsableMixin, ModelViewSet):
             return StockChangeSerializer
 
 
-class StoreViewSet(StaffBrowsableMixin, ModelViewSet):
+class StoreViewSet(BrowsableMixin, ModelViewSet):
     queryset = Store.objects.all().order_by("name")
     serializer_class = StoreSerializer
     pagination_class = LargeResultPagination
@@ -177,7 +175,7 @@ class StoreViewSet(StaffBrowsableMixin, ModelViewSet):
     ordering = ["name"]
 
 
-class StockViewSet(StaffBrowsableMixin, ModelViewSet):
+class StockViewSet(BrowsableMixin, ModelViewSet):
     queryset = Stock.objects.all().order_by("store__store_id")
     serializer_class = StockSerializer
     pagination_class = Pagination
@@ -186,14 +184,14 @@ class StockViewSet(StaffBrowsableMixin, ModelViewSet):
     filterset_fields = ["store", "beer"]
 
 
-class WrongMatchViewSet(StaffBrowsableMixin, ModelViewSet):
+class WrongMatchViewSet(BrowsableMixin, ModelViewSet):
     queryset = WrongMatch.objects.all()
     serializer_class = WrongMatchSerializer
     pagination_class = Pagination
     permission_classes = [permissions.AllowAny]
 
 
-class ReleaseViewSet(StaffBrowsableMixin, ModelViewSet):
+class ReleaseViewSet(BrowsableMixin, ModelViewSet):
     queryset = (
         Release.objects.filter(active=True)
         .order_by("-release_date")
@@ -232,14 +230,14 @@ def get_checked_in_styles(request):
 
         data = {"checked_in_styles": styles}
         return Response(data, status=200)
-    except:
-        message = {"message": "An error occurred"}
+    except Exception as e:
+        message = {"message": "An error occurred", "error": str(e)}
         return Response(message, status=500)
 
 
 @api_view(["POST", "DELETE"])
 @permission_classes([IsAuthenticated])
-def add_remove_tasted(request) -> Response:
+def add_remove_tasted(request):
     user = request.user
     beer_id = request.query_params.get("beer_id", None)
     rating = request.query_params.get("rating", None)
@@ -291,8 +289,8 @@ def add_wishlist(request):
             else:
                 message = {"message": "Beer already in wishlist"}
             return Response(message, status=200)
-        except:
-            message = {"message": "An error occurred"}
+        except Exception as e:
+            message = {"message": "An error occurred", "error": str(e)}
             return Response(message, status=500)
     else:
         message = {"message": "beer_id missing"}
@@ -313,8 +311,8 @@ def remove_wishlist(request):
             else:
                 message = {"message": "Beer not in wishlist"}
             return Response(message, status=200)
-        except:
-            message = {"message": "An error occurred"}
+        except Exception as e:
+            message = {"message": "An error occurred", "error": str(e)}
             return Response(message, status=500)
     else:
         message = {"message": "beer_id missing"}
