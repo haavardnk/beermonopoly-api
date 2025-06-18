@@ -77,6 +77,14 @@ class BeerViewSet(BrowsableMixin, ModelViewSet):
 
     def get_queryset(self):
         queryset = Beer.objects.all()
+        # Prefetch related objects for serializer speed
+        queryset = queryset.prefetch_related(
+            "badge_set",
+            "stock_set",
+            "tasted_set",
+            "checkin_set",
+            "wishlist_set",
+        )
         beers = self.request.query_params.get("beers", None)  # type: ignore[attr-defined]
         user_checkin = self.request.query_params.get("user_checkin", None)  # type: ignore[attr-defined]
         user_tasted = self.request.query_params.get("user_tasted", None)  # type: ignore[attr-defined]
@@ -118,7 +126,6 @@ class BeerViewSet(BrowsableMixin, ModelViewSet):
             and self.request.user
             and self.request.user.is_authenticated
         ):
-            print("test")
             queryset = queryset.filter(wishlist__user=self.request.user)
         elif (
             user_wishlisted is not None
@@ -126,7 +133,6 @@ class BeerViewSet(BrowsableMixin, ModelViewSet):
             and self.request.user
             and self.request.user.is_authenticated
         ):
-            print("teset")
             queryset = queryset.exclude(wishlist__user=self.request.user)
 
         return queryset
@@ -149,6 +155,7 @@ class StockChangeViewSet(BrowsableMixin, ModelViewSet):
             Stock.objects.all()
             .exclude(Q(stocked_at=None) & Q(unstocked_at=None))
             .annotate(stock_unstock_at=Greatest("stocked_at", "unstocked_at"))
+            .select_related("store", "beer")
             .order_by(
                 F("stock_unstock_at__date").desc(),
                 F("stocked_at").desc(nulls_last=True),
@@ -176,7 +183,9 @@ class StoreViewSet(BrowsableMixin, ModelViewSet):
 
 
 class StockViewSet(BrowsableMixin, ModelViewSet):
-    queryset = Stock.objects.all().order_by("store__store_id")
+    queryset = (
+        Stock.objects.all().order_by("store__store_id").select_related("store", "beer")
+    )
     serializer_class = StockSerializer
     pagination_class = Pagination
     permission_classes = [permissions.DjangoModelPermissionsOrAnonReadOnly]
@@ -185,7 +194,7 @@ class StockViewSet(BrowsableMixin, ModelViewSet):
 
 
 class WrongMatchViewSet(BrowsableMixin, ModelViewSet):
-    queryset = WrongMatch.objects.all()
+    queryset = WrongMatch.objects.all().select_related("beer")
     serializer_class = WrongMatchSerializer
     pagination_class = Pagination
     permission_classes = [permissions.AllowAny]
