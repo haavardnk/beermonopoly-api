@@ -1,5 +1,5 @@
 import cloudscraper, xmltodict
-from distutils.util import strtobool
+from beers.api.utils import parse_bool
 from beers.models import Beer, ExternalAPI, VmpNotReleased
 from django.utils import timezone
 from django.core.management.base import BaseCommand

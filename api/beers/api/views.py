@@ -1,4 +1,3 @@
-from distutils.util import strtobool
 from django.db.models import F, Q, Count
 from django.db.models.functions import Greatest
 from django.contrib.postgres.aggregates import ArrayAgg
@@ -34,6 +33,7 @@ from beers.api.serializers import (
     StockChangeSerializer,
     AuthenticatedStockChangeSerializer,
 )
+from .utils import parse_bool
 
 
 class StaffBrowsableMixin(object):
@@ -88,35 +88,35 @@ class BeerViewSet(StaffBrowsableMixin, ModelViewSet):
             queryset = queryset.filter(vmp_id__in=beers)
         if (
             user_checkin is not None
-            and strtobool(user_checkin)
+            and parse_bool(user_checkin)
             and self.request.user
             and self.request.user.is_authenticated
         ):
             queryset = queryset.filter(checkin__user=self.request.user)
         elif (
             user_checkin is not None
-            and not strtobool(user_checkin)
+            and not parse_bool(user_checkin)
             and self.request.user
             and self.request.user.is_authenticated
         ):
             queryset = queryset.exclude(checkin__user=self.request.user)
         if (
             user_tasted is not None
-            and strtobool(user_tasted)
+            and parse_bool(user_tasted)
             and self.request.user
             and self.request.user.is_authenticated
         ):
             queryset = queryset.filter(tasted__user=self.request.user)
         elif (
             user_tasted is not None
-            and not strtobool(user_tasted)
+            and not parse_bool(user_tasted)
             and self.request.user
             and self.request.user.is_authenticated
         ):
             queryset = queryset.exclude(tasted__user=self.request.user)
         if (
             user_wishlisted is not None
-            and strtobool(user_wishlisted)
+            and parse_bool(user_wishlisted)
             and self.request.user
             and self.request.user.is_authenticated
         ):
@@ -124,7 +124,7 @@ class BeerViewSet(StaffBrowsableMixin, ModelViewSet):
             queryset = queryset.filter(wishlist__user=self.request.user)
         elif (
             user_wishlisted is not None
-            and not strtobool(user_wishlisted)
+            and not parse_bool(user_wishlisted)
             and self.request.user
             and self.request.user.is_authenticated
         ):

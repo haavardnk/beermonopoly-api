@@ -1,4 +1,3 @@
-from distutils.util import strtobool
 from rest_framework import serializers
 from beers.models import (
     Beer,
@@ -14,6 +13,7 @@ from beers.models import (
 from django.contrib.auth.models import User
 from drf_dynamic_fields import DynamicFieldsMixin
 from django.db.models import Avg, Count
+from .utils import parse_bool
 
 
 class BeerSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
@@ -53,7 +53,7 @@ class BeerSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
 
     def get_all_stock(self, beer):
         all_stock = self.context["request"].query_params.get("all_stock")
-        if all_stock and bool(strtobool(all_stock)):
+        if all_stock and parse_bool(all_stock):
             try:
                 ci = Stock.objects.filter(beer=beer).exclude(quantity=0)
                 serializer = AllStockSerializer(instance=ci, many=True)
