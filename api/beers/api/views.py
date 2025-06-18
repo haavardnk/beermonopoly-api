@@ -1,6 +1,7 @@
 from distutils.util import strtobool
-from django.db.models import F, Q
+from django.db.models import F, Q, Count
 from django.db.models.functions import Greatest
+from django.contrib.postgres.aggregates import ArrayAgg
 from rest_framework import permissions, filters, renderers
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
@@ -193,7 +194,24 @@ class WrongMatchViewSet(StaffBrowsableMixin, ModelViewSet):
 
 
 class ReleaseViewSet(StaffBrowsableMixin, ModelViewSet):
-    queryset = Release.objects.filter(active=True).order_by("-release_date")
+    queryset = (
+        Release.objects.filter(active=True)
+        .order_by("-release_date")
+        .prefetch_related("beer")
+        .annotate(
+            product_count=Count("beer", distinct=True),
+            beer_count=Count(
+                "beer", filter=Q(beer__main_category__iexact="Øl"), distinct=True
+            ),
+            cider_count=Count(
+                "beer", filter=Q(beer__main_category__iexact="Sider"), distinct=True
+            ),
+            mead_count=Count(
+                "beer", filter=Q(beer__main_category__iexact="Mjød"), distinct=True
+            ),
+            product_selections=ArrayAgg("beer__product_selection", distinct=True),
+        )
+    )
     serializer_class = ReleaseSerializer
     pagination_class = Pagination
     permission_classes = [permissions.AllowAny]
