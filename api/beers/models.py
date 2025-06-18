@@ -16,7 +16,7 @@ class Option(models.Model):
 
 class Beer(DirtyFieldsMixin, models.Model):
     # Vinmonopolet info
-    vmp_id = models.BigIntegerField(primary_key=True)  # ID number on Vinmonopolet
+    vmp_id = models.BigIntegerField(primary_key=True)
     vmp_name = models.CharField(max_length=150)
     main_category = models.CharField(max_length=50, blank=True, null=True)
     sub_category = models.CharField(max_length=50, blank=True, null=True)
@@ -93,6 +93,7 @@ class Beer(DirtyFieldsMixin, models.Model):
             if (
                 "untpd_url" in dirty_fields
                 and len(dirty_fields) == 1
+                and self.untpd_url is not None
                 and self.untpd_id != self.untpd_url.split("/")[-1]
             ):
                 self.untpd_id = self.untpd_url.split("/")[-1]
@@ -104,7 +105,7 @@ class Beer(DirtyFieldsMixin, models.Model):
             if (
                 "match_manually" in dirty_fields
                 and len(dirty_fields) == 1
-                and self.match_manually == True
+                and self.match_manually
             ):
                 self.untpd_id = None
                 self.untpd_name = None
@@ -165,9 +166,7 @@ class Stock(models.Model):
 
 class WrongMatch(models.Model):
     beer = models.ForeignKey(Beer, on_delete=models.CASCADE)
-    suggested_url = models.CharField(
-        max_length=250, validators=[URLValidator()], blank=True, null=True
-    )
+    suggested_url = models.CharField(max_length=250, validators=[URLValidator()])
     accept_change = models.BooleanField(default=False)
 
     def __str__(self):
@@ -179,7 +178,7 @@ class WrongMatch(models.Model):
         if "https://untp.beer/" in self.suggested_url:
             try:
                 suggested_url = requests.head(self.suggested_url).headers["location"]
-            except:
+            except Exception:
                 suggested_url = self.suggested_url
         else:
             suggested_url = self.suggested_url
@@ -188,13 +187,13 @@ class WrongMatch(models.Model):
             auto_accept = Option.objects.get(name="auto_accept_wrong_match").active
             if auto_accept:
                 self.accept_change = auto_accept
-        except:
+        except Option.DoesNotExist:
             pass
 
-        if self.accept_change == True and suggested_url != self.beer.untpd_url:
+        if self.accept_change and suggested_url != self.beer.untpd_url:
             Checkin.objects.filter(beer=self.beer).delete()
             self.beer.untpd_url = suggested_url
-            self.beer.untpd_id = suggested_url.split("/")[-1]
+            self.beer.untpd_id = int(suggested_url.split("/")[-1])
             self.beer.prioritize_recheck = True
             self.beer.verified_match = True
             self.beer.match_manually = False
@@ -202,7 +201,7 @@ class WrongMatch(models.Model):
 
             self.delete()
 
-        elif self.accept_change == True and suggested_url == self.beer.untpd_url:
+        elif self.accept_change and suggested_url == self.beer.untpd_url:
             self.delete()
 
 
