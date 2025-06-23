@@ -211,6 +211,7 @@ CORS_ALLOW_METHODS = [
 ]
 CSRF_TRUSTED_ORIGINS = [
     "https://api.beermonopoly.com",
+    "https://api.olmonopolet.app",
     "https://auth.beermonopoly.com",
 ]
 
