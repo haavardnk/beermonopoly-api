@@ -1,10 +1,10 @@
-import cloudscraper, xmltodict
+import cloudscraper
+import xmltodict
 from beers.models import Store, ExternalAPI
 from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-
     # Updates stores from Vinmonopolet API.
     def handle(self, *args, **options):
         baseurl = ExternalAPI.objects.get(name="vinmonopolet").baseurl

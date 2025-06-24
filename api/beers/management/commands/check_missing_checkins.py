@@ -1,4 +1,5 @@
-import requests, json
+import requests
+import json
 from beers.models import ExternalAPI, Checkin
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
@@ -10,7 +11,6 @@ from django_q.models import Schedule
 class Command(BaseCommand):
     # Checks if users are missing checkins in the database.
     def handle(self, *args, **options):
-
         untappd = ExternalAPI.objects.get(name="untappd")
         baseurl = untappd.baseurl
 
@@ -69,7 +69,7 @@ class Command(BaseCommand):
 
                     scheduled += 1
 
-            except:
+            except Exception:
                 print("Failed user: " + user.username)
                 failed += 1
                 continue

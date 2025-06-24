@@ -1,4 +1,5 @@
-import cloudscraper, xmltodict
+import cloudscraper
+import xmltodict
 from django.utils import timezone
 from beers.models import Beer, ExternalAPI, Store, Stock
 import re
@@ -111,7 +112,7 @@ class Command(BaseCommand):
 
                                 stocked += 1
 
-                    except:
+                    except Exception:
                         continue
 
             # Remove all beers no longer in stock in the store

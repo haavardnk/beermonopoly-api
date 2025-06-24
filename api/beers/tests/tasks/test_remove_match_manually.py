@@ -18,4 +18,4 @@ def test_remove_match_manually():
     remove_match_manually()
 
     beer = Beer.objects.get(vmp_id=12611502)
-    assert beer.match_manually == False
+    assert not beer.match_manually

@@ -207,7 +207,7 @@ class WrongMatch(models.Model):
 
 class ExternalAPI(models.Model):
     name = models.CharField(primary_key=True, max_length=50)
-    baseurl = models.TextField(validators=[URLValidator()], blank=True, null=True)
+    baseurl = models.TextField(validators=[URLValidator()])
     api_client_id = models.CharField(max_length=100, blank=True, null=True)
     api_client_secret = models.CharField(max_length=100, blank=True, null=True)
 

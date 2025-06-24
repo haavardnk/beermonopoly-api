@@ -1,4 +1,5 @@
-import cloudscraper, xmltodict
+import cloudscraper
+import xmltodict
 from beers.models import Beer, ExternalAPI
 from django.utils import timezone
 from django.core.management.base import BaseCommand
@@ -81,7 +82,7 @@ class Command(BaseCommand):
                 product.save()
                 updated += 1
 
-            except:
+            except Exception:
                 failed += 1
                 continue
 

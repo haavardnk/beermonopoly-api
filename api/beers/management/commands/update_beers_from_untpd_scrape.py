@@ -1,4 +1,5 @@
-import re, json
+import re
+import json
 from bs4 import BeautifulSoup
 from urllib.request import Request, urlopen
 from itertools import chain
@@ -109,7 +110,7 @@ class Command(BaseCommand):
                         r"\b\d+\b", soup.find("p", {"class": "abv"}).text
                     )
                 ][0]
-            except:
+            except Exception:
                 beer.abv = 0
             try:
                 beer.ibu = [
@@ -118,7 +119,7 @@ class Command(BaseCommand):
                         r"\b\d+\b", soup.find("p", {"class": "ibu"}).text
                     )
                 ][0]
-            except:
+            except Exception:
                 beer.ibu = None
             beer.label_hd_url = soup.find("a", {"class": "label image-big"})[
                 "data-image"

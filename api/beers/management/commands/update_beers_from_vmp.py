@@ -1,4 +1,5 @@
-import cloudscraper, xmltodict
+import cloudscraper
+import xmltodict
 from beers.api.utils import parse_bool
 from beers.models import Beer, ExternalAPI
 from django.utils import timezone
@@ -78,7 +79,7 @@ class Command(BaseCommand):
                                 == "Kan bestilles til alle butikker"
                             )
                             beer.vmp_updated = timezone.now()
-                            if beer.active == False:
+                            if not beer.active:
                                 beer.active = True
                             beer.save()
 
@@ -114,7 +115,7 @@ class Command(BaseCommand):
 
                             created += 1
 
-                except:
+                except Exception:
                     continue
 
         self.stdout.write(

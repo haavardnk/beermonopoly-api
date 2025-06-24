@@ -1,4 +1,5 @@
-import pytest, responses
+import pytest
+import responses
 from freezegun import freeze_time
 from django.utils import timezone
 from beers.models import Beer, ExternalAPI
@@ -98,7 +99,7 @@ def test_update_beer_correctly(mocked_responses, json_response):
         == "https://untappd.com/b/ayinger-privatbrauerei-ayinger-winter-bock/100415"
     )
     assert beer.untpd_updated == timezone.now()
-    assert beer.prioritize_recheck == False
+    assert beer.prioritize_recheck is False
 
 
 @pytest.mark.django_db
@@ -132,7 +133,7 @@ def test_update_beer_no_search_match(mocked_responses):
     smart_update_untappd()
 
     beer = Beer.objects.get(vmp_id=12611502)
-    assert beer.untpd_name == None
+    assert beer.untpd_name is None
 
 
 @pytest.mark.django_db
@@ -171,7 +172,7 @@ def test_stop_when_no_api_calls_remaining(mocked_responses, json_response):
     beer2 = Beer.objects.get(vmp_id=12611504)
 
     assert beer1.untpd_name == "Ayinger Winter Bock"
-    assert beer2.untpd_name == None
+    assert beer2.untpd_name is None
 
 
 @pytest.mark.django_db

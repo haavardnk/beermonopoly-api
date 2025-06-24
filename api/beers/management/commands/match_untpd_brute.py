@@ -1,4 +1,5 @@
-import requests, json
+import requests
+import json
 from urllib.parse import quote
 from fuzzywuzzy import process, fuzz
 from beers.models import Beer, ExternalAPI
@@ -34,7 +35,6 @@ class Command(BaseCommand):
 
             # Run three times
             for i in range(1, 4):
-
                 # Remove collab brewery
                 if " x " in querystring:
                     querywords = querystring.split()
@@ -45,7 +45,6 @@ class Command(BaseCommand):
 
             # Remove last word in querystring until only one remains and try to find match
             for i in range(len(querystring.split())):
-
                 # Stop if no api calls remaining
                 if int(api_remaining) <= 5:
                     break
@@ -89,7 +88,7 @@ class Command(BaseCommand):
                     request = requests.get(url, headers=headers)
                     response = json.loads(request.text)
                     api_remaining = request.headers["X-Ratelimit-Remaining"]
-                except:
+                except Exception:
                     break
 
                 try:

@@ -7,7 +7,6 @@ from django.db.models.signals import post_save
 
 @receiver(user_signed_up)
 def get_checkins(request, user, **kwargs):
-
     Schedule.objects.create(
         name="get checkins for user: " + user.username,
         func="beers.tasks.get_user_checkins",
@@ -18,7 +17,6 @@ def get_checkins(request, user, **kwargs):
 
 @receiver(user_signed_up)
 def get_friendlist(request, user, **kwargs):
-
     Schedule.objects.create(
         name="get friendlist for user: " + user.username,
         func="beers.tasks.get_users_friendlist",

@@ -1,4 +1,5 @@
-import pytest, responses
+import pytest
+import responses
 from urllib.parse import quote
 from beers.models import Beer, ExternalAPI
 from beers.tasks import match_untpd
@@ -112,8 +113,8 @@ def test_no_match(mocked_responses):
     match_untpd()
 
     beer = Beer.objects.get(vmp_id=12630102)
-    assert beer.untpd_id == None
-    assert beer.match_manually == True
+    assert beer.untpd_id is None
+    assert beer.match_manually
 
 
 @pytest.mark.django_db
@@ -159,8 +160,8 @@ def test_bad_match(mocked_responses):
     match_untpd()
 
     beer = Beer.objects.get(vmp_id=12512002)
-    assert beer.untpd_id == None
-    assert beer.match_manually == True
+    assert beer.untpd_id is None
+    assert beer.match_manually
 
 
 @pytest.mark.django_db
@@ -222,4 +223,4 @@ def test_stop_when_no_api_calls_remaining(mocked_responses):
     beer2 = Beer.objects.get(vmp_id=12512002)
 
     assert beer1.untpd_id == 1320463
-    assert beer2.untpd_id == None
+    assert beer2.untpd_id is None

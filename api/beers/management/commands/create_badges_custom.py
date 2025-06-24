@@ -30,7 +30,7 @@ class Command(BaseCommand):
                 )
                 created += 1
 
-            except:
+            except Exception:
                 continue
 
         self.stdout.write(self.style.SUCCESS(f"Created {created} badges."))

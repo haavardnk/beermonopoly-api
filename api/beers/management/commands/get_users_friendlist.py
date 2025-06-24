@@ -1,4 +1,5 @@
-import requests, json
+import requests
+import json
 from beers.models import ExternalAPI, FriendList
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
@@ -11,7 +12,6 @@ class Command(BaseCommand):
         parser.add_argument("--full", action="store_true")
 
     def handle(self, *args, **options):
-
         untappd = ExternalAPI.objects.get(name="untappd")
         baseurl = untappd.baseurl
 
@@ -80,10 +80,7 @@ class Command(BaseCommand):
                             failed += 1
                             continue
 
-                    if (
-                        response["response"]["pagination"]["next_url"]
-                        and full_update == True
-                    ):
+                    if response["response"]["pagination"]["next_url"] and full_update:
                         print(str(count) + " of " + str(response["response"]["found"]))
                         url = (
                             baseurl
@@ -97,7 +94,7 @@ class Command(BaseCommand):
                         print("No more pages")
                         break
 
-                except:
+                except Exception:
                     break
 
         self.stdout.write(

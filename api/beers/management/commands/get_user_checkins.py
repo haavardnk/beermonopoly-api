@@ -1,4 +1,5 @@
-import requests, json
+import requests
+import json
 from beers.models import Beer, ExternalAPI, Checkin
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
@@ -140,7 +141,7 @@ class Command(BaseCommand):
                 api_remaining = request.headers["X-Ratelimit-Remaining"]
                 print(api_remaining)
 
-            except:
+            except Exception:
                 break
 
         if int(api_remaining) <= 4 and response["response"]["pagination"]["next_url"]:

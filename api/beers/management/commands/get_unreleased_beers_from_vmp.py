@@ -1,5 +1,5 @@
-import cloudscraper, xmltodict
-from beers.api.utils import parse_bool
+import cloudscraper
+import xmltodict
 from beers.models import Beer, ExternalAPI, VmpNotReleased
 from django.utils import timezone
 from django.core.management.base import BaseCommand
@@ -46,7 +46,7 @@ class Command(BaseCommand):
                     beer.product_selection = response["product_selection"]
                     beer.vmp_url = "https://www.vinmonopolet.no" + response["url"]
                     beer.vmp_updated = timezone.now()
-                    if beer.active == False:
+                    if not beer.active:
                         beer.active = True
                     beer.save()
 
@@ -76,7 +76,7 @@ class Command(BaseCommand):
                     created += 1
                     product.delete()
 
-            except:
+            except Exception:
                 continue
 
         self.stdout.write(

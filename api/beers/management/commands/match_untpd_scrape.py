@@ -60,7 +60,7 @@ class Command(BaseCommand):
                     print(f"Failed to match {beer}... Possible option: {best_match[0]}")
                     continue
 
-            except:
+            except Exception:
                 beer.description = "Missing on Untappd."
                 beer.match_manually = True
                 beer.save()

@@ -7,7 +7,6 @@ class Command(BaseCommand):
         parser.add_argument("limit", type=int)
 
     def handle(self, *args, **options):
-
         checkins = Checkin.objects.all().order_by("updated")[: options["limit"]]
 
         updated = 0

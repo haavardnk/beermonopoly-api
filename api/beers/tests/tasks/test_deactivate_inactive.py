@@ -20,7 +20,7 @@ def test_deactivate_inactive_beer():
     deactivate_inactive(30)
 
     beer = Beer.objects.get(vmp_id=12611502)
-    assert beer.active == False
+    assert not beer.active
 
 
 @pytest.mark.django_db
@@ -38,4 +38,4 @@ def test_active_beer_does_not_get_deactivated():
     deactivate_inactive(30)
 
     beer = Beer.objects.get(vmp_id=12611502)
-    assert beer.active == True
+    assert beer.active

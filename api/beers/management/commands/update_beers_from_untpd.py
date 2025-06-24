@@ -1,4 +1,5 @@
-import requests, json
+import requests
+import json
 from json.decoder import JSONDecodeError
 from itertools import chain
 from beers.models import Beer, ExternalAPI
@@ -68,7 +69,7 @@ class Command(BaseCommand):
                         + "beer/info/"
                         + str(beer.untpd_id)
                         + "?client_id="
-                        + api_client_id
+                        + api_client_id  # type: ignore
                         + "&client_secret="
                         + api_client_secret
                     )
@@ -107,7 +108,7 @@ class Command(BaseCommand):
                 api_remaining = request.headers["X-Ratelimit-Remaining"]
                 updated += 1
 
-            except:
+            except Exception:
                 api_remaining = request.headers["X-Ratelimit-Remaining"]
                 continue
 

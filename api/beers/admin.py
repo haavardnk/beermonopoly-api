@@ -107,7 +107,6 @@ class CheckinAdmin(admin.ModelAdmin):
 
 @admin.register(Tasted)
 class Tasted(admin.ModelAdmin):
-
     exclude = ["beer"]
     list_display = (
         "user",

@@ -1,4 +1,5 @@
-import requests, json
+import requests
+import json
 from beers.models import Beer, ExternalAPI, Wishlist
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
@@ -6,10 +7,8 @@ from allauth.socialaccount.models import SocialToken
 
 
 class Command(BaseCommand):
-
     # Updates the database with information from Untappd.
     def handle(self, *args, **options):
-
         untappd = ExternalAPI.objects.get(name="untappd")
         baseurl = untappd.baseurl
 
@@ -92,7 +91,7 @@ class Command(BaseCommand):
                         print("No more pages")
                         break
 
-                except:
+                except Exception:
                     break
 
         self.stdout.write(

@@ -26,8 +26,8 @@ def set_token(request):
 
             return Response(message, status=200)
 
-        except:
-            message = {"message": "An error occurred"}
+        except Exception as e:
+            message = {"message": f"An error occurred: {str(e)}"}
             return Response(message, status=500)
     else:
         message = {"message": "beer_id missing"}
