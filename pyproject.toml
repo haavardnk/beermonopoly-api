@@ -7,7 +7,7 @@ requires-python = ">=3.12"
 dependencies = [
     "beautifulsoup4>=4.12.3",
     "blessed>=1.20.0",
-    "cloudscraper>=1.2.71",
+    "cloudscraper25>=2.7.0",
     "cryptography>=43.0.3",
     "django-admin-shell>=2.0.1",
     "django-allauth>=65.1.0",
@@ -41,7 +41,4 @@ dependencies = [
 ]
 
 [tool.uv]
-dev-dependencies = [
-    "codecov>=2.1.13",
-    "coverage>=7.6.4",
-]
+dev-dependencies = ["codecov>=2.1.13", "coverage>=7.6.4"]

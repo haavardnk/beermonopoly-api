@@ -1,4 +1,4 @@
-import cloudscraper
+import cloudscraper25
 import xmltodict
 from beers.models import Store, ExternalAPI
 from django.core.management.base import BaseCommand
@@ -17,7 +17,7 @@ class Command(BaseCommand):
         req_url = url + "?currentPage=0&fields=FULL&pageSize=1&query="
 
         try:
-            scraper = cloudscraper.create_scraper(interpreter="nodejs")
+            scraper = cloudscraper25.create_scraper(interpreter="nodejs")
             request = scraper.get(req_url).text
             response = xmltodict.parse(request)
 

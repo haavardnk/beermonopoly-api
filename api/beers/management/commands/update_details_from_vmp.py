@@ -1,4 +1,4 @@
-import cloudscraper
+import cloudscraper25
 import xmltodict
 from beers.models import Beer, ExternalAPI
 from django.utils import timezone
@@ -7,7 +7,7 @@ from django.core.management.base import BaseCommand
 
 def call_api(url, product):
     req_url = url + str(product) + "?fields=FULL"
-    scraper = cloudscraper.create_scraper(interpreter="nodejs")
+    scraper = cloudscraper25.create_scraper(interpreter="nodejs")
     request = scraper.get(req_url).text
     response = xmltodict.parse(request)["product"]
 

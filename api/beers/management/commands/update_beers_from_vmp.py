@@ -1,4 +1,4 @@
-import cloudscraper
+import cloudscraper25
 import xmltodict
 from beers.api.utils import parse_bool
 from beers.models import Beer, ExternalAPI
@@ -18,7 +18,7 @@ def call_api(url, page, product):
     req_url = (
         url + "?currentPage=" + str(page) + "&fields=FULL&pageSize=100&query=" + query
     )
-    scraper = cloudscraper.create_scraper(interpreter="nodejs")
+    scraper = cloudscraper25.create_scraper(interpreter="nodejs")
     request = scraper.get(req_url).text
     response = xmltodict.parse(request)["productCategorySearchPage"]
     total_pages = response["pagination"]["totalPages"]
